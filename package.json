@@ -1,0 +1,48 @@
+{
+  "name": "ksp-deltav-planner",
+  "version": "1.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod",
+    "serve": "serve dist/ksp-deltav-planner",
+    "lint": "ng lint"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~8.1.1",
+    "@angular/common": "~8.1.1",
+    "@angular/compiler": "~8.1.1",
+    "@angular/core": "~8.1.1",
+    "@angular/forms": "~8.1.1",
+    "@angular/platform-browser": "~8.1.1",
+    "@angular/platform-browser-dynamic": "~8.1.1",
+    "@angular/pwa": "^0.801.2",
+    "@angular/router": "~8.1.1",
+    "@angular/service-worker": "~8.1.1",
+    "core-js": "^3.1.4",
+    "d3-selection": "^1.4.0",
+    "ng2-semantic-ui": "^0.9.7",
+    "rxjs": "~6.5.2",
+    "semantic-ui-css": "^2.4.1",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.9.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.801.1",
+    "@angular/cli": "^8.1.1",
+    "@angular/compiler-cli": "~8.1.1",
+    "@angular/language-service": "~8.1.1",
+    "@types/d3-selection": "^1.4.1",
+    "@types/jsdom": "^12.2.4",
+    "@types/node": "~12.6.4",
+    "codelyzer": "~5.1.0",
+    "jsdom": "^15.1.1",
+    "replace-in-file": "^4.1.1",
+    "serve": "^11.1.0",
+    "sharp": "^0.22.1",
+    "ts-node": "~8.3.0",
+    "tslint": "~5.18.0",
+    "typescript": "~3.4.5"
+  }
+}

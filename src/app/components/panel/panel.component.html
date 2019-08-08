@@ -1,0 +1,117 @@
+<div class="ui one column grid">
+  <div class="computer only column">
+    <h1 class="ui header centered white pt">Kerbal Space Program Delta-V Planner</h1>
+  </div>
+  <div class="mobile only column">
+    <h1 class="ui header centered white pt">KSP Delta-V Planner</h1>
+  </div>
+</div>
+<div class="ui header centered">
+  <a aria-label="information" routerLink="information"
+     class="clickable">
+    <i class="large info circle white icon"></i>
+  </a>
+  <a aria-label="github" href="https://github.com/LoicViennois/KSP-DeltaV-Planner">
+    <i class="large github white icon"></i>
+  </a>
+  <a aria-label="copyright" routerLink="copyright"
+     class="clickable">
+    <i class="large copyright white icon"></i>
+  </a>
+</div>
+<div class="ui large form">
+  <div class="field">
+    <label>From:</label>
+    <ng-template let-option #optionTemplate>
+      <i *ngIf="!option.isPlanet" class="icon caret right pl"></i>
+      <img class="ui avatar image" [src]="option.imageUrl" alt="">
+      {{ option.name }}
+    </ng-template>
+    <sui-select class="selection"
+                [(ngModel)]="selectedPath.from"
+                [options]="options"
+                labelField="name"
+                [optionTemplate]="optionTemplate"
+                [isSearchable]="true"
+                (selectedOptionChange)="selectFromChanged()"
+                #selectFrom>
+      <sui-select-option class="ui big" *ngFor="let option of selectFrom.filteredOptions"
+                         [value]="option">
+      </sui-select-option>
+    </sui-select>
+  </div>
+  <div class="field mb-0">
+    <div class="ui two column centered grid">
+      <div class="column right aligned">
+        <i class="icon retweet large clickable white" (click)="reverseSelection()"></i>
+      </div>
+      <div class="column left aligned">
+        <i class="icon close large clickable white" (click)="init()"></i>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <label>To:</label>
+    <sui-select class="selection"
+                [(ngModel)]="selectedPath.to"
+                [options]="options"
+                labelField="name"
+                [optionTemplate]="optionTemplate"
+                [isSearchable]="true"
+                (selectedOptionChange)="selectToChanged()"
+                #selectTo>
+      <sui-select-option *ngFor="let option of selectTo.filteredOptions"
+                         [value]="option">
+      </sui-select-option>
+    </sui-select>
+  </div>
+  <div class="field pt pb">
+    <div class="ui two column centered grid">
+      <div class="column right aligned">
+        <sui-checkbox
+          (click)="computeDeltaV()"
+          [isDisabled]="isKerbinTrip"
+          [(ngModel)]="selectedPath.landing">
+          <span class="white">Landing</span>
+        </sui-checkbox>
+      </div>
+      <div class="column left aligned">
+        <sui-checkbox
+          (click)="computeDeltaV()"
+          [isDisabled]="isKerbinTrip"
+          [(ngModel)]="return">
+          <span class="white">Return</span>
+        </sui-checkbox>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="steps.length > 0"
+     class="ui vertical big fluid menu">
+  <a *ngFor="let step of steps" class="item not-clickable"
+     (mouseenter)="enterItem(step)"
+     (mouseleave)="leaveItem()">
+    <div *ngIf="landingInAtmosphere(step)"
+         class="ui large label"
+         [class.grey]="selectedPath.to.canLand"
+         [class.red]="!selectedPath.to.canLand"
+         suiPopup
+         [popupHeader]="!selectedPath.to.canLand ? 'Landing here might not a good idea...': ''"
+         popupText="Aerobraking is possible"
+         popupPlacement="left">
+      <i *ngIf="!selectedPath.to.canLand" class="ui icon ban"></i>
+      <i class="ui icon cloud download"></i>
+      {{ step.dv }} m/s
+    </div>
+    <div *ngIf="!landingInAtmosphere(step)"
+         class="ui large grey label">{{ step.dv }} m/s
+    </div>
+    <ksp-step-message [step]="step"></ksp-step-message>
+  </a>
+  <a *ngIf="total" class="active item not-clickable"
+     (mouseenter)="enterItem(total)"
+     (mouseleave)="leaveItem()">
+    <div class="ui large left pointing blue label">{{ total.dv }} m/s</div>
+    <ksp-step-message [step]="total"></ksp-step-message>
+  </a>
+</div>

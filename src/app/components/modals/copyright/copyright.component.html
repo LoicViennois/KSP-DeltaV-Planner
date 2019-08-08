@@ -1,0 +1,65 @@
+<sui-modal [isClosable]="true" (dismissed)="router.navigate([''])">
+  <div class="header">Licence notice</div>
+  <div class="content">
+    <p>
+      <strong>KSP Delta-V Planner v{{ version }}</strong><br>
+      Copyright &copy; 2019 by <a href="https://github.com/LoicViennois" target="_blank">Loïc Viennois</a>
+    </p>
+    <p>
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+    </p>
+    <p>
+      See the
+      <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License v3</a>
+      for more details.
+    </p>
+    <div class="ui divider"></div>
+    <p>The <strong>Kerbal Space Program Δv Map</strong> (SVG map) is licensed under
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode" target="_blank">CC BY-NC-SA 4.0</a>
+      by
+      <a href="https://github.com/LoicViennois" target="_blank">Loïc Viennois</a>.<br>
+      This work is a derivative of
+      <a href="https://github.com/Kowgan/ksp_cheat_sheets" target="_blank">Cheat Sheets for Kerbal Space Program</a>
+      by
+      <a href="https://github.com/Kowgan" target="_blank">Kowgan</a>,
+      used under
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode" target="_blank">CC BY-NC-SA 4.0</a>.
+    </p>
+    <p>
+      Map design by <a href="https://www.reddit.com/user/swashlebucky/" target="_blank"> /u/swashlebucky</a>.<br>
+      Design inspired by Kowgan and WAC.<br>
+      Atmospheric numbers by Kowgan.<br>
+      Vacuum numbers by <a href="https://www.reddit.com/user/CuriousMetaphor/"
+                           target="_blank">/u/CuriousMetaphor</a>.<br>
+      Relay Antenna calculations from the
+      <a href="https://wiki.kerbalspaceprogram.com/wiki/CommNet" target="_blank">Wiki</a>.<br>
+      Original subway concept by <a href="https://www.reddit.com/user/JellyCubes/" target="_blank">/u/JellyCubes</a>.
+    </p>
+    <div class="ui divider"></div>
+    <h5 class="ui header">Send feedback:</h5>
+    <p>
+      <i class="large github icon"></i>
+      To report a bug or send a suggestion,
+      <a href="https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/new"
+         target="_blank">
+        file an issue on Github
+        <i class="small external icon"></i>
+      </a>
+    </p>
+    <p>
+      <i class="large reddit icon"></i>
+      To give me your feedback,
+      <a href="https://www.reddit.com/message/compose/?to=LoicViennois"
+         target="_blank">
+        send me a message on Reddit
+        <i class="small external icon"></i>
+      </a>
+    </p>
+  </div>
+  <!--<div class="actions">-->
+  <!--  <button class="ui grey button" (click)="modal.approve(undefined)" autofocus>OK</button>-->
+  <!--</div>-->
+</sui-modal>
