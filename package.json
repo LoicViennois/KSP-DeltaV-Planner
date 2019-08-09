@@ -1,12 +1,13 @@
 {
   "name": "ksp-deltav-planner",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
     "serve": "serve dist/ksp-deltav-planner",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +42,7 @@
     "replace-in-file": "^4.1.1",
     "serve": "^11.1.0",
     "sharp": "^0.22.1",
+    "standard-version": "^7.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~5.18.0",
     "typescript": "~3.4.5"
