@@ -66,13 +66,20 @@
     </sui-select>
   </div>
   <div class="field pt pb">
-    <div class="ui two column centered grid">
+    <div class="ui three column centered grid">
       <div class="column right aligned">
         <sui-checkbox
           (click)="computeDeltaV()"
           [isDisabled]="isKerbinTrip"
           [(ngModel)]="selectedPath.landing">
           <span class="white">Landing</span>
+        </sui-checkbox>
+      </div>
+      <div class="column center aligned">
+        <sui-checkbox
+          (click)="computeDeltaV()"
+          [(ngModel)]="selectedPath.aerobraking">
+          <span class="white">Aerobraking</span>
         </sui-checkbox>
       </div>
       <div class="column left aligned">

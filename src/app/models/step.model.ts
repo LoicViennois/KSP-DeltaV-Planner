@@ -17,5 +17,6 @@ export interface Step {
   type: StepType,
   from?: AstroBody,
   to?: AstroBody,
-  dv: number
+  dv: number,
+  returnDv?: number
 }

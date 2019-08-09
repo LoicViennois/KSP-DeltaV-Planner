@@ -45,7 +45,8 @@ export class PanelComponent implements OnInit {
     this.selectedPath = {
       from: this.kerbin,
       to: null,
-      landing: false
+      landing: false,
+      aerobraking: true
     }
     this.steps = []
     this.return = false
@@ -75,6 +76,14 @@ export class PanelComponent implements OnInit {
     return step.type === StepType.landing && this.selectedPath.to.hasAtmosphere
   }
 
+  get doAerobrakeFrom (): boolean {
+    return this.selectedPath.aerobraking && this.selectedPath.from.hasAtmosphere
+  }
+
+  get doAerobrakeTo (): boolean {
+    return this.selectedPath.aerobraking && this.selectedPath.to.hasAtmosphere
+  }
+
   computeDeltaV () {
     if (this.selectedPath.from == null
       || this.selectedPath.to == null) {
@@ -83,7 +92,8 @@ export class PanelComponent implements OnInit {
     this.steps = [{
       type: StepType.takeOff,
       from: this.selectedPath.from,
-      dv: this.selectedPath.from.dvGL
+      dv: this.selectedPath.from.dvGL,
+      returnDv: this.doAerobrakeFrom ? 0 : this.selectedPath.from.dvGL
     }]
     this.total = null
 
@@ -236,7 +246,8 @@ export class PanelComponent implements OnInit {
       this.steps.push({
         type: StepType.landing,
         to: this.selectedPath.to,
-        dv: this.selectedPath.to.dvGL
+        dv: this.doAerobrakeTo ? 0 : this.selectedPath.to.dvGL,
+        returnDv: this.selectedPath.to.dvGL
       })
     }
 
@@ -248,7 +259,9 @@ export class PanelComponent implements OnInit {
         type: StepType.return,
         from: this.selectedPath.to,
         to: this.selectedPath.from,
-        dv: this.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2)
+        dv: this.steps
+          .map(step => step.returnDv != null ? step.returnDv : step.dv)
+          .reduce((dv1, dv2) => dv1 + dv2)
       })
     }
 

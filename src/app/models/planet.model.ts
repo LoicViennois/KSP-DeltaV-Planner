@@ -4,6 +4,7 @@ export interface AstroPath {
   from: AstroBody,
   to: AstroBody
   landing: boolean,
+  aerobraking: boolean
 }
 
 interface AbstractBody {
