@@ -1,10 +1,15 @@
+import { Step } from './step.model'
+
 export type AstroBody = Planet | Satellite
 
 export interface AstroPath {
   from: AstroBody,
   to: AstroBody
   landing: boolean,
-  aerobraking: boolean
+  aerobraking: boolean,
+  steps: Step[],
+  total: Step,
+  return: boolean
 }
 
 interface AbstractBody {

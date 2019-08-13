@@ -28,7 +28,7 @@
       {{ option.name }}
     </ng-template>
     <sui-select class="selection"
-                [(ngModel)]="selectedPath.from"
+                [(ngModel)]="path.from"
                 [options]="options"
                 labelField="name"
                 [optionTemplate]="optionTemplate"
@@ -43,17 +43,17 @@
   <div class="field mb-0">
     <div class="ui two column centered grid">
       <div class="column right aligned">
-        <i class="icon retweet large clickable white" (click)="reverseSelection()"></i>
+        <i class="icon retweet large clickable white" (click)="astroPathService.reverseSelection()"></i>
       </div>
       <div class="column left aligned">
-        <i class="icon close large clickable white" (click)="init()"></i>
+        <i class="icon close large clickable white" (click)="astroPathService.reset()"></i>
       </div>
     </div>
   </div>
   <div class="field">
     <label>To:</label>
     <sui-select class="selection"
-                [(ngModel)]="selectedPath.to"
+                [(ngModel)]="path.to"
                 [options]="options"
                 labelField="name"
                 [optionTemplate]="optionTemplate"
@@ -69,24 +69,24 @@
     <div class="ui three column centered grid">
       <div class="column right aligned">
         <sui-checkbox
-          (click)="computeDeltaV()"
-          [isDisabled]="isKerbinTrip"
-          [(ngModel)]="selectedPath.landing">
+          (click)="astroPathService.pathChanged(path)"
+          [isDisabled]="astroPathService.isKerbinTrip"
+          [(ngModel)]="path.landing">
           <span class="white">Landing</span>
         </sui-checkbox>
       </div>
       <div class="column center aligned">
         <sui-checkbox
-          (click)="computeDeltaV()"
-          [(ngModel)]="selectedPath.aerobraking">
+          (click)="astroPathService.pathChanged(path)"
+          [(ngModel)]="path.aerobraking">
           <span class="white">Aerobraking</span>
         </sui-checkbox>
       </div>
       <div class="column left aligned">
         <sui-checkbox
-          (click)="computeDeltaV()"
-          [isDisabled]="isKerbinTrip"
-          [(ngModel)]="return">
+          (click)="astroPathService.pathChanged(path)"
+          [isDisabled]="astroPathService.isKerbinTrip"
+          [(ngModel)]="path.return">
           <span class="white">Return</span>
         </sui-checkbox>
       </div>
@@ -100,13 +100,13 @@
      (mouseleave)="leaveItem()">
     <div *ngIf="landingInAtmosphere(step)"
          class="ui large label"
-         [class.grey]="selectedPath.to.canLand"
-         [class.red]="!selectedPath.to.canLand"
+         [class.grey]="path.to.canLand"
+         [class.red]="!path.to.canLand"
          suiPopup
-         [popupHeader]="!selectedPath.to.canLand ? 'Landing here might not a good idea...': ''"
+         [popupHeader]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
          popupText="Aerobraking is possible"
          popupPlacement="left">
-      <i *ngIf="!selectedPath.to.canLand" class="ui icon ban"></i>
+      <i *ngIf="!path.to.canLand" class="ui icon ban"></i>
       <i class="ui icon cloud download"></i>
       {{ step.dv }} m/s
     </div>
@@ -115,10 +115,10 @@
     </div>
     <ksp-step-message [step]="step"></ksp-step-message>
   </a>
-  <a *ngIf="total" class="active item not-clickable"
-     (mouseenter)="enterItem(total)"
+  <a *ngIf="path.total" class="active item not-clickable"
+     (mouseenter)="enterItem(path.total)"
      (mouseleave)="leaveItem()">
-    <div class="ui large left pointing blue label">{{ total.dv }} m/s</div>
-    <ksp-step-message [step]="total"></ksp-step-message>
+    <div class="ui large left pointing blue label">{{ path.total.dv }} m/s</div>
+    <ksp-step-message [step]="path.total"></ksp-step-message>
   </a>
 </div>
