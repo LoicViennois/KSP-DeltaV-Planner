@@ -43,15 +43,16 @@ export class AstroPathService {
   }
 
   pathChanged (path: AstroPath) {
-    this.computeSteps(path)
-    this.path.next(path)
+    const newPath = { ...path }
+    this.computeSteps(newPath)
+    this.path.next(newPath)
   }
 
   reversePath () {
-    const path = this.path.value;
-    [path.from, path.to] = [path.to, path.from]
-    this.computeSteps(path)
-    this.path.next(path)
+    const newPath = { ...this.path.value };
+    [newPath.from, newPath.to] = [newPath.to, newPath.from]
+    this.computeSteps(newPath)
+    this.path.next(newPath)
   }
 
   private get kerbin (): Kerbin {
