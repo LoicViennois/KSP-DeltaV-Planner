@@ -4,6 +4,7 @@ import { takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs'
 
 import { AstroPathService } from '../../services/astro-path.service'
+import { StepSelectionService } from '../../services/step-selection.service'
 import { AstroPath } from '../../models/planet.model'
 import { Step, StepType } from '../../models/step.model'
 
@@ -23,7 +24,8 @@ export class MapComponent implements OnInit, OnDestroy {
   private readonly suffixStepSOI: string[]
   private readonly suffixStepLow: string[]
 
-  constructor (private astroPathService: AstroPathService) {
+  constructor (private readonly astroPathService: AstroPathService,
+               private readonly stepSelectionService: StepSelectionService) {
     this.suffixHub = ['transit', 'hub', 'com']
     this.suffixLow = this.suffixHub.concat(['transit-low', 'low'])
     this.suffixLanding = this.suffixLow.concat(['ground'])
@@ -41,7 +43,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.path = p
         this.pathChanged({ soft: false })
       })
-    this.astroPathService.getSelection()
+    this.stepSelectionService.getSelection()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((s) => this.selectionChanged(s))
   }

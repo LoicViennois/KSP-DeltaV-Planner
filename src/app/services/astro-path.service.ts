@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, Subject } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 import { AstroPath, Planet, Satellite } from '../models/planet.model'
-import { Step, StepType } from '../models/step.model'
+import { StepType } from '../models/step.model'
 import { Kerbin } from '../models/data/kerbin'
 import { BodiesService } from './bodies.service'
 
@@ -10,12 +10,10 @@ import { BodiesService } from './bodies.service'
   providedIn: 'root'
 })
 export class AstroPathService {
-  private readonly step: Subject<Step>
   private readonly path: BehaviorSubject<AstroPath>
   private readonly initialPath: AstroPath
 
   constructor (private readonly bodiesService: BodiesService) {
-    this.step = new Subject()
     this.initialPath = {
       from: this.kerbin,
       to: null,
@@ -49,15 +47,7 @@ export class AstroPathService {
     this.path.next(path)
   }
 
-  getSelection (): Observable<Step> {
-    return this.step.asObservable()
-  }
-
-  selectionChanged (step: Step) {
-    this.step.next(step)
-  }
-
-  reverseSelection () {
+  reversePath () {
     const path = this.path.value;
     [path.from, path.to] = [path.to, path.from]
     this.computeSteps(path)

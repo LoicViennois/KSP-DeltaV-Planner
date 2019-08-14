@@ -6,6 +6,7 @@ import { AstroBody, AstroPath } from '../../models/planet.model'
 import { Step, StepType } from '../../models/step.model'
 import { Kerbin } from '../../models/data/kerbin'
 import { AstroPathService } from '../../services/astro-path.service'
+import { StepSelectionService } from '../../services/step-selection.service'
 import { BodiesService } from '../../services/bodies.service'
 
 @Component({
@@ -31,6 +32,7 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   constructor (public readonly astroPathService: AstroPathService,
+               public readonly stepSelectionService: StepSelectionService,
                private readonly bodiesService: BodiesService) {
   }
 
@@ -48,14 +50,14 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  selectFromChanged () {
+  pathFromChanged () {
     if (this.path.from.name !== 'Kerbin') {
       this.path.to = this.kerbin
     }
     this.astroPathService.pathChanged(this.path)
   }
 
-  selectToChanged () {
+  pathToChanged () {
     if (this.path.to.name !== 'Kerbin') {
       this.path.from = this.kerbin
     }

@@ -33,7 +33,7 @@
                 labelField="name"
                 [optionTemplate]="optionTemplate"
                 [isSearchable]="true"
-                (selectedOptionChange)="selectFromChanged()"
+                (selectedOptionChange)="pathFromChanged()"
                 #selectFrom>
       <sui-select-option class="ui big" *ngFor="let option of selectFrom.filteredOptions"
                          [value]="option">
@@ -43,7 +43,7 @@
   <div class="field mb-0">
     <div class="ui two column centered grid">
       <div class="column right aligned">
-        <i class="icon retweet large clickable white" (click)="astroPathService.reverseSelection()"></i>
+        <i class="icon retweet large clickable white" (click)="astroPathService.reversePath()"></i>
       </div>
       <div class="column left aligned">
         <i class="icon close large clickable white" (click)="astroPathService.reset()"></i>
@@ -58,7 +58,7 @@
                 labelField="name"
                 [optionTemplate]="optionTemplate"
                 [isSearchable]="true"
-                (selectedOptionChange)="selectToChanged()"
+                (selectedOptionChange)="pathToChanged()"
                 #selectTo>
       <sui-select-option *ngFor="let option of selectTo.filteredOptions"
                          [value]="option">
@@ -96,8 +96,8 @@
 <div *ngIf="steps.length > 0"
      class="ui vertical big fluid menu">
   <a *ngFor="let step of steps" class="item not-clickable"
-     (mouseenter)="astroPathService.selectionChanged(step)"
-     (mouseleave)="astroPathService.selectionChanged(null)">
+     (mouseenter)="stepSelectionService.selectionChanged(step)"
+     (mouseleave)="stepSelectionService.selectionChanged(null)">
     <div *ngIf="landingInAtmosphere(step)"
          class="ui large label"
          [class.grey]="path.to.canLand"
@@ -116,8 +116,8 @@
     <ksp-step-message [step]="step"></ksp-step-message>
   </a>
   <a *ngIf="path.total" class="active item not-clickable"
-     (mouseenter)="astroPathService.selectionChanged(path.total)"
-     (mouseleave)="astroPathService.selectionChanged(null)">
+     (mouseenter)="stepSelectionService.selectionChanged(path.total)"
+     (mouseleave)="stepSelectionService.selectionChanged(null)">
     <div class="ui large left pointing blue label">{{ path.total.dv }} m/s</div>
     <ksp-step-message [step]="path.total"></ksp-step-message>
   </a>
