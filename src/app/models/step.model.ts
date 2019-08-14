@@ -14,9 +14,9 @@ export enum StepType {
 }
 
 export interface Step {
-  type: StepType,
-  from?: AstroBody,
-  to?: AstroBody,
-  dv: number,
-  returnDv?: number
+  readonly type: StepType,
+  readonly from?: AstroBody,
+  readonly to?: AstroBody,
+  readonly dv: number,
+  readonly returnDv?: number
 }

@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
   styleUrls: ['./info.component.less']
 })
 export class InfoComponent implements OnInit {
-  constructor (public router: Router) {
+  constructor (public readonly router: Router) {
   }
 
   ngOnInit () {

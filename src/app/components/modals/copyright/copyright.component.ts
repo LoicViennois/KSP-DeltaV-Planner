@@ -10,9 +10,9 @@ import { environment } from '../../../../environments/environment'
   styleUrls: ['./copyright.component.less']
 })
 export class CopyrightComponent implements OnInit {
-  version: string = environment.version
+  readonly version: string = environment.version
 
-  constructor (public router: Router) {
+  constructor (public readonly router: Router) {
   }
 
   ngOnInit () {

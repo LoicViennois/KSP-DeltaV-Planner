@@ -8,8 +8,8 @@ import { Step, StepType } from '../../../models/step.model'
   styleUrls: ['./step-message.component.less']
 })
 export class StepMessageComponent implements OnInit {
-  @Input() step: Step
-  stepType = StepType
+  @Input() readonly step: Step
+  readonly stepType = StepType
 
   constructor () {
   }
