@@ -96,8 +96,8 @@
 <div *ngIf="steps.length > 0"
      class="ui vertical big fluid menu">
   <a *ngFor="let step of steps" class="item not-clickable"
-     (mouseenter)="enterItem(step)"
-     (mouseleave)="leaveItem()">
+     (mouseenter)="astroPathService.selectionChanged(step)"
+     (mouseleave)="astroPathService.selectionChanged(null)">
     <div *ngIf="landingInAtmosphere(step)"
          class="ui large label"
          [class.grey]="path.to.canLand"
@@ -116,8 +116,8 @@
     <ksp-step-message [step]="step"></ksp-step-message>
   </a>
   <a *ngIf="path.total" class="active item not-clickable"
-     (mouseenter)="enterItem(path.total)"
-     (mouseleave)="leaveItem()">
+     (mouseenter)="astroPathService.selectionChanged(path.total)"
+     (mouseleave)="astroPathService.selectionChanged(null)">
     <div class="ui large left pointing blue label">{{ path.total.dv }} m/s</div>
     <ksp-step-message [step]="path.total"></ksp-step-message>
   </a>

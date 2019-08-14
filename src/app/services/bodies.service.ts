@@ -8,8 +8,8 @@ import { Kerbin } from '../models/data/kerbin'
   providedIn: 'root'
 })
 export class BodiesService {
-  bodies: AstroBody[]
-  kerbin: Kerbin
+  readonly bodies: AstroBody[]
+  readonly kerbin: Kerbin
 
   constructor () {
     const bodies: AstroBody[] = []

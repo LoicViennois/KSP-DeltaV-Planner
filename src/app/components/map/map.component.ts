@@ -14,14 +14,14 @@ import { Step, StepType } from '../../models/step.model'
 })
 export class MapComponent implements OnInit, OnDestroy {
   private svg
-  private unsubscribe = new Subject<void>()
-  private suffixHub: string[]
-  private suffixLow: string[]
-  private suffixLanding: string[]
-  private suffixStepGround: string[]
-  private suffixStepSOI: string[]
-  private suffixStepLow: string[]
   private path: AstroPath
+  private readonly unsubscribe = new Subject<void>()
+  private readonly suffixHub: string[]
+  private readonly suffixLow: string[]
+  private readonly suffixLanding: string[]
+  private readonly suffixStepGround: string[]
+  private readonly suffixStepSOI: string[]
+  private readonly suffixStepLow: string[]
 
   constructor (private astroPathService: AstroPathService) {
     this.suffixHub = ['transit', 'hub', 'com']

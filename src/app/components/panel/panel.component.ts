@@ -16,7 +16,7 @@ import { BodiesService } from '../../services/bodies.service'
 export class PanelComponent implements OnInit, OnDestroy {
   path: AstroPath
 
-  private unsubscribe = new Subject<void>()
+  private readonly unsubscribe = new Subject<void>()
 
   get kerbin (): Kerbin {
     return this.bodiesService.kerbin
@@ -30,8 +30,8 @@ export class PanelComponent implements OnInit, OnDestroy {
     return this.path.steps
   }
 
-  constructor (public astroPathService: AstroPathService,
-               private bodiesService: BodiesService) {
+  constructor (public readonly astroPathService: AstroPathService,
+               private readonly bodiesService: BodiesService) {
   }
 
   ngOnInit () {
@@ -64,14 +64,6 @@ export class PanelComponent implements OnInit, OnDestroy {
 
   landingInAtmosphere (step: Step): boolean {
     return step.type === StepType.landing && this.path.to.hasAtmosphere
-  }
-
-  enterItem (step: Step) {
-    this.astroPathService.selectionChanged(step)
-  }
-
-  leaveItem () {
-    this.astroPathService.selectionChanged(null)
   }
 
 }

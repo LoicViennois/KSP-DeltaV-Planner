@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, Subject } from 'rxjs'
 
-import { AstroBody, AstroPath, Planet, Satellite } from '../models/planet.model'
+import { AstroPath, Planet, Satellite } from '../models/planet.model'
 import { Step, StepType } from '../models/step.model'
 import { Kerbin } from '../models/data/kerbin'
 import { BodiesService } from './bodies.service'
@@ -10,20 +10,13 @@ import { BodiesService } from './bodies.service'
   providedIn: 'root'
 })
 export class AstroPathService {
-  private path: BehaviorSubject<AstroPath>
-  private step: Subject<Step>
+  private readonly step: Subject<Step>
+  private readonly path: BehaviorSubject<AstroPath>
+  private readonly initialPath: AstroPath
 
-  get kerbin (): Kerbin {
-    return this.bodiesService.kerbin
-  }
-
-  get bodies (): AstroBody[] {
-    return this.bodiesService.bodies
-  }
-
-  constructor (private bodiesService: BodiesService) {
+  constructor (private readonly bodiesService: BodiesService) {
     this.step = new Subject()
-    this.path = new BehaviorSubject({
+    this.initialPath = {
       from: this.kerbin,
       to: null,
       landing: false,
@@ -31,19 +24,20 @@ export class AstroPathService {
       steps: [],
       total: null,
       return: false
-    })
+    }
+    this.path = new BehaviorSubject({ ...this.initialPath })
+  }
+
+  get isKerbinTrip (): boolean {
+    const path = this.path.value
+    if (path.from == null || path.to == null) {
+      return false
+    }
+    return path.from.name === 'Kerbin' && path.to.name === 'Kerbin'
   }
 
   reset () {
-    this.path.next({
-      from: this.kerbin,
-      to: null,
-      landing: false,
-      aerobraking: true,
-      steps: [],
-      total: null,
-      return: false
-    })
+    this.path.next({ ...this.initialPath })
   }
 
   getPath (): Observable<AstroPath> {
@@ -70,12 +64,8 @@ export class AstroPathService {
     this.path.next(path)
   }
 
-  get isKerbinTrip (): boolean {
-    const path = this.path.value
-    if (path.from == null || path.to == null) {
-      return false
-    }
-    return path.from.name === 'Kerbin' && path.to.name === 'Kerbin'
+  private get kerbin (): Kerbin {
+    return this.bodiesService.kerbin
   }
 
   private computeSteps (path: AstroPath) {
@@ -182,7 +172,7 @@ export class AstroPathService {
         dv: satellite.dvPL + satellite.dvLI
       })
     } else {
-      const planet = (this.bodies.find((body) => body.name === satellite.parent)) as Planet
+      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet
       path.steps.push({
         type: StepType.transitToSOI,
         to: planet,
@@ -206,7 +196,7 @@ export class AstroPathService {
         dv: satellite.dvPL + satellite.dvLI
       })
     } else {
-      const planet = (this.bodies.find((body) => body.name === satellite.parent)) as Planet
+      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet
       path.steps.push({
         type: StepType.transitFromLowToSOI,
         from: satellite,

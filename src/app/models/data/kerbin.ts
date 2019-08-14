@@ -1,16 +1,16 @@
 import { Planet } from '../planet.model'
 
 export class Kerbin implements Planet {
-  name = 'Kerbin'
-  isPlanet = true
-  hasAtmosphere = true
-  canLand = true
-  imageUrl = 'assets/planets/kerbin.png'
-  dvGL = 3400
-  dvLE = 950
-  dvKeostat = 1115
-  color = '#2A7EFE'
-  satellites = [
+  readonly name = 'Kerbin'
+  readonly isPlanet = true
+  readonly hasAtmosphere = true
+  readonly canLand = true
+  readonly imageUrl = 'assets/planets/kerbin.png'
+  readonly dvGL = 3400
+  readonly dvLE = 950
+  readonly dvKeostat = 1115
+  readonly color = '#2A7EFE'
+  readonly satellites = [
     {
       name: 'Mun',
       isPlanet: false,
@@ -35,7 +35,7 @@ export class Kerbin implements Planet {
       dvPL: 930,
       color: '#51C47F',
     }
-    ]
+  ]
 
   transitToLowOrbit (planet: Planet): number {
     return this.dvLE + planet.dvK + (planet.dvLI || planet.dvLE + planet.dvEI)
