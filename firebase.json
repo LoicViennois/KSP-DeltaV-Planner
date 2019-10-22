@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/ksp-deltav-planner",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
