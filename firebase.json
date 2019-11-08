@@ -1,5 +1,9 @@
 {
   "hosting": {
+    "predeploy": [
+      "npm run lint",
+      "npm run build:prod"
+    ],
     "public": "dist/ksp-deltav-planner",
     "ignore": [
       "firebase.json",
