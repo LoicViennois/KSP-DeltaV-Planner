@@ -8,8 +8,7 @@
     "build:prod": "ng build --prod",
     "serve": "serve dist/ksp-deltav-planner",
     "lint": "ng lint",
-    "release": "standard-version",
-    "deploy": "firebase deploy"
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
