@@ -4,12 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "build:prod": "ng build --prod",
-    "serve": "serve dist/ksp-deltav-planner",
     "lint": "ng lint",
-    "release": "standard-version",
-    "deploy": "firebase deploy"
+    "release": "standard-version"
   },
   "private": true,
   "dependencies": {
@@ -42,7 +39,6 @@
     "codelyzer": "~5.2.0",
     "jsdom": "^15.2.1",
     "replace-in-file": "^4.2.0",
-    "serve": "^11.2.0",
     "sharp": "^0.23.4",
     "standard-version": "^7.0.1",
     "ts-node": "~8.5.4",
