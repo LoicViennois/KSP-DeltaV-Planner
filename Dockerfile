@@ -9,13 +9,6 @@ RUN npm ci
 
 COPY . .
 
-# Dev
-FROM base as dev
-
-EXPOSE 80
-
-CMD ["npm", "run", "start:docker"]
-
 # Build
 FROM base as build
 
