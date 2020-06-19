@@ -22,4 +22,4 @@ RUN apt-get update && apt-get install --no-install-recommends -y curl
 
 COPY --from=build /usr/src/app/dist/ksp-deltav-planner /usr/share/nginx/html
 
-HEALTHCHECK --interval=1m CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK CMD curl -f http://localhost/ || exit 1
