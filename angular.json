@@ -46,8 +46,9 @@
               "src/manifest.webmanifest"
             ],
             "styles": [
-              "./node_modules/semantic-ui-css/semantic.min.css",
-              "src/styles.less"
+              "src/styles.less",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
             "scripts": [],
             "es5BrowserSupport": true

@@ -1,124 +1,163 @@
-<div class="ui one column grid">
-  <div class="computer only column">
-    <h1 class="ui header centered white pt">Kerbal Space Program Delta-V Planner</h1>
+<div class="d-flex flex-column align-items-stretch">
+
+  <div class="d-none d-md-block text-center">
+    <h2 class="text-white">Kerbal Space Program Delta-V Planner</h2>
   </div>
-  <div class="mobile only column">
-    <h1 class="ui header centered white pt">KSP Delta-V Planner</h1>
+  <div class="d-md-none text-center">
+    <h2 class="text-white">KSP Delta-V Planner</h2>
   </div>
-</div>
-<div class="ui header centered">
-  <a aria-label="information" routerLink="information"
-     class="clickable">
-    <i class="large info circle white icon"></i>
-  </a>
-  <a aria-label="github" href="https://github.com/LoicViennois/KSP-DeltaV-Planner">
-    <i class="large github white icon"></i>
-  </a>
-  <a aria-label="copyright" routerLink="copyright"
-     class="clickable">
-    <i class="large copyright white icon"></i>
-  </a>
-</div>
-<div class="ui large form">
-  <div class="field">
-    <label>From:</label>
-    <ng-template let-option #optionTemplate>
-      <i *ngIf="!option.isPlanet" class="icon caret right pl"></i>
-      <img class="ui avatar image" [src]="option.imageUrl" alt="">
-      {{ option.name }}
-    </ng-template>
-    <sui-select class="selection"
-                [(ngModel)]="path.from"
-                [options]="options"
-                labelField="name"
-                [optionTemplate]="optionTemplate"
-                [isSearchable]="true"
-                (selectedOptionChange)="pathFromChanged()"
-                #selectFrom>
-      <sui-select-option class="ui big" *ngFor="let option of selectFrom.filteredOptions"
-                         [value]="option">
-      </sui-select-option>
-    </sui-select>
+
+  <div class="my-3 align-self-center">
+    <a aria-label="information" routerLink="information"
+       class="text-white mx-3">
+      <i class="fas fa-2x fa-info-circle"></i>
+    </a>
+    <a aria-label="github" href="https://github.com/LoicViennois/KSP-DeltaV-Planner"
+       class="text-white mx-3">
+      <i class="fab fa-2x fa-github"></i>
+    </a>
+    <a aria-label="copyright" routerLink="copyright"
+       class="text-white mx-3">
+      <i class="fas fa-2x fa-copyright"></i>
+    </a>
   </div>
-  <div class="field mb-0">
-    <div class="ui two column centered grid">
-      <div class="column right aligned">
-        <i class="icon retweet large clickable white" (click)="astroPathService.reversePath()"></i>
+
+  <div>
+    <label for="fromBody" class="text-white">From:</label>
+  </div>
+
+  <div>
+    <div ngbDropdown>
+      <div id="fromBody"
+           class="btn btn-light btn-path-size toggle-right"
+           ngbDropdownToggle>
+        <div>
+          <span *ngIf="path.from == null" class="text-black-50">Select your starting point</span>
+          <img *ngIf="path.from != null" class="pr-2 body-icon-h" [src]="path.from.imageUrl" alt="">
+          <span *ngIf="path.from != null">{{ path.from.name }}</span>
+        </div>
       </div>
-      <div class="column left aligned">
-        <i class="icon close large clickable white" (click)="astroPathService.reset()"></i>
-      </div>
-    </div>
-  </div>
-  <div class="field">
-    <label>To:</label>
-    <sui-select class="selection"
-                [(ngModel)]="path.to"
-                [options]="options"
-                labelField="name"
-                [optionTemplate]="optionTemplate"
-                [isSearchable]="true"
-                (selectedOptionChange)="pathToChanged()"
-                #selectTo>
-      <sui-select-option *ngFor="let option of selectTo.filteredOptions"
-                         [value]="option">
-      </sui-select-option>
-    </sui-select>
-  </div>
-  <div class="field pt pb">
-    <div class="ui three column centered grid">
-      <div class="column right aligned">
-        <sui-checkbox
-          (click)="astroPathService.pathChanged(path)"
-          [isDisabled]="astroPathService.isKerbinTrip"
-          [(ngModel)]="path.landing">
-          <span class="white">Landing</span>
-        </sui-checkbox>
-      </div>
-      <div class="column center aligned">
-        <sui-checkbox
-          (click)="astroPathService.pathChanged(path)"
-          [(ngModel)]="path.aerobraking">
-          <span class="white">Aerobraking</span>
-        </sui-checkbox>
-      </div>
-      <div class="column left aligned">
-        <sui-checkbox
-          (click)="astroPathService.pathChanged(path)"
-          [isDisabled]="astroPathService.isKerbinTrip"
-          [(ngModel)]="path.return">
-          <span class="white">Return</span>
-        </sui-checkbox>
+      <div ngbDropdownMenu>
+        <button *ngFor="let option of options"
+                class="text-left"
+                ngbDropdownItem
+                (click)="pathFromChanged(option)">
+          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+          <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
+          <span>{{ option.name }}</span>
+        </button>
       </div>
     </div>
   </div>
-</div>
-<div *ngIf="steps.length > 0"
-     class="ui vertical big fluid menu">
-  <a *ngFor="let step of steps" class="item not-clickable"
-     (mouseenter)="stepSelectionService.selectionChanged(step)"
-     (mouseleave)="stepSelectionService.selectionChanged(null)">
-    <div *ngIf="landingInAtmosphere(step)"
-         class="ui large label"
-         [class.grey]="path.to.canLand"
-         [class.red]="!path.to.canLand"
-         suiPopup
-         [popupHeader]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
-         popupText="Aerobraking is possible"
-         popupPlacement="left">
-      <i *ngIf="!path.to.canLand" class="ui icon ban"></i>
-      <i class="ui icon cloud download"></i>
-      {{ step.dv }} m/s
+
+  <div class="d-flex justify-content-center mt-3 text-white">
+    <div>
+      <i class="fas fa-lg fa-retweet mx-3 clickable" (click)="astroPathService.reversePath()"></i>
     </div>
-    <div *ngIf="!landingInAtmosphere(step)"
-         class="ui large grey label">{{ step.dv }} m/s
+    <div>
+      <i class="fas fa-lg fa-times mx-3 clickable" (click)="astroPathService.reset()"></i>
     </div>
-    <ksp-step-message [step]="step"></ksp-step-message>
-  </a>
-  <a *ngIf="path.total" class="active item not-clickable"
-     (mouseenter)="stepSelectionService.selectionChanged(path.total)"
-     (mouseleave)="stepSelectionService.selectionChanged(null)">
-    <div class="ui large left pointing blue label">{{ path.total.dv }} m/s</div>
-    <ksp-step-message [step]="path.total"></ksp-step-message>
-  </a>
+  </div>
+
+  <div>
+    <label for="toBody" class="text-white">To:</label>
+  </div>
+
+  <div>
+    <div ngbDropdown>
+      <div id="toBody"
+           class="btn btn-light btn-path-size toggle-right"
+           ngbDropdownToggle>
+        <div>
+          <span *ngIf="path.to == null" class="text-black-50">Select your destination</span>
+          <img *ngIf="path.to != null" class="pr-2 body-icon-h" [src]="path.to.imageUrl" alt="">
+          <span *ngIf="path.to != null">{{ path.to.name }}</span>
+        </div>
+      </div>
+      <div ngbDropdownMenu>
+        <button *ngFor="let option of options"
+                ngbDropdownItem
+                (click)="pathToChanged(option)">
+          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+          <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
+          <span>{{ option.name }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-center text-white my-3">
+    <div class="mx-2">
+      <div class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               id="landingCheck"
+               (change)="astroPathService.pathChanged(path)"
+               [disabled]="astroPathService.isKerbinTrip"
+               [(ngModel)]="path.landing">
+        <label class="form-check-label" for="landingCheck">
+          Landing
+        </label>
+      </div>
+    </div>
+    <div class="mx-2">
+      <div class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               id="aerobrakingCheck"
+               (change)="astroPathService.pathChanged(path)"
+               [(ngModel)]="path.aerobraking">
+        <label class="form-check-label" for="aerobrakingCheck">
+          Aerobraking
+        </label>
+      </div>
+    </div>
+    <div class="mx-2">
+      <div class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               id="returnCheck"
+               (change)=astroPathService.pathChanged(path)
+               [disabled]="astroPathService.isKerbinTrip"
+               [(ngModel)]="path.return">
+        <label class="form-check-label" for="returnCheck">
+          Return
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="steps.length > 0">
+    <ul class="list-group">
+      <li *ngFor="let step of steps"
+          class="list-group-item d-flex justify-content-between align-items-center"
+          (mouseenter)="stepSelectionService.selectionChanged(step)"
+          (mouseleave)="stepSelectionService.selectionChanged(null)">
+        <ksp-step-message [step]="step"></ksp-step-message>
+        <div *ngIf="landingInAtmosphere(step)"
+             class="badge badge-dv"
+             [class.badge-secondary]="path.to.canLand"
+             [class.badge-danger]="!path.to.canLand"
+             [popoverTitle]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
+             ngbPopover="Aerobraking is possible"
+             triggers="mouseenter:mouseleave"
+             placement="top-right">
+          <i *ngIf="!path.to.canLand" class="fas fa-ban mr-2"></i>
+          <i class="fas fa-cloud-download-alt mr-2"></i>
+          {{ step.dv }} m/s
+        </div>
+        <div *ngIf="!landingInAtmosphere(step)"
+             class="badge badge-secondary badge-dv">{{ step.dv }} m/s
+        </div>
+      </li>
+      <li *ngIf="path.total"
+          class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center"
+          (mouseenter)="stepSelectionService.selectionChanged(path.total)"
+          (mouseleave)="stepSelectionService.selectionChanged(null)">
+        <ksp-step-message [step]="path.total"></ksp-step-message>
+        <div class="badge badge-primary badge-dv">{{ path.total.dv }} m/s</div>
+      </li>
+    </ul>
+  </div>
+
 </div>

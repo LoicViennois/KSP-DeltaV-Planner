@@ -1,49 +1,48 @@
-<sui-modal [isClosable]="true" (dismissed)="router.navigate([''])">
-  <div class="header">Information</div>
-  <div class="content">
-    <p>
-      This is a Δv planner for the game
-      <a href="https://www.kerbalspaceprogram.com" target="_blank">Kerbal Space Program</a>
-      developed by
-      <a href="http://squad.com.mx" target="_blank">Squad</a>.
-    </p>
-    <p>
-      Low orbits are 10 km above atmosphere or terrain obstacles.<br>
-      All values are measured as vacuum Δv in m/s.<br>
-      Total values do not include maximum plane change Δv.<br>
-      Atmospheric ascent values are typical.<br>
-      More/less efficient ascents are likely, depending on ascent profile, TWR and aerodynamic effects.<br>
-      Flight time is based on 10 years of average flight possibilities simulated on AlexMoon's Launch Window Planner,
-      from day 1.
-    </p>
-    <div class="ui divider"></div>
-    <h5 class="ui header">More information:</h5>
-    <p>
-      KSP forum: <a href="https://forum.kerbalspaceprogram.com" target="_blank">forum.kerbalspaceprogram.com</a><br>
-      KSP on reddit: <a href="https://www.reddit.com/r/KerbalSpaceProgram" target="_blank">www.reddit.com/r/KerbalSpaceProgram</a>
-    </p>
-    <div class="ui divider"></div>
-    <h5 class="ui header">Send feedback:</h5>
-    <p>
-      <i class="large github icon"></i>
-      To report a bug or send a suggestion,
-      <a href="https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/new"
-         target="_blank">
-        file an issue on Github
-        <i class="small external icon"></i>
-      </a>
-    </p>
-    <p>
-      <i class="large reddit icon"></i>
-      To give me your feedback,
-      <a href="https://www.reddit.com/message/compose/?to=LoicViennois"
-         target="_blank">
-        send me a message on Reddit
-        <i class="small external icon"></i>
-      </a>
-    </p>
-  </div>
-  <!--<div class="actions">-->
-  <!--  <button class="ui grey button" (click)="modal.approve(undefined)" autofocus>OK</button>-->
-  <!--</div>-->
-</sui-modal>
+<div class="modal-header">
+  <h5 class="modal-title">Information</h5>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.close('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <p>
+    This is a Δv planner for the game
+    <a href="https://www.kerbalspaceprogram.com" target="_blank">Kerbal Space Program</a>
+    developed by
+    <a href="http://squad.com.mx" target="_blank">Squad</a>.
+  </p>
+  <p>
+    Low orbits are 10 km above atmosphere or terrain obstacles.<br>
+    All values are measured as vacuum Δv in m/s.<br>
+    Total values do not include maximum plane change Δv.<br>
+    Atmospheric ascent values are typical.<br>
+    More/less efficient ascents are likely, depending on ascent profile, TWR and aerodynamic effects.<br>
+    Flight time is based on 10 years of average flight possibilities simulated on AlexMoon's Launch Window
+    Planner,
+    from day 1.
+  </p>
+  <hr>
+  <h6>More information:</h6>
+  <p>
+    KSP forum: <a href="https://forum.kerbalspaceprogram.com" target="_blank">forum.kerbalspaceprogram.com</a><br>
+    KSP on reddit: <a href="https://www.reddit.com/r/KerbalSpaceProgram" target="_blank">www.reddit.com/r/KerbalSpaceProgram</a>
+  </p>
+  <hr>
+  <h6>Send feedback:</h6>
+  <p>
+    <i class="fab fa-lg fa-github pr-1"></i>
+    To report a bug or send a suggestion,
+    <a href="https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/new"
+       target="_blank">
+      file an issue on Github
+      <i class="fas fa-xs fa-external-link-alt"></i>
+    </a><br>
+    <i class="fab fa-lg fa-reddit pr-1"></i>
+    To give me your feedback,
+    <a href="https://www.reddit.com/message/compose/?to=LoicViennois"
+       target="_blank">
+      send me a message on Reddit
+      <i class="fas fa-xs fa-external-link-alt"></i>
+    </a>
+  </p>
+</div>

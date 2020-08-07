@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 import { environment } from '../../../../environments/environment'
 
@@ -12,7 +12,7 @@ import { environment } from '../../../../environments/environment'
 export class CopyrightComponent implements OnInit {
   readonly version: string = environment.version
 
-  constructor (public readonly router: Router) {
+  constructor (public activeModal: NgbActiveModal) {
   }
 
   ngOnInit () {

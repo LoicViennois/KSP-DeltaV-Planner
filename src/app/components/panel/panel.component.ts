@@ -50,14 +50,16 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete()
   }
 
-  pathFromChanged () {
+  pathFromChanged (body: AstroBody) {
+    this.path.from = body
     if (this.path.from.name !== 'Kerbin') {
       this.path.to = this.kerbin
     }
     this.astroPathService.pathChanged(this.path)
   }
 
-  pathToChanged () {
+  pathToChanged (body: AstroBody) {
+    this.path.to = body
     if (this.path.to.name !== 'Kerbin') {
       this.path.from = this.kerbin
     }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
   selector: 'ksp-info',
@@ -7,7 +7,7 @@ import { Router } from '@angular/router'
   styleUrls: ['./info.component.less']
 })
 export class InfoComponent implements OnInit {
-  constructor (public readonly router: Router) {
+  constructor (public activeModal: NgbActiveModal) {
   }
 
   ngOnInit () {
