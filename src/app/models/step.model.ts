@@ -1,4 +1,4 @@
-import { AstroBody } from './planet.model'
+import { AstroBody } from './planet.model';
 
 export enum StepType {
   takeOff,
@@ -14,9 +14,9 @@ export enum StepType {
 }
 
 export interface Step {
-  readonly type: StepType,
-  readonly from?: AstroBody,
-  readonly to?: AstroBody,
-  readonly dv: number,
-  readonly returnDv?: number
+  readonly type: StepType;
+  readonly from?: AstroBody;
+  readonly to?: AstroBody;
+  readonly dv: number;
+  readonly returnDv?: number;
 }

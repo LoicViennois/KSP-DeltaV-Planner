@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { environment } from '../../../../environments/environment'
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -9,13 +9,10 @@ import { environment } from '../../../../environments/environment'
   templateUrl: './copyright.component.html',
   styleUrls: ['./copyright.component.less']
 })
-export class CopyrightComponent implements OnInit {
-  readonly version: string = environment.version
+export class CopyrightComponent {
+  readonly version: string = environment.version;
 
-  constructor (public activeModal: NgbActiveModal) {
-  }
-
-  ngOnInit () {
+  constructor(public activeModal: NgbActiveModal) {
   }
 
 }

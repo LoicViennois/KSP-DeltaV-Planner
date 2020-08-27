@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { InfoComponent } from './components/modals/info/info.component'
-import { CopyrightComponent } from './components/modals/copyright/copyright.component'
-import { ModalContainerComponent } from './components/modals/modal-container/modal-container.component'
+import { InfoComponent } from './components/modals/info/info.component';
+import { CopyrightComponent } from './components/modals/copyright/copyright.component';
+import { ModalContainerComponent } from './components/modals/modal-container/modal-container.component';
 
 
 const routes: Routes = [
@@ -25,7 +25,7 @@ const routes: Routes = [
     path: '**',
     redirectTo: '',
   },
-]
+];
 
 
 @NgModule({

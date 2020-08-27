@@ -1,19 +1,19 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-import { AstroPath, Planet, Satellite } from '../models/planet.model'
-import { StepType } from '../models/step.model'
-import { Kerbin } from '../models/data/kerbin'
-import { BodiesService } from './bodies.service'
+import { AstroPath, Planet, Satellite } from '../models/planet.model';
+import { StepType } from '../models/step.model';
+import { Kerbin } from '../models/data/kerbin';
+import { BodiesService } from './bodies.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AstroPathService {
-  private readonly path: BehaviorSubject<AstroPath>
-  private readonly initialPath: AstroPath
+  private readonly path: BehaviorSubject<AstroPath>;
+  private readonly initialPath: AstroPath;
 
-  constructor (private readonly bodiesService: BodiesService) {
+  constructor(private readonly bodiesService: BodiesService) {
     this.initialPath = {
       from: this.kerbin,
       to: null,
@@ -22,108 +22,108 @@ export class AstroPathService {
       steps: [],
       total: null,
       return: false
-    }
-    this.path = new BehaviorSubject({ ...this.initialPath })
+    };
+    this.path = new BehaviorSubject({ ...this.initialPath });
   }
 
-  get isKerbinTrip (): boolean {
-    const path = this.path.value
+  get isKerbinTrip(): boolean {
+    const path = this.path.value;
     if (path.from == null || path.to == null) {
-      return false
+      return false;
     }
-    return path.from.name === 'Kerbin' && path.to.name === 'Kerbin'
+    return path.from.name === 'Kerbin' && path.to.name === 'Kerbin';
   }
 
-  reset () {
-    this.path.next({ ...this.initialPath })
+  reset(): void {
+    this.path.next({ ...this.initialPath });
   }
 
-  getPath (): Observable<AstroPath> {
-    return this.path.asObservable()
+  getPath(): Observable<AstroPath> {
+    return this.path.asObservable();
   }
 
-  pathChanged (path: AstroPath) {
-    const newPath = { ...path }
-    this.computeSteps(newPath)
-    this.path.next(newPath)
+  pathChanged(path: AstroPath): void {
+    const newPath = { ...path };
+    this.computeSteps(newPath);
+    this.path.next(newPath);
   }
 
-  reversePath () {
+  reversePath(): void {
     const newPath = { ...this.path.value };
-    [newPath.from, newPath.to] = [newPath.to, newPath.from]
-    this.computeSteps(newPath)
-    this.path.next(newPath)
+    [newPath.from, newPath.to] = [newPath.to, newPath.from];
+    this.computeSteps(newPath);
+    this.path.next(newPath);
   }
 
-  private get kerbin (): Kerbin {
-    return this.bodiesService.kerbin
+  private get kerbin(): Kerbin {
+    return this.bodiesService.kerbin;
   }
 
-  private computeSteps (path: AstroPath) {
+  private computeSteps(path: AstroPath): void {
     if (path.from == null || path.to == null) {
-      return
+      return;
     }
     path.steps = [{
       type: StepType.takeOff,
       from: path.from,
       dv: path.from.dvGL,
       returnDv: this.doAerobrakeFrom(path) ? 0 : path.from.dvGL
-    }]
+    }];
 
     /**
      * Kerbin trip
      */
     if (this.isKerbinTrip) {
-      this.computeKerbinToKerbin(path)
-      return
+      this.computeKerbinToKerbin(path);
+      return;
     }
 
     /**
      * From Kerbin to Planet
      */
     if (path.from.name === 'Kerbin' && path.to.isPlanet) {
-      this.computeKerbinToPlanet(path)
-      this.computeTotal(path)
-      return
+      this.computeKerbinToPlanet(path);
+      this.computeTotal(path);
+      return;
     }
 
     /**
      * From Planet to Kerbin
      */
     if (path.from.isPlanet && path.to.name === 'Kerbin') {
-      this.computePlanetToKerbin(path)
-      this.computeTotal(path)
-      return
+      this.computePlanetToKerbin(path);
+      this.computeTotal(path);
+      return;
     }
 
     /**
      * From Kerbin to Satellite
      */
     if (path.from.name === 'Kerbin' && !path.to.isPlanet) {
-      this.computeKerbinToSatellite(path)
-      this.computeTotal(path)
-      return
+      this.computeKerbinToSatellite(path);
+      this.computeTotal(path);
+      return;
     }
 
     /**
      * From Satellite to Kerbin
      */
     if (!path.from.isPlanet && path.to.name === 'Kerbin') {
-      this.computeSatelliteToKerbin(path)
-      this.computeTotal(path)
-      return
+      this.computeSatelliteToKerbin(path);
+      this.computeTotal(path);
+      return;
     }
   }
 
-  private doAerobrakeFrom (path: AstroPath): boolean {
-    return path.aerobraking && path.from.hasAtmosphere
+  private doAerobrakeFrom(path: AstroPath): boolean {
+    return path.aerobraking && path.from.hasAtmosphere;
   }
 
-  private doAerobrakeTo (path: AstroPath): boolean {
-    return path.aerobraking && path.to.hasAtmosphere
+  private doAerobrakeTo(path: AstroPath): boolean {
+    return path.aerobraking && path.to.hasAtmosphere;
   }
 
-  private computeKerbinToKerbin (path: AstroPath) {
+  private computeKerbinToKerbin(path: AstroPath): void {
     path.steps.push({
       type: StepType.transitToSOI,
       to: this.kerbin,
@@ -132,38 +132,38 @@ export class AstroPathService {
       type: StepType.transitToKeostat,
       to: this.kerbin,
       dv: this.kerbin.dvKeostat
-    })
+    });
   }
 
-  private computeKerbinToPlanet (path: AstroPath) {
-    const planet = path.to as Planet
+  private computeKerbinToPlanet(path: AstroPath): void {
+    const planet = path.to as Planet;
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: path.to,
       dv: this.kerbin.transitToLowOrbit(planet)
-    })
+    });
   }
 
-  private computePlanetToKerbin (path: AstroPath) {
-    const planet = path.from as Planet
+  private computePlanetToKerbin(path: AstroPath): void {
+    const planet = path.from as Planet;
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: this.kerbin,
       dv: this.kerbin.transitToLowOrbit(planet)
-    })
+    });
   }
 
-  private computeKerbinToSatellite (path: AstroPath) {
-    const satellite = path.to as Satellite
+  private computeKerbinToSatellite(path: AstroPath): void {
+    const satellite = path.to as Satellite;
     if (this.isKerbinSatellite(satellite)) {
       path.steps.push({
         type: StepType.transitFromLowToLow,
         from: this.kerbin,
         to: satellite,
         dv: satellite.dvPL + satellite.dvLI
-      })
+      });
     } else {
-      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet
+      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
       path.steps.push({
         type: StepType.transitToSOI,
         to: planet,
@@ -173,21 +173,21 @@ export class AstroPathService {
         from: planet,
         to: satellite,
         dv: satellite.dvPE + satellite.dvLI
-      })
+      });
     }
   }
 
-  private computeSatelliteToKerbin (path: AstroPath) {
-    const satellite = path.from as Satellite
+  private computeSatelliteToKerbin(path: AstroPath): void {
+    const satellite = path.from as Satellite;
     if (this.isKerbinSatellite(satellite)) {
       path.steps.push({
         type: StepType.transitFromLowToLow,
         from: satellite,
         to: this.kerbin,
         dv: satellite.dvPL + satellite.dvLI
-      })
+      });
     } else {
-      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet
+      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
       path.steps.push({
         type: StepType.transitFromLowToSOI,
         from: satellite,
@@ -197,11 +197,11 @@ export class AstroPathService {
         type: StepType.transitToLowOrbit,
         to: this.kerbin,
         dv: this.kerbin.transitToSOI(planet)
-      })
+      });
     }
   }
 
-  private computeTotal (path: AstroPath) {
+  private computeTotal(path: AstroPath): void {
     /**
      * Landing
      */
@@ -211,7 +211,7 @@ export class AstroPathService {
         to: path.to,
         dv: this.doAerobrakeTo(path) ? 0 : path.to.dvGL,
         returnDv: path.to.dvGL
-      })
+      });
     }
 
     /**
@@ -225,17 +225,17 @@ export class AstroPathService {
         dv: path.steps
           .map(step => step.returnDv != null ? step.returnDv : step.dv)
           .reduce((dv1, dv2) => dv1 + dv2)
-      })
+      });
     }
 
     path.total = {
       type: StepType.total,
       dv: path.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2)
-    }
+    };
   }
 
-  private isKerbinSatellite (satellite: Satellite) {
-    return ['Mun', 'Minmus'].includes(satellite.name)
+  private isKerbinSatellite(satellite: Satellite): boolean {
+    return ['Mun', 'Minmus'].includes(satellite.name);
   }
 
 }

@@ -1,5 +1,5 @@
-import { Kerbin } from './kerbin'
-import { Planet } from '../planet.model'
+import { Kerbin } from './kerbin';
+import { Planet } from '../planet.model';
 
 export const planets: Planet[] = [
   {
@@ -177,4 +177,4 @@ export const planets: Planet[] = [
     satellites: [],
     color: '#EFAB01',
   }
-]
+];
