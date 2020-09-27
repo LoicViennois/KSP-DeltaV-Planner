@@ -8,6 +8,8 @@ export class Kerbin implements Planet {
   readonly imageUrl = 'assets/planets/kerbin.png';
   readonly dvGL = 3400;
   readonly dvLE = 950;
+  readonly dvEI = null;
+  readonly dvLI = null;
   readonly dvK = null;
   readonly dvKeostat = 1115;
   readonly color = '#2A7EFE';
@@ -22,6 +24,7 @@ export class Kerbin implements Planet {
       dvGL: 580,
       dvLI: 310,
       dvPL: 860,
+      dvPE: null,
       color: '#7F7F80',
     },
     {
@@ -34,15 +37,16 @@ export class Kerbin implements Planet {
       dvGL: 180,
       dvLI: 160,
       dvPL: 930,
+      dvPE: null,
       color: '#51C47F',
     }
   ];
 
   transitToLowOrbit(planet: Planet): number {
-    return this.dvLE + planet.dvK + (planet.dvLI || planet.dvLE + planet.dvEI);
+    return this.dvLE + (planet.dvK || 0) + (planet.dvLI || (planet.dvLE || 0) + (planet.dvEI || 0));
   }
 
   transitToSOI(planet: Planet): number {
-    return this.dvLE + planet.dvK + planet.dvEI;
+    return this.dvLE + (planet.dvK || 0) + (planet.dvEI || 0);
   }
 }

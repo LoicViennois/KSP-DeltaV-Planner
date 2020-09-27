@@ -42,7 +42,7 @@
                 class="text-left"
                 ngbDropdownItem
                 (click)="pathFromChanged(option)">
-          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+          <i *ngIf="isSatellite(option)" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
           <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
           <span>{{ option.name }}</span>
         </button>
@@ -78,7 +78,7 @@
         <button *ngFor="let option of options"
                 ngbDropdownItem
                 (click)="pathToChanged(option)">
-          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+          <i *ngIf="isSatellite(option)" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
           <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
           <span>{{ option.name }}</span>
         </button>
@@ -136,13 +136,13 @@
         <ksp-step-message [step]="step"></ksp-step-message>
         <div *ngIf="landingInAtmosphere(step)"
              class="badge badge-dv"
-             [class.badge-secondary]="path.to.canLand"
-             [class.badge-danger]="!path.to.canLand"
-             [popoverTitle]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
+             [class.badge-secondary]="pathToCanLand"
+             [class.badge-danger]="!pathToCanLand"
+             [popoverTitle]="!pathToCanLand ? 'Landing here might not a good idea...': ''"
              ngbPopover="Aerobraking is possible"
              triggers="mouseenter:mouseleave"
              placement="top-right">
-          <i *ngIf="!path.to.canLand" class="fas fa-ban mr-2"></i>
+          <i *ngIf="!pathToCanLand" class="fas fa-ban mr-2"></i>
           <i class="fas fa-cloud-download-alt mr-2"></i>
           {{ step.dv }} m/s
         </div>

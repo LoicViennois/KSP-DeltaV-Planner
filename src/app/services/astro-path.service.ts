@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { AstroPath, Planet, Satellite } from '../models/planet.model';
+import { AstroPath, isFullAstroPath, isPlanet, isSatellite, Planet, Satellite } from '../models/planet.model';
 import { StepType } from '../models/step.model';
 import { Kerbin } from '../models/data/kerbin';
 import { BodiesService } from './bodies.service';
@@ -28,10 +28,14 @@ export class AstroPathService {
 
   get isKerbinTrip(): boolean {
     const path = this.path.value;
-    if (path.from == null || path.to == null) {
+    if (!isFullAstroPath(path)) {
       return false;
     }
     return path.from.name === 'Kerbin' && path.to.name === 'Kerbin';
+  }
+
+  private get kerbin(): Kerbin {
+    return this.bodiesService.kerbin;
   }
 
   reset(): void {
@@ -55,17 +59,14 @@ export class AstroPathService {
     this.path.next(newPath);
   }
 
-  private get kerbin(): Kerbin {
-    return this.bodiesService.kerbin;
-  }
-
   private computeSteps(path: AstroPath): void {
-    if (path.from == null || path.to == null) {
+    if (!isFullAstroPath(path)) {
       return;
     }
     path.steps = [{
       type: StepType.takeOff,
       from: path.from,
+      to: null,
       dv: path.from.dvGL,
       returnDv: this.doAerobrakeFrom(path) ? 0 : path.from.dvGL
     }];
@@ -81,7 +82,7 @@ export class AstroPathService {
     /**
      * From Kerbin to Planet
      */
-    if (path.from.name === 'Kerbin' && path.to.isPlanet) {
+    if (path.from.name === 'Kerbin' && isPlanet(path.to)) {
       this.computeKerbinToPlanet(path);
       this.computeTotal(path);
       return;
@@ -90,7 +91,7 @@ export class AstroPathService {
     /**
      * From Planet to Kerbin
      */
-    if (path.from.isPlanet && path.to.name === 'Kerbin') {
+    if (isPlanet(path.from) && path.to.name === 'Kerbin') {
       this.computePlanetToKerbin(path);
       this.computeTotal(path);
       return;
@@ -99,7 +100,7 @@ export class AstroPathService {
     /**
      * From Kerbin to Satellite
      */
-    if (path.from.name === 'Kerbin' && !path.to.isPlanet) {
+    if (path.from.name === 'Kerbin' && isSatellite(path.to)) {
       this.computeKerbinToSatellite(path);
       this.computeTotal(path);
       return;
@@ -108,7 +109,7 @@ export class AstroPathService {
     /**
      * From Satellite to Kerbin
      */
-    if (!path.from.isPlanet && path.to.name === 'Kerbin') {
+    if (isSatellite(path.from) && path.to.name === 'Kerbin') {
       this.computeSatelliteToKerbin(path);
       this.computeTotal(path);
       return;
@@ -116,20 +117,22 @@ export class AstroPathService {
   }
 
   private doAerobrakeFrom(path: AstroPath): boolean {
-    return path.aerobraking && path.from.hasAtmosphere;
+    return path.aerobraking && (path.from?.hasAtmosphere ?? false);
   }
 
   private doAerobrakeTo(path: AstroPath): boolean {
-    return path.aerobraking && path.to.hasAtmosphere;
+    return path.aerobraking && (path.to?.hasAtmosphere ?? false);
   }
 
   private computeKerbinToKerbin(path: AstroPath): void {
     path.steps.push({
       type: StepType.transitToSOI,
+      from: null,
       to: this.kerbin,
       dv: this.kerbin.dvLE
     }, {
       type: StepType.transitToKeostat,
+      from: null,
       to: this.kerbin,
       dv: this.kerbin.dvKeostat
     });
@@ -139,6 +142,7 @@ export class AstroPathService {
     const planet = path.to as Planet;
     path.steps.push({
       type: StepType.transitToLowOrbit,
+      from: null,
       to: path.to,
       dv: this.kerbin.transitToLowOrbit(planet)
     });
@@ -148,6 +152,7 @@ export class AstroPathService {
     const planet = path.from as Planet;
     path.steps.push({
       type: StepType.transitToLowOrbit,
+      from: null,
       to: this.kerbin,
       dv: this.kerbin.transitToLowOrbit(planet)
     });
@@ -160,19 +165,20 @@ export class AstroPathService {
         type: StepType.transitFromLowToLow,
         from: this.kerbin,
         to: satellite,
-        dv: satellite.dvPL + satellite.dvLI
+        dv: (satellite.dvPL ?? 0) + (satellite.dvLI ?? 0)
       });
     } else {
       const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
       path.steps.push({
         type: StepType.transitToSOI,
+        from: null,
         to: planet,
         dv: this.kerbin.transitToSOI(planet)
       }, {
         type: StepType.transitFromSOIToLow,
         from: planet,
         to: satellite,
-        dv: satellite.dvPE + satellite.dvLI
+        dv: (satellite.dvPE ?? 0) + (satellite.dvLI ?? 0)
       });
     }
   }
@@ -184,7 +190,7 @@ export class AstroPathService {
         type: StepType.transitFromLowToLow,
         from: satellite,
         to: this.kerbin,
-        dv: satellite.dvPL + satellite.dvLI
+        dv: (satellite.dvPL ?? 0) + (satellite.dvLI ?? 0)
       });
     } else {
       const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
@@ -192,9 +198,10 @@ export class AstroPathService {
         type: StepType.transitFromLowToSOI,
         from: satellite,
         to: planet,
-        dv: satellite.dvPE + satellite.dvLI
+        dv: (satellite.dvPE ?? 0) + (satellite.dvLI ?? 0)
       }, {
         type: StepType.transitToLowOrbit,
+        from: null,
         to: this.kerbin,
         dv: this.kerbin.transitToSOI(planet)
       });
@@ -208,9 +215,10 @@ export class AstroPathService {
     if (path.landing) {
       path.steps.push({
         type: StepType.landing,
+        from: null,
         to: path.to,
-        dv: this.doAerobrakeTo(path) ? 0 : path.to.dvGL,
-        returnDv: path.to.dvGL
+        dv: this.doAerobrakeTo(path) ? 0 : path.to?.dvGL ?? 0,
+        returnDv: path.to?.dvGL ?? 0
       });
     }
 
@@ -230,6 +238,8 @@ export class AstroPathService {
 
     path.total = {
       type: StepType.total,
+      from: null,
+      to: null,
       dv: path.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2)
     };
   }

@@ -6,17 +6,17 @@ import { Step } from '../models/step.model';
   providedIn: 'root'
 })
 export class StepSelectionService {
-  private readonly step: Subject<Step>;
+  private readonly step: Subject<Step | null>;
 
   constructor() {
     this.step = new Subject();
   }
 
-  getSelection(): Observable<Step> {
+  getSelection(): Observable<Step | null> {
     return this.step.asObservable();
   }
 
-  selectionChanged(step: Step): void {
+  selectionChanged(step: Step | null): void {
     this.step.next(step);
   }
 }

@@ -2,51 +2,51 @@
   <span *ngSwitchCase="stepType.takeOff">
     <i class="fas fa-rocket mr"></i>
     <strong>TakeOff</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong>
+    <strong [ngStyle]="{ 'color': stepFromColor }">{{ stepFromName }}</strong>
   </span>
   <span *ngSwitchCase="stepType.transitToLowOrbit">
       <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong> low orbit
   </span>
   <span *ngSwitchCase="stepType.transitFromLowToLow">
     <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    <strong [ngStyle]="{ 'color': stepFromColor }">{{ stepFromName }}</strong> low orbit to
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong> low orbit
   </span>
   <span *ngSwitchCase="stepType.transitToSOI">
     <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong> SOI
   </span>
   <span *ngSwitchCase="stepType.transitFromSOIToLow">
     <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> SOI to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    <strong [ngStyle]="{ 'color': stepFromColor }">{{ stepFromName }}</strong> SOI to
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong> low orbit
   </span>
   <span *ngSwitchCase="stepType.transitFromLowToSOI">
     <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
+    <strong [ngStyle]="{ 'color': stepFromColor }">{{ stepFromName }}</strong> low orbit to
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong> SOI
   </span>
   <span *ngSwitchCase="stepType.transitToKeostat">
     <i class="far fa-dot-circle mr"></i>
     <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">Keostationary</strong> orbit
+    <strong [ngStyle]="{ 'color': stepToColor }">Keostationary</strong> orbit
   </span>
   <span *ngSwitchCase="stepType.landing">
     <i class="fas fa-rocket rotate-left mr"></i>
     <strong>Landing</strong> on
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong>
   </span>
   <span *ngSwitchCase="stepType.return">
     <i class="fas fa-reply mr"></i>
     <strong>Return</strong> trip from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
+    <strong [ngStyle]="{ 'color': stepFromColor }">{{ stepFromName }}</strong> to
+    <strong [ngStyle]="{ 'color': stepToColor }">{{ stepToName }}</strong>
   </span>
   <span *ngSwitchCase="stepType.total">
     <i class="fas fa-flag mr"></i>

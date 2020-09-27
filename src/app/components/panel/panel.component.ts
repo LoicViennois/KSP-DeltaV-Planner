@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { AstroBody, AstroPath } from '../../models/planet.model';
+import { AstroBody, AstroPath, FullAstroPath, isSatellite } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
 import { Kerbin } from '../../models/data/kerbin';
 import { AstroPathService } from '../../services/astro-path.service';
@@ -15,9 +15,14 @@ import { BodiesService } from '../../services/bodies.service';
   styleUrls: ['./panel.component.less']
 })
 export class PanelComponent implements OnInit, OnDestroy {
-  path: AstroPath;
+  path!: AstroPath;
 
   private readonly unsubscribe = new Subject<void>();
+
+  constructor(public readonly astroPathService: AstroPathService,
+              public readonly stepSelectionService: StepSelectionService,
+              private readonly bodiesService: BodiesService) {
+  }
 
   get kerbin(): Kerbin {
     return this.bodiesService.kerbin;
@@ -31,9 +36,8 @@ export class PanelComponent implements OnInit, OnDestroy {
     return this.path.steps;
   }
 
-  constructor(public readonly astroPathService: AstroPathService,
-              public readonly stepSelectionService: StepSelectionService,
-              private readonly bodiesService: BodiesService) {
+  get pathToCanLand(): boolean {
+    return (this.path as FullAstroPath).to.canLand;
   }
 
   ngOnInit(): void {
@@ -67,7 +71,11 @@ export class PanelComponent implements OnInit, OnDestroy {
   }
 
   landingInAtmosphere(step: Step): boolean {
-    return step.type === StepType.landing && this.path.to.hasAtmosphere;
+    return step.type === StepType.landing && ((this.path as FullAstroPath).to.hasAtmosphere);
+  }
+
+  isSatellite(body: AstroBody): boolean {
+    return isSatellite(body);
   }
 
 }

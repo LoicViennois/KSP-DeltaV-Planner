@@ -5,8 +5,8 @@ import { Subject } from 'rxjs';
 
 import { AstroPathService } from '../../services/astro-path.service';
 import { StepSelectionService } from '../../services/step-selection.service';
-import { AstroPath } from '../../models/planet.model';
-import { Step, StepType } from '../../models/step.model';
+import { AstroPath, FullAstroPath, isFullAstroPath, isPlanet, isSatellite } from '../../models/planet.model';
+import { FullStep, Step, StepType } from '../../models/step.model';
 
 @Component({
   selector: 'ksp-map',
@@ -14,8 +14,8 @@ import { Step, StepType } from '../../models/step.model';
   styleUrls: ['./map.component.less']
 })
 export class MapComponent implements OnInit, OnDestroy {
-  private svg;
-  private path: AstroPath;
+  private svg!: d3.Selection<d3.BaseType, unknown, HTMLElement, undefined>;
+  private path!: AstroPath;
   private readonly unsubscribe = new Subject<void>();
   private readonly suffixHub: string[];
   private readonly suffixLow: string[];
@@ -68,7 +68,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
   private pathChanged(options: { soft: boolean }): void {
     // not a full path
-    if (this.path.from == null || this.path.to == null) {
+    if (!isFullAstroPath(this.path)) {
       this.showAll();
       return;
     }
@@ -89,11 +89,11 @@ export class MapComponent implements OnInit, OnDestroy {
     ];
 
     // destination is a satellite
-    if (!this.path.to.isPlanet) {
+    if (isSatellite(this.path.to)) {
       const parentName = this.path.to.parent.toLowerCase();
       idsToShow.push(...this.suffixHub.map(suffix => `${parentName}-${suffix}`));
     }
-    if (!this.path.from.isPlanet) {
+    if (isSatellite(this.path.from)) {
       const parentName = this.path.from.parent.toLowerCase();
       idsToShow.push(...this.suffixHub.map(suffix => `${parentName}-${suffix}`));
     }
@@ -121,7 +121,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  private selectionChanged(step: Step): void {
+  private selectionChanged(step: Step | null): void {
     // selection cleared (on mouse leave)
     if (step == null) {
       this.pathChanged({ soft: false });
@@ -133,10 +133,12 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const path = this.path as FullAstroPath;
+
     // init
-    const pathFromName = this.path.from.name.toLowerCase();
-    const pathToName = this.path.to.name.toLowerCase();
-    let idsToShow = [];
+    const pathFromName = path.from.name.toLowerCase();
+    const pathToName = path.to.name.toLowerCase();
+    let idsToShow: string[] = [];
 
     // build ids
     this.pathChanged({ soft: true });
@@ -149,25 +151,25 @@ export class MapComponent implements OnInit, OnDestroy {
     } else if (step.type === StepType.transitToLowOrbit) {
       idsToShow = [
         'hub',
-        ...this.suffixStepLow.map(suffix => `${this.path.from.isPlanet ?
-          pathFromName : this.path.from.parent.toLowerCase()}-${suffix}`),
+        ...this.suffixStepLow.map(suffix => `${isPlanet(path.from) ?
+          pathFromName : path.from.parent.toLowerCase()}-${suffix}`),
         ...this.suffixStepLow.map(suffix => `${pathToName}-${suffix}`)
       ];
     } else if (step.type === StepType.transitToSOI) {
       idsToShow = [
         'hub',
         ...this.suffixStepLow.map(suffix => `${pathFromName}-${suffix}`),
-        ...this.suffixStepSOI.map(suffix => `${step.to.name.toLowerCase()}-${suffix}`)
+        ...this.suffixStepSOI.map(suffix => `${(step as FullStep).to.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromSOIToLow) {
       idsToShow = [
-        `${step.from.name.toLowerCase()}-hub`,
-        ...this.suffixStepLow.map(suffix => `${step.to.name.toLowerCase()}-${suffix}`)
+        `${(step as FullStep).from.name.toLowerCase()}-hub`,
+        ...this.suffixStepLow.map(suffix => `${(step as FullStep).to.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromLowToSOI) {
       idsToShow = [
-        `${step.to.name.toLowerCase()}-hub`,
-        ...this.suffixStepLow.map(suffix => `${step.from.name.toLowerCase()}-${suffix}`)
+        `${(step as FullStep).to.name.toLowerCase()}-hub`,
+        ...this.suffixStepLow.map(suffix => `${(step as FullStep).from.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromLowToLow) {
       // mun or minmus
