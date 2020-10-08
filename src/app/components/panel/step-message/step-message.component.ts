@@ -8,7 +8,7 @@ import { Step, StepType } from '../../../models/step.model';
   styleUrls: ['./step-message.component.less']
 })
 export class StepMessageComponent {
-  @Input() readonly step: Step;
+  @Input() step: Step;
   readonly stepType = StepType;
 
   constructor() {
