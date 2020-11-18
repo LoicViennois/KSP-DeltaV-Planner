@@ -48,6 +48,7 @@ export class AstroPathService {
 
   pathChanged(path: AstroPath): void {
     const newPath = { ...path };
+    newPath.total = null;
     this.computeSteps(newPath);
     this.path.next(newPath);
   }
