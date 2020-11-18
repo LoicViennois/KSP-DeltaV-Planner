@@ -10,8 +10,8 @@ import { MapComponent } from './components/map/map.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { StepMessageComponent } from './components/panel/step-message/step-message.component';
 import { DvPillComponent } from './components/panel/dv-pill/dv-pill.component';
-import { CopyrightComponent } from './components/modals/copyright/copyright.component';
-import { InfoComponent } from './components/modals/info/info.component';
+import { AboutComponent } from './components/modals/about/about.component';
+import { HelpComponent } from './components/modals/help/help.component';
 import { ModalContainerComponent } from './components/modals/modal-container/modal-container.component';
 
 import { environment } from '../environments/environment';
@@ -19,8 +19,8 @@ import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   entryComponents: [
-    CopyrightComponent,
-    InfoComponent
+    AboutComponent,
+    HelpComponent
   ],
   declarations: [
     AppComponent,
@@ -28,8 +28,8 @@ import { AppRoutingModule } from './app-routing.module';
     PanelComponent,
     StepMessageComponent,
     DvPillComponent,
-    CopyrightComponent,
-    InfoComponent,
+    AboutComponent,
+    HelpComponent,
     ModalContainerComponent,
   ],
   imports: [

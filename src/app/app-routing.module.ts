@@ -1,21 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { InfoComponent } from './components/modals/info/info.component';
-import { CopyrightComponent } from './components/modals/copyright/copyright.component';
+import { HelpComponent } from './components/modals/help/help.component';
+import { AboutComponent } from './components/modals/about/about.component';
 import { ModalContainerComponent } from './components/modals/modal-container/modal-container.component';
 
 
 const routes: Routes = [
   {
-    path: 'information',
+    path: 'help',
     component: ModalContainerComponent,
-    data: { component: InfoComponent }
+    data: { component: HelpComponent }
   },
   {
-    path: 'copyright',
+    path: 'about',
     component: ModalContainerComponent,
-    data: { component: CopyrightComponent }
+    data: { component: AboutComponent }
   },
   {
     path: '',

@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'ksp-info',
-  templateUrl: './info.component.html',
-  styleUrls: ['./info.component.less']
+  selector: 'ksp-help',
+  templateUrl: './help.component.html',
+  styleUrls: ['./help.component.less']
 })
-export class InfoComponent {
+export class HelpComponent {
   constructor(public activeModal: NgbActiveModal) {
   }
 
