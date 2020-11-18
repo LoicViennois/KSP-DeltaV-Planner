@@ -144,10 +144,11 @@
              placement="top-right">
           <i *ngIf="!path.to.canLand" class="fas fa-ban mr-2"></i>
           <i class="fas fa-cloud-download-alt mr-2"></i>
-          {{ step.dv }} m/s
+          <ksp-dv-pill [step]="step"></ksp-dv-pill>
         </div>
         <div *ngIf="!landingInAtmosphere(step)"
-             class="badge badge-secondary badge-dv">{{ step.dv }} m/s
+             class="badge badge-secondary badge-dv">
+          <ksp-dv-pill [step]="step"></ksp-dv-pill>
         </div>
       </li>
       <li *ngIf="path.total"
@@ -155,7 +156,9 @@
           (mouseenter)="stepSelectionService.selectionChanged(path.total)"
           (mouseleave)="stepSelectionService.selectionChanged(null)">
         <ksp-step-message [step]="path.total"></ksp-step-message>
-        <div class="badge badge-primary badge-dv">{{ path.total.dv }} m/s</div>
+        <div class="badge badge-primary badge-dv">
+          <ksp-dv-pill [step]="path.total"></ksp-dv-pill>
+        </div>
       </li>
     </ul>
   </div>

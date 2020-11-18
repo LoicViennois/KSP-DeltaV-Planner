@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { AstroBody } from '../models/planet.model';
+import { AstroBody, Planet, Satellite } from '../models/planet.model';
 import { planets } from '../models/data/planets';
 import { Kerbin } from '../models/data/kerbin';
 
@@ -21,5 +21,9 @@ export class BodiesService {
     }
     this.bodies = bodies;
     this.kerbin = this.bodies.find(body => body.name === 'Kerbin') as Kerbin;
+  }
+
+  getParent(satellite: Satellite): Planet {
+    return (this.bodies.find((body) => body.name === satellite.parent)) as Planet;
   }
 }

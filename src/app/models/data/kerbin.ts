@@ -8,6 +8,8 @@ export class Kerbin implements Planet {
   readonly imageUrl = 'assets/planets/kerbin.png';
   readonly dvGL = 3400;
   readonly dvLE = 950;
+  readonly dvK = null;
+  readonly dvPlaneChange = null;
   readonly dvKeostat = 1115;
   readonly color = '#2A7EFE';
   readonly satellites = [
@@ -21,6 +23,7 @@ export class Kerbin implements Planet {
       dvGL: 580,
       dvLI: 310,
       dvPL: 860,
+      dvPlaneChange: 0,
       color: '#7F7F80',
     },
     {
@@ -33,6 +36,7 @@ export class Kerbin implements Planet {
       dvGL: 180,
       dvLI: 160,
       dvPL: 930,
+      dvPlaneChange: 340,
       color: '#51C47F',
     }
   ];

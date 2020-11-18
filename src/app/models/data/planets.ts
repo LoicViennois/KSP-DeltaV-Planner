@@ -11,6 +11,7 @@ export const planets: Planet[] = [
     dvGL: 870,
     dvLI: 2410,
     dvK: 760,
+    dvPlaneChange: 2520,
     satellites: [],
     color: '#D38D5F',
   },
@@ -24,6 +25,7 @@ export const planets: Planet[] = [
     dvLE: 1330,
     dvEI: 80,
     dvK: 90,
+    dvPlaneChange: 430,
     color: '#7137c7',
     satellites: [
       {
@@ -36,6 +38,7 @@ export const planets: Planet[] = [
         dvGL: 30,
         dvLI: 410,
         dvPE: 60,
+        dvPlaneChange: 0,
         color: '#8a5cd1',
       }
     ]
@@ -51,6 +54,7 @@ export const planets: Planet[] = [
     dvLE: 360,
     dvEI: 250,
     dvK: 130,
+    dvPlaneChange: 10,
     color: '#fd4001',
     satellites: [
       {
@@ -63,6 +67,7 @@ export const planets: Planet[] = [
         dvGL: 390,
         dvLI: 180,
         dvPE: 30,
+        dvPlaneChange: 0,
         color: '#fd612c',
       }
     ]
@@ -76,6 +81,7 @@ export const planets: Planet[] = [
     dvGL: 430,
     dvLI: 1290,
     dvK: 610,
+    dvPlaneChange: 1010,
     satellites: [],
     color: '#989898',
   },
@@ -89,6 +95,7 @@ export const planets: Planet[] = [
     dvLE: 2810,
     dvEI: 160,
     dvK: 980,
+    dvPlaneChange: 270,
     color: '#71c737',
     satellites: [
       {
@@ -101,6 +108,7 @@ export const planets: Planet[] = [
         dvGL: 2900,
         dvLI: 1070,
         dvPE: 930,
+        dvPlaneChange: 0,
         color: '#87c75d',
       },
       {
@@ -113,6 +121,7 @@ export const planets: Planet[] = [
         dvGL: 860,
         dvLI: 910,
         dvPE: 620,
+        dvPlaneChange: 0,
         color: '#6aae3c',
       },
       {
@@ -125,6 +134,7 @@ export const planets: Planet[] = [
         dvGL: 2270,
         dvLI: 1100,
         dvPE: 400,
+        dvPlaneChange: 0,
         color: '#5a9333',
       },
       {
@@ -137,6 +147,7 @@ export const planets: Planet[] = [
         dvGL: 230,
         dvLI: 900,
         dvPE: 220,
+        dvPlaneChange: 2440,
         color: '#416a24',
       },
       {
@@ -149,6 +160,7 @@ export const planets: Planet[] = [
         dvGL: 130,
         dvLI: 820,
         dvPE: 160,
+        dvPlaneChange: 700,
         color: '#2d4a19',
       },
     ]
@@ -162,6 +174,7 @@ export const planets: Planet[] = [
     dvGL: 620,
     dvLI: 1370,
     dvK: 1140,
+    dvPlaneChange: 1330,
     satellites: [],
     color: '#a9a9a9',
   },
@@ -174,6 +187,7 @@ export const planets: Planet[] = [
     dvGL: 67000,
     dvLI: 13700,
     dvK: 6000,
+    dvPlaneChange: 0,
     satellites: [],
     color: '#EFAB01',
   }

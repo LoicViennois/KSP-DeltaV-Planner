@@ -18,5 +18,6 @@ export interface Step {
   readonly from?: AstroBody;
   readonly to?: AstroBody;
   readonly dv: number;
+  readonly dvMax?: number;
   readonly returnDv?: number;
 }

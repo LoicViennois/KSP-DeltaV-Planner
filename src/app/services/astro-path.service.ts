@@ -34,6 +34,10 @@ export class AstroPathService {
     return path.from.name === 'Kerbin' && path.to.name === 'Kerbin';
   }
 
+  private get kerbin(): Kerbin {
+    return this.bodiesService.kerbin;
+  }
+
   reset(): void {
     this.path.next({ ...this.initialPath });
   }
@@ -53,10 +57,6 @@ export class AstroPathService {
     [newPath.from, newPath.to] = [newPath.to, newPath.from];
     this.computeSteps(newPath);
     this.path.next(newPath);
-  }
-
-  private get kerbin(): Kerbin {
-    return this.bodiesService.kerbin;
   }
 
   private computeSteps(path: AstroPath): void {
@@ -137,42 +137,52 @@ export class AstroPathService {
 
   private computeKerbinToPlanet(path: AstroPath): void {
     const planet = path.to as Planet;
+    const dv = this.kerbin.transitToLowOrbit(planet);
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: path.to,
-      dv: this.kerbin.transitToLowOrbit(planet)
+      dv,
+      dvMax: dv + planet.dvPlaneChange
     });
   }
 
   private computePlanetToKerbin(path: AstroPath): void {
     const planet = path.from as Planet;
+    const dv = this.kerbin.transitToLowOrbit(planet);
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: this.kerbin,
-      dv: this.kerbin.transitToLowOrbit(planet)
+      dv,
+      dvMax: dv + planet.dvPlaneChange
     });
   }
 
   private computeKerbinToSatellite(path: AstroPath): void {
     const satellite = path.to as Satellite;
     if (this.isKerbinSatellite(satellite)) {
+      const dv = satellite.dvPL + satellite.dvLI;
       path.steps.push({
         type: StepType.transitFromLowToLow,
         from: this.kerbin,
         to: satellite,
-        dv: satellite.dvPL + satellite.dvLI
+        dv,
+        dvMax: dv + satellite.dvPlaneChange,
       });
     } else {
-      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
+      const planet = this.bodiesService.getParent(satellite);
+      const dv1 = this.kerbin.transitToSOI(planet);
+      const dv2 = satellite.dvPE + satellite.dvLI;
       path.steps.push({
         type: StepType.transitToSOI,
         to: planet,
-        dv: this.kerbin.transitToSOI(planet)
+        dv: dv1,
+        dvMax: dv1 + planet.dvPlaneChange
       }, {
         type: StepType.transitFromSOIToLow,
         from: planet,
         to: satellite,
-        dv: satellite.dvPE + satellite.dvLI
+        dv: dv2,
+        dvMax: dv2 + satellite.dvPlaneChange
       });
     }
   }
@@ -187,7 +197,7 @@ export class AstroPathService {
         dv: satellite.dvPL + satellite.dvLI
       });
     } else {
-      const planet = (this.bodiesService.bodies.find((body) => body.name === satellite.parent)) as Planet;
+      const planet = this.bodiesService.getParent(satellite);
       path.steps.push({
         type: StepType.transitFromLowToSOI,
         from: satellite,
@@ -218,19 +228,30 @@ export class AstroPathService {
      * Return
      */
     if (path.return) {
+      const dv = path.steps
+        .map(step => step.returnDv != null ? step.returnDv : step.dv)
+        .reduce((dv1, dv2) => dv1 + dv2);
+
+      let dvMax = dv;
+      if (path.to.isPlanet) {
+        dvMax += path.to.dvPlaneChange;
+      } else {
+        const planet = this.bodiesService.getParent(path.to as Satellite);
+        dvMax += path.to.dvPlaneChange + planet.dvPlaneChange;
+      }
       path.steps.push({
         type: StepType.return,
         from: path.to,
         to: path.from,
-        dv: path.steps
-          .map(step => step.returnDv != null ? step.returnDv : step.dv)
-          .reduce((dv1, dv2) => dv1 + dv2)
+        dv,
+        dvMax
       });
     }
 
     path.total = {
       type: StepType.total,
-      dv: path.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2)
+      dv: path.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2),
+      dvMax: path.steps.map(step => step.dvMax || step.dv).reduce((dv1, dv2) => dv1 + dv2)
     };
   }
 

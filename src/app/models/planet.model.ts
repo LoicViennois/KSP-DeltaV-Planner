@@ -21,13 +21,14 @@ interface AbstractBody {
   readonly imageUrl: string;
   readonly dvGL: number; // Ground <-> Low Orbit
   readonly dvLI?: number; // Low Orbit <-> Intercept
+  readonly dvPlaneChange: number; // Maximum plane change dV
   readonly color: string;
 }
 
 export interface Planet extends AbstractBody {
   readonly dvLE?: number; // Low Orbit <-> Elliptical Orbit to SOI Edge
   readonly dvEI?: number; // Elliptical Orbit to SOI Edge <-> Intercept
-  readonly dvK?: number; // Intercept <-> Kerbin Elliptical Orbit to SOI Edge
+  readonly dvK: number; // Intercept <-> Kerbin Elliptical Orbit to SOI Edge
   readonly satellites: Satellite[];
 }
 
