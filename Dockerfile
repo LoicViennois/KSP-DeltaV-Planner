@@ -24,7 +24,7 @@ ENV MATOMO_SITE_ID=""
 RUN apt-get update && apt-get install --no-install-recommends -y curl
 
 COPY --from=build /usr/src/app/dist/ksp-deltav-planner /usr/share/nginx/html
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
