@@ -8,11 +8,13 @@
       "resources": {
         "files": [
           "/index.html",
+          "/manifest.webmanifest",
           "/*.css",
           "/*.js"
         ]
       }
-    }, {
+    },
+    {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
