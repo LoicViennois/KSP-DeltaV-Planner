@@ -34,7 +34,7 @@
            ngbDropdownToggle>
         <div>
           <span *ngIf="path.from == null" class="text-black-50">Select your starting point</span>
-          <img *ngIf="path.from != null" class="pr-2 body-icon-h" [src]="path.from.imageUrl" alt="">
+          <img width="32" height="32" *ngIf="path.from != null" class="mr-2" [src]="path.from.imageUrl" alt="">
           <span *ngIf="path.from != null">{{ path.from.name }}</span>
         </div>
       </div>
@@ -44,7 +44,7 @@
                 ngbDropdownItem
                 (click)="pathFromChanged(option)">
           <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
-          <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
+          <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
           <span>{{ option.name }}</span>
         </button>
       </div>
@@ -71,7 +71,7 @@
            ngbDropdownToggle>
         <div>
           <span *ngIf="path.to == null" class="text-black-50">Select your destination</span>
-          <img *ngIf="path.to != null" class="pr-2 body-icon-h" [src]="path.to.imageUrl" alt="">
+          <img width="32" height="32" *ngIf="path.to != null" class="mr-2" [src]="path.to.imageUrl" alt="">
           <span *ngIf="path.to != null">{{ path.to.name }}</span>
         </div>
       </div>
@@ -80,7 +80,7 @@
                 ngbDropdownItem
                 (click)="pathToChanged(option)">
           <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
-          <img class="pr-2 body-icon-h" [src]="option.imageUrl" alt="">
+          <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
           <span>{{ option.name }}</span>
         </button>
       </div>
