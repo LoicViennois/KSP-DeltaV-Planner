@@ -5,7 +5,7 @@ export class Kerbin implements Planet {
   readonly isPlanet = true;
   readonly hasAtmosphere = true;
   readonly canLand = true;
-  readonly imageUrl = 'assets/planets/kerbin.png';
+  readonly imageUrl = 'assets/planets/kerbin.webp';
   readonly dvGL = 3400;
   readonly dvLE = 950;
   readonly dvK = null;
@@ -18,7 +18,7 @@ export class Kerbin implements Planet {
       isPlanet: false,
       hasAtmosphere: false,
       canLand: true,
-      imageUrl: 'assets/planets/mun.png',
+      imageUrl: 'assets/planets/mun.webp',
       parent: 'Kerbin',
       dvGL: 580,
       dvLI: 310,
@@ -31,7 +31,7 @@ export class Kerbin implements Planet {
       isPlanet: false,
       hasAtmosphere: false,
       canLand: true,
-      imageUrl: 'assets/planets/minmus.png',
+      imageUrl: 'assets/planets/minmus.webp',
       parent: 'Kerbin',
       dvGL: 180,
       dvLI: 160,
