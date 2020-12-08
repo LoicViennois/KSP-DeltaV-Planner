@@ -1,6 +1,6 @@
 # KSP Delta-V Planner
 
-<a href="https://ksp.loicviennois.com/" target="_blank"><img src="src/assets/icons/icon-192x192.png" width="192" alt="logo" /></a>
+<a href="https://ksp.loicviennois.com/" target="_blank" rel="noopener"><img src="src/assets/icons/icon-192x192.png" width="192" alt="logo" /></a>
 
 KSP Delta-V Planner is a tool to calculate your rocket Delta-V for
 interplanetary travels in [Kerbal Space Program](https://www.kerbalspaceprogram.com/).
