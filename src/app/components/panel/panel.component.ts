@@ -66,8 +66,9 @@ export class PanelComponent implements OnInit, OnDestroy {
     this.astroPathService.pathChanged(this.path);
   }
 
-  landingInAtmosphere(step: Step): boolean {
-    return step.type === StepType.landing && this.path.to.hasAtmosphere;
+  aerobraking(step: Step): boolean {
+    return (step.type === StepType.landing && this.path.to.hasAtmosphere) ||
+      (step.type === StepType.transitToLowOrbit && this.path.to.hasAtmosphere);
   }
 
 }
