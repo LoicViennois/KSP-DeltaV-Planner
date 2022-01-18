@@ -156,7 +156,7 @@
             (mouseenter)="stepSelectionService.selectionChanged(step)"
             (mouseleave)="stepSelectionService.selectionChanged(null)">
             <ksp-step-message [step]="step"></ksp-step-message>
-            @if (landingInAtmosphere(step)) {
+            @if (aerobraking(step)) {
               <div
                 class="badge badge-dv"
                 [class.text-bg-secondary]="path.to.canLand"
@@ -172,7 +172,7 @@
                 <ksp-dv-pill [step]="step"></ksp-dv-pill>
               </div>
             }
-            @if (!landingInAtmosphere(step)) {
+            @if (!aerobraking(step)) {
               <div
                 class="badge text-bg-secondary badge-dv">
                 <ksp-dv-pill [step]="step"></ksp-dv-pill>
