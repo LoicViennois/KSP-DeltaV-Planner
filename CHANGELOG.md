@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.3.1...v1.4.0) (2022-10-09)
+
+
+### Features
+
+* convert png images to webp ([1870f5d](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/1870f5d521b71c1915b1908738484d5846bb8268))
+* optimize for PWA and SEO ([b13105e](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/b13105ebc1568f9aea2eded44294bdef74cb00f9))
+* update PWA config ([61dd718](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/61dd71800f1a2cd6d42dc5e89a201632aa8e0d0d))
+* update to angular 13 ([8565935](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/85659358f00fa6d5030e873010b055e457e29b5c))
+
+
+### Bug Fixes
+
+* fix pwa config and improve nginx config for pwa ([311f033](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/311f0339f4b50c7c15dfc4218d9a3befbc84e7e0))
+
 ### [1.3.1](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.3.0...v1.3.1) (2020-11-19)
 
 
