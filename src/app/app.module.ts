@@ -18,32 +18,28 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
-  entryComponents: [
-    AboutComponent,
-    HelpComponent
-  ],
-  declarations: [
-    AppComponent,
-    MapComponent,
-    PanelComponent,
-    StepMessageComponent,
-    DvPillComponent,
-    AboutComponent,
-    HelpComponent,
-    ModalContainerComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    NgbDropdownModule,
-    NgbPopoverModule,
-    NgbModalModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        MapComponent,
+        PanelComponent,
+        StepMessageComponent,
+        DvPillComponent,
+        AboutComponent,
+        HelpComponent,
+        ModalContainerComponent,
+    ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        NgbDropdownModule,
+        NgbPopoverModule,
+        NgbModalModule,
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+        AppRoutingModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }

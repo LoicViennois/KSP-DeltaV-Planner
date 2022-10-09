@@ -17,6 +17,7 @@ export class DvPillComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    return;
   }
 
 }

@@ -7,4 +7,4 @@ interplanetary travels in [Kerbal Space Program](https://www.kerbalspaceprogram.
 
 It features an interactive map inspired by [Kowgan](https://github.com/Kowgan/ksp_cheat_sheets).
 
-KSP Delta-V Planner is built on [Angular 10](https://angular.io)
+KSP Delta-V Planner is built on [Angular 13](https://angular.io)
