@@ -2,7 +2,7 @@ version: '2.4'
 
 services:
   client:
-    image: loicviennois/ksp-deltav-planner
+    image: ghcr.io/loicviennois/ksp-deltav-planner
     build: .
     ports:
       - '8080:80'
