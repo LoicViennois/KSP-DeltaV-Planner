@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.4.0...v1.4.1) (2022-11-16)
+
+
+### Bug Fixes
+
+* update matomo code ([c14509b](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/c14509b76b46ae88ba913fa4e4f3b76c79d7358b))
+
 ## [1.4.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.3.1...v1.4.0) (2022-10-09)
 
 
