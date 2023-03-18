@@ -24,7 +24,7 @@
     </a>
   </div>
 
-  <div>
+  <!-- <div>
     <label for="fromBody" class="text-white">From:</label>
   </div>
 
@@ -50,7 +50,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="d-flex justify-content-center mt-3 text-white">
     <div>
@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <div>
+  <!-- <div>
     <label for="toBody" class="text-white">To:</label>
   </div>
 
@@ -86,7 +86,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="d-flex justify-content-center text-white my-3">
     <div class="mx-2">
@@ -136,14 +136,14 @@
           (mouseenter)="stepSelectionService.selectionChanged(step)"
           (mouseleave)="stepSelectionService.selectionChanged(null)">
         <ksp-step-message [step]="step"></ksp-step-message>
-        <div *ngIf="landingInAtmosphere(step)"
-             class="badge badge-dv"
-             [class.badge-secondary]="path.to.canLand"
-             [class.badge-danger]="!path.to.canLand"
-             [popoverTitle]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
-             ngbPopover="Aerobraking is possible"
-             triggers="mouseenter:mouseleave"
-             placement="top-right">
+          <div *ngIf="landingInAtmosphere(step)"
+              class="badge badge-dv"
+              [class.badge-secondary]="path.to.canLand"
+              [class.badge-danger]="!path.to.canLand"
+              [popoverTitle]="!path.to.canLand ? 'Landing here might not a good idea...': ''"
+              ngbPopover="Aerobraking is possible"
+              triggers="mouseenter:mouseleave"
+              placement="top-right">
           <i *ngIf="!path.to.canLand" class="fas fa-ban mr-2"></i>
           <i class="fas fa-cloud-download-alt mr-2"></i>
           <ksp-dv-pill [step]="step"></ksp-dv-pill>
