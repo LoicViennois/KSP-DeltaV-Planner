@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 
 import { AstroPathService } from '../../services/astro-path.service';
 import { StepSelectionService } from '../../services/step-selection.service';
-import { AstroPath, AstroBody } from '../../models/planet.model';
+import { AstroBody, AstroPath } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
 import { BodiesService } from '../../services/bodies.service';
 import { Kerbin } from 'src/app/models/data/kerbin';
@@ -41,44 +41,10 @@ export class MapComponent implements OnInit, OnDestroy {
   get kerbin(): Kerbin {
     return this.bodiesService.kerbin;
   }
-  
-  private destinationSvgElementClicked(selection: AstroBody): void {
-    this.path.to = selection;  
-    if (this.path.to.name !== 'Kerbin') {
-      this.path.from = this.kerbin;
-    }
-    this.astroPathService.pathChanged(this.path);
-  }
-
-
-  /**
-   * Makes the SVG itself interactive.
-   * Click on a planet or moon will set the destination.
-   * Prototype status.
-   **/
-  addEventlistenersToAstroBodies() {
-    this.bodiesService.bodies.forEach(body => {
-      let bodyName = body.name
-      let lowerCaseBodyName = bodyName.toLowerCase()
-
-      let circleSelector = `#${lowerCaseBodyName}-ground use`
-      let bodyCircle = this.svg.select(circleSelector)
-      bodyCircle.on('click', () => {
-        this.destinationSvgElementClicked(body)
-      })
-
-      let labelSelector = `#${lowerCaseBodyName}`
-      let bodyLable = this.svg.select(labelSelector)
-      bodyLable.on('click', () => {
-        this.destinationSvgElementClicked(body)
-      })
-    })
-
-  }
 
   ngOnInit(): void {
     this.svg = d3.select('svg');
-    this.addEventlistenersToAstroBodies()
+    this.addEventListenersToAstroBodies();
     this.astroPathService.getPath()
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((p) => {
@@ -93,6 +59,39 @@ export class MapComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe.next();
     this.unsubscribe.complete();
+  }
+
+  /**
+   * Makes the SVG itself interactive.
+   * Click on a planet or moon will set the destination.
+   * Prototype status.
+   **/
+  private addEventListenersToAstroBodies() {
+    this.bodiesService.bodies.forEach(body => {
+      let bodyName = body.name;
+      let lowerCaseBodyName = bodyName.toLowerCase();
+
+      let circleSelector = `#${lowerCaseBodyName}-ground use`;
+      let bodyCircle = this.svg.select(circleSelector);
+      bodyCircle.on('click', () => {
+        this.destinationSvgElementClicked(body);
+      });
+
+      let labelSelector = `#${lowerCaseBodyName}`;
+      let bodyLable = this.svg.select(labelSelector);
+      bodyLable.on('click', () => {
+        this.destinationSvgElementClicked(body);
+      });
+    });
+
+  }
+
+  private destinationSvgElementClicked(selection: AstroBody): void {
+    this.path.to = selection;
+    if (this.path.to.name !== 'Kerbin') {
+      this.path.from = this.kerbin;
+    }
+    this.astroPathService.pathChanged(this.path);
   }
 
   private fadeAll(): void {
