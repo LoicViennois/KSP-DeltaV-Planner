@@ -71,26 +71,25 @@ export class MapComponent implements OnInit, OnDestroy {
       let bodyName = body.name;
       let lowerCaseBodyName = bodyName.toLowerCase();
 
-      let circleSelector = `#${lowerCaseBodyName}-ground use`;
-      let bodyCircle = this.svg.select(circleSelector);
-      bodyCircle.on('click', () => {
-        this.destinationSvgElementClicked(body);
+      let groundCircle = this.svg.select(`#${lowerCaseBodyName}-ground`);
+      groundCircle.on('click', () => {
+        this.destinationSvgElementClicked(body, true);
       });
 
-      let labelSelector = `#${lowerCaseBodyName}`;
-      let bodyLable = this.svg.select(labelSelector);
-      bodyLable.on('click', () => {
-        this.destinationSvgElementClicked(body);
+      let lowOrbitCircle = this.svg.select(`#${lowerCaseBodyName}-low`);
+      lowOrbitCircle.on('click', () => {
+        this.destinationSvgElementClicked(body, false);
       });
     });
 
   }
 
-  private destinationSvgElementClicked(selection: AstroBody): void {
+  private destinationSvgElementClicked(selection: AstroBody, landing: boolean): void {
     this.path.to = selection;
     if (this.path.to.name !== 'Kerbin') {
       this.path.from = this.kerbin;
     }
+    this.path.landing = landing;
     this.astroPathService.pathChanged(this.path);
   }
 

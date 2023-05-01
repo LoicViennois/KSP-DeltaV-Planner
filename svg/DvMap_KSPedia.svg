@@ -804,7 +804,7 @@
      sodipodi:insensitive="true" />
   <g
      id="duna-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        style="fill:none;fill-opacity:1;stroke:#ff4000;stroke-width:38.10326767;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 440.14853,260.22289 154.35176,-0.0152"
@@ -961,7 +961,7 @@
   </g>
   <g
      id="jool-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path12479"
@@ -1052,7 +1052,7 @@
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.88397217px;line-height:1.25;font-family:Aller;-inkscape-font-specification:Aller;fill:#808080;fill-opacity:1">91050</tspan></text>
   <g
      id="kerbin-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5543"
@@ -1126,7 +1126,7 @@
   </g>
   <g
      id="mun-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5519"
@@ -1154,7 +1154,7 @@
   </g>
   <g
      id="minmus-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5531-4"
@@ -1423,7 +1423,7 @@
   </g>
   <g
      id="kerbin-low"
-     class="dv-map">
+     class="dv-map low">
     <text
        inkscape:transform-center-y="57.738587"
        transform="rotate(45)"
@@ -1463,7 +1463,7 @@
   </g>
   <g
      id="moho-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -1492,7 +1492,7 @@
   </g>
   <g
      id="mun-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -1605,7 +1605,7 @@
   </g>
   <g
      id="moho-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -1678,7 +1678,7 @@
   </g>
   <g
      id="gilly-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        style="fill:none;fill-opacity:1;stroke:#8b5cd2;stroke-width:38.10326767;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 434.13452,454.9379 122.64692,-0.0232"
@@ -1707,7 +1707,7 @@
   </g>
   <g
      id="gilly-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -1761,7 +1761,7 @@
   </g>
   <g
      id="eve-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
@@ -1797,7 +1797,7 @@
   <g
      id="eve-low"
      transform="matrix(2.1507178,0,0,2.1507178,211.56373,-525.879)"
-     class="dv-map">
+     class="dv-map low">
     <g
        id="g826">
       <text
@@ -1838,7 +1838,7 @@
   <g
      id="ike-ground"
      transform="matrix(2.1507178,0,0,2.1507178,222.95759,-525.87891)"
-     class="dv-map">
+     class="dv-map ground">
     <path
        style="fill:none;fill-opacity:1;stroke:#ff612c;stroke-width:38.10326767;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 442.10519,149.99377 107.90059,-0.0231"
@@ -1896,7 +1896,7 @@
   </g>
   <g
      id="duna-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -1922,7 +1922,7 @@
   </g>
   <g
      id="dres-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path12523-5-1"
@@ -1951,7 +1951,7 @@
   </g>
   <g
      id="minmus-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        x="0"
        y="0"
@@ -1977,7 +1977,7 @@
   </g>
   <g
      id="eeloo-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5541-0-6"
@@ -2081,7 +2081,7 @@
   </g>
   <g
      id="eeloo-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -2816,7 +2816,7 @@
        sodipodi:role="line"> </tspan></text>
   <g
      id="kerbol-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5517"
@@ -2984,7 +2984,7 @@
   </g>
   <g
      id="kerbol-low"
-     class="dv-map">
+     class="dv-map low">
     <text
        transform="rotate(-45)"
        inkscape:transform-center-y="54.810512"
@@ -3089,7 +3089,7 @@
   </g>
   <g
      id="pol-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5682-0"
@@ -3118,7 +3118,7 @@
   </g>
   <g
      id="pol-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        x="0"
        y="0"
@@ -3164,7 +3164,7 @@
        sodipodi:role="line">6840</tspan></text>
   <g
      id="bop-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5733-7"
@@ -3257,7 +3257,7 @@
   </g>
   <g
      id="bop-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -3352,7 +3352,7 @@
   </g>
   <g
      id="tylo-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5818-5"
@@ -3381,7 +3381,7 @@
   </g>
   <g
      id="tylo-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        x="0"
        y="0"
@@ -3427,7 +3427,7 @@
        y="1306.4922">7880</tspan></text>
   <g
      id="vall-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5868-6"
@@ -3508,7 +3508,7 @@
   </g>
   <g
      id="vall-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        x="0"
        y="0"
@@ -3554,7 +3554,7 @@
        y="1393.5922">10390</tspan></text>
   <g
      id="laythe-ground"
-     class="dv-map">
+     class="dv-map ground">
     <path
        inkscape:connector-curvature="0"
        id="path5900-0"
@@ -3642,7 +3642,7 @@
   </g>
   <g
      id="laythe-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -3713,7 +3713,7 @@
   </g>
   <g
      id="jool-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        height="100%"
        width="100%"
@@ -3739,7 +3739,7 @@
   </g>
   <g
      id="dres-low"
-     class="dv-map">
+     class="dv-map low">
     <use
        x="0"
        y="0"
@@ -5006,7 +5006,7 @@
   </g>
   <g
      id="ike-low"
-     class="dv-map">
+     class="dv-map low">
     <text
        inkscape:transform-center-x="47.802316"
        id="text8421"
