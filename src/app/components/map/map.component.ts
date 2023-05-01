@@ -64,7 +64,6 @@ export class MapComponent implements OnInit, OnDestroy {
   /**
    * Makes the SVG itself interactive.
    * Click on a planet or moon will set the destination.
-   * Prototype status.
    **/
   private addEventListenersToAstroBodies() {
     this.bodiesService.bodies.forEach(body => {
