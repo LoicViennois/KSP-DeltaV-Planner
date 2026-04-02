@@ -106,6 +106,30 @@
       <div class="form-check">
         <input class="form-check-input"
                type="checkbox"
+               id="aeroCaptureEllipticalCheck"
+               (change)="astroPathService.pathChanged(path)"
+               [(ngModel)]="path.aeroCaptureElliptical">
+        <label class="form-check-label" for="aeroCaptureEllipticalCheck">
+          Aero Capture (Elliptical)
+        </label>
+      </div>
+    </div>
+    <div class="mx-2">
+      <div class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               id="aeroCaptureLowCheck"
+               (change)="astroPathService.pathChanged(path)"
+               [(ngModel)]="path.aeroCaptureLow">
+        <label class="form-check-label" for="aeroCaptureLowCheck">
+          Aero Capture (Low)
+        </label>
+      </div>
+    </div>
+    <div class="mx-2">
+      <div class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
                id="aerobrakingCheck"
                (change)="astroPathService.pathChanged(path)"
                [(ngModel)]="path.aerobraking">
@@ -148,7 +172,15 @@
           <i class="fas fa-cloud-download-alt mr-2"></i>
           <ksp-dv-pill [step]="step"></ksp-dv-pill>
         </div>
-        <div *ngIf="!landingInAtmosphere(step)"
+        <div *ngIf="capturingInAtmosphere(step)"
+             class="badge badge-secondary badge-dv"
+             ngbPopover="Aerobraking is possible"
+             triggers="mouseenter:mouseleave"
+             placement="top-right">
+          <i class="fas fa-cloud-download-alt mr-2"></i>
+          <ksp-dv-pill [step]="step"></ksp-dv-pill>
+        </div>
+        <div *ngIf="!landingInAtmosphere(step) && !capturingInAtmosphere(step)"
              class="badge badge-secondary badge-dv">
           <ksp-dv-pill [step]="step"></ksp-dv-pill>
         </div>

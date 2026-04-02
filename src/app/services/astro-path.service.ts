@@ -19,6 +19,8 @@ export class AstroPathService {
       to: null,
       landing: false,
       aerobraking: true,
+      aeroCaptureLow: false,
+      aeroCaptureElliptical: false,
       steps: [],
       total: null,
       return: false
@@ -138,7 +140,12 @@ export class AstroPathService {
 
   private computeKerbinToPlanet(path: AstroPath): void {
     const planet = path.to as Planet;
-    const dv = this.kerbin.transitToLowOrbit(planet);
+    let dv = this.kerbin.transitToLowOrbit(planet);
+    if (path.aeroCaptureLow && planet.hasAtmosphere) {
+      dv -= (planet.dvLI || planet.dvLE + (planet.dvEI || 0));
+    } else if (path.aeroCaptureElliptical && planet.hasAtmosphere) {
+      dv -= (planet.dvEI || 0);
+    }
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: path.to,
@@ -149,7 +156,12 @@ export class AstroPathService {
 
   private computePlanetToKerbin(path: AstroPath): void {
     const planet = path.from as Planet;
-    const dv = this.kerbin.transitToLowOrbit(planet);
+    let dv = this.kerbin.transitToLowOrbit(planet);
+    if (path.aeroCaptureLow && this.kerbin.hasAtmosphere) {
+      dv -= (this.kerbin.dvLE + (planet.dvK || 0));
+    } else if (path.aeroCaptureElliptical && this.kerbin.hasAtmosphere) {
+      dv -= (planet.dvK || 0);
+    }
     path.steps.push({
       type: StepType.transitToLowOrbit,
       to: this.kerbin,

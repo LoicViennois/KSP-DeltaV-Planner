@@ -70,4 +70,10 @@ export class PanelComponent implements OnInit, OnDestroy {
     return step.type === StepType.landing && this.path.to.hasAtmosphere;
   }
 
+  capturingInAtmosphere(step: Step): boolean {
+    return step.type === StepType.transitToLowOrbit &&
+      step.to?.hasAtmosphere &&
+      (this.path.aeroCaptureLow || this.path.aeroCaptureElliptical);
+  }
+
 }

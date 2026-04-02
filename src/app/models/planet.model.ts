@@ -7,6 +7,8 @@ export interface AstroPath {
   to: AstroBody;
   landing: boolean;
   aerobraking: boolean;
+  aeroCaptureLow: boolean;
+  aeroCaptureElliptical: boolean;
   steps: Step[];
   total: Step;
   return: boolean;
