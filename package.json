@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build:prod": "ng build --configuration production",
+    "build:preview": "ng build --configuration production --base-href=./",
     "lint": "ng lint",
     "release": "standard-version"
   },
