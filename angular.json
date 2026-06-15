@@ -99,18 +99,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ksp-deltav-planner:build"
+            "buildTarget": "ksp-deltav-planner:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ksp-deltav-planner:build:production"
+              "buildTarget": "ksp-deltav-planner:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ksp-deltav-planner:build"
+            "buildTarget": "ksp-deltav-planner:build"
           }
         },
         "lint": {
