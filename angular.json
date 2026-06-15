@@ -125,8 +125,9 @@
       }
     }
   },
-  "defaultProject": "ksp-deltav-planner",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
