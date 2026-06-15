@@ -10,9 +10,10 @@ import { StepSelectionService } from '../../services/step-selection.service';
 import { BodiesService } from '../../services/bodies.service';
 
 @Component({
-  selector: 'ksp-panel',
-  templateUrl: './panel.component.html',
-  styleUrls: ['./panel.component.less']
+    selector: 'ksp-panel',
+    templateUrl: './panel.component.html',
+    styleUrls: ['./panel.component.less'],
+    standalone: false
 })
 export class PanelComponent implements OnInit, OnDestroy {
   path: AstroPath;

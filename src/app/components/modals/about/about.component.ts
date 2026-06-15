@@ -5,9 +5,10 @@ import { environment } from '../../../../environments/environment';
 
 
 @Component({
-  selector: 'ksp-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.less']
+    selector: 'ksp-about',
+    templateUrl: './about.component.html',
+    styleUrls: ['./about.component.less'],
+    standalone: false
 })
 export class AboutComponent {
   readonly version: string = environment.version;

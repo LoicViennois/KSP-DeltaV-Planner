@@ -9,9 +9,10 @@ import { AstroPath } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
 
 @Component({
-  selector: 'ksp-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.less']
+    selector: 'ksp-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.less'],
+    standalone: false
 })
 export class MapComponent implements OnInit, OnDestroy {
   private svg;

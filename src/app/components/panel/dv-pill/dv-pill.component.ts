@@ -2,9 +2,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Step } from '../../../models/step.model';
 
 @Component({
-  selector: 'ksp-dv-pill',
-  templateUrl: './dv-pill.component.html',
-  styleUrls: ['./dv-pill.component.less']
+    selector: 'ksp-dv-pill',
+    templateUrl: './dv-pill.component.html',
+    styleUrls: ['./dv-pill.component.less'],
+    standalone: false
 })
 export class DvPillComponent implements OnInit {
   @Input() step: Step;
