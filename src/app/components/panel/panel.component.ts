@@ -8,12 +8,17 @@ import { Kerbin } from '../../models/data/kerbin';
 import { AstroPathService } from '../../services/astro-path.service';
 import { StepSelectionService } from '../../services/step-selection.service';
 import { BodiesService } from '../../services/bodies.service';
+import { RouterLink } from '@angular/router';
+import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { StepMessageComponent } from './step-message/step-message.component';
+import { DvPillComponent } from './dv-pill/dv-pill.component';
 
 @Component({
     selector: 'ksp-panel',
     templateUrl: './panel.component.html',
     styleUrls: ['./panel.component.less'],
-    standalone: false
+    imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, FormsModule, StepMessageComponent, NgbPopover, DvPillComponent]
 })
 export class PanelComponent implements OnInit, OnDestroy {
   path: AstroPath;

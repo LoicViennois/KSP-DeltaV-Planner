@@ -7,8 +7,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
     selector: 'ksp-about',
     templateUrl: './about.component.html',
-    styleUrls: ['./about.component.less'],
-    standalone: false
+    styleUrls: ['./about.component.less']
 })
 export class AboutComponent {
   readonly version: string = environment.version;

@@ -4,8 +4,7 @@ import { Step } from '../../../models/step.model';
 @Component({
     selector: 'ksp-dv-pill',
     templateUrl: './dv-pill.component.html',
-    styleUrls: ['./dv-pill.component.less'],
-    standalone: false
+    styleUrls: ['./dv-pill.component.less']
 })
 export class DvPillComponent implements OnInit {
   @Input() step: Step;

@@ -6,8 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
     selector: 'ksp-modal-container',
     template: '',
-    styleUrls: ['./modal-container.component.less'],
-    standalone: false
+    styleUrls: ['./modal-container.component.less']
 })
 export class ModalContainerComponent {
   currentDialog = null;

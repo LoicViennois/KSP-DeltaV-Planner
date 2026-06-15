@@ -11,8 +11,7 @@ import { Step, StepType } from '../../models/step.model';
 @Component({
     selector: 'ksp-map',
     templateUrl: './map.component.html',
-    styleUrls: ['./map.component.less'],
-    standalone: false
+    styleUrls: ['./map.component.less']
 })
 export class MapComponent implements OnInit, OnDestroy {
   private svg;
