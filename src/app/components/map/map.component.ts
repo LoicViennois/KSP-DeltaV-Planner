@@ -56,12 +56,12 @@ export class MapComponent implements OnInit, OnDestroy {
   private fadeAll(): void {
     this.svg.selectAll('.dv-map')
       .classed('fade-soft', false)
-      .classed('fade', true);
+      .classed('map-fade', true);
   }
 
   private showAll(): void {
     this.svg.selectAll('.dv-map')
-      .classed('fade', false);
+      .classed('map-fade', false);
     this.svg.selectAll('.dv-map')
       .classed('soft-fade', false);
   }
@@ -111,7 +111,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // fade elements in svg
     idsToShow.forEach((id) => {
       this.svg.select(`#${id}`)
-        .classed('fade', false);
+        .classed('map-fade', false);
     });
     if (options.soft) {
       idsToShow.forEach((id) => {

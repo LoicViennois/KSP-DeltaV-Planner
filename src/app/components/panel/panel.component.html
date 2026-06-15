@@ -38,7 +38,7 @@
             <span class="text-black-50">Select your starting point</span>
           }
           @if (path.from != null) {
-            <img width="32" height="32" class="mr-2" [src]="path.from.imageUrl" alt="">
+            <img width="32" height="32" class="me-2" [src]="path.from.imageUrl" alt="">
           }
           @if (path.from != null) {
             <span>{{ path.from.name }}</span>
@@ -52,9 +52,9 @@
             ngbDropdownItem
             (click)="pathFromChanged(option)">
             @if (!option.isPlanet) {
-              <i class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+              <i class="fas fa-lg fa-caret-right ms-3 me-2"></i>
             }
-            <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
+            <img width="32" height="32" class="me-2" [src]="option.imageUrl" alt="">
             <span>{{ option.name }}</span>
           </button>
         }
@@ -85,7 +85,7 @@
             <span class="text-black-50">Select your destination</span>
           }
           @if (path.to != null) {
-            <img width="32" height="32" class="mr-2" [src]="path.to.imageUrl" alt="">
+            <img width="32" height="32" class="me-2" [src]="path.to.imageUrl" alt="">
           }
           @if (path.to != null) {
             <span>{{ path.to.name }}</span>
@@ -98,9 +98,9 @@
             ngbDropdownItem
             (click)="pathToChanged(option)">
             @if (!option.isPlanet) {
-              <i class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+              <i class="fas fa-lg fa-caret-right ms-3 me-2"></i>
             }
-            <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
+            <img width="32" height="32" class="me-2" [src]="option.imageUrl" alt="">
             <span>{{ option.name }}</span>
           </button>
         }
@@ -161,22 +161,22 @@
             @if (landingInAtmosphere(step)) {
               <div
                 class="badge badge-dv"
-                [class.badge-secondary]="path.to.canLand"
-                [class.badge-danger]="!path.to.canLand"
+                [class.text-bg-secondary]="path.to.canLand"
+                [class.text-bg-danger]="!path.to.canLand"
                 [popoverTitle]="!path.to.canLand ? 'Landing here might not be a good idea...': ''"
                 ngbPopover="Aerobraking is possible"
                 triggers="mouseenter:mouseleave"
                 placement="top-right">
                 @if (!path.to.canLand) {
-                  <i class="fas fa-ban mr-2"></i>
+                  <i class="fas fa-ban me-2"></i>
                 }
-                <i class="fas fa-cloud-download-alt mr-2"></i>
+                <i class="fas fa-cloud-download-alt me-2"></i>
                 <ksp-dv-pill [step]="step"></ksp-dv-pill>
               </div>
             }
             @if (!landingInAtmosphere(step)) {
               <div
-                class="badge badge-secondary badge-dv">
+                class="badge text-bg-secondary badge-dv">
                 <ksp-dv-pill [step]="step"></ksp-dv-pill>
               </div>
             }
@@ -188,7 +188,7 @@
             (mouseenter)="stepSelectionService.selectionChanged(path.total)"
             (mouseleave)="stepSelectionService.selectionChanged(null)">
             <ksp-step-message [step]="path.total"></ksp-step-message>
-            <div class="badge badge-primary badge-dv">
+            <div class="badge text-bg-primary badge-dv">
               <ksp-dv-pill [step]="path.total"></ksp-dv-pill>
             </div>
           </li>
