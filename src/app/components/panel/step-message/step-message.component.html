@@ -1,55 +1,76 @@
-<ng-container [ngSwitch]="step.type">
-  <span *ngSwitchCase="stepType.takeOff">
-    <i class="fas fa-rocket mr"></i>
-    <strong>TakeOff</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong>
-  </span>
-  <span *ngSwitchCase="stepType.transitToLowOrbit">
+
+@switch (step.type) {
+  @case (stepType.takeOff) {
+    <span>
+      <i class="fas fa-rocket mr"></i>
+      <strong>TakeOff</strong> from
+      <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong>
+    </span>
+  }
+  @case (stepType.transitToLowOrbit) {
+    <span>
       <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
-  </span>
-  <span *ngSwitchCase="stepType.transitFromLowToLow">
-    <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
-  </span>
-  <span *ngSwitchCase="stepType.transitToSOI">
-    <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
-  </span>
-  <span *ngSwitchCase="stepType.transitFromSOIToLow">
-    <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> SOI to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
-  </span>
-  <span *ngSwitchCase="stepType.transitFromLowToSOI">
-    <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
-  </span>
-  <span *ngSwitchCase="stepType.transitToKeostat">
-    <i class="far fa-dot-circle mr"></i>
-    <strong>Transit</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">Keostationary</strong> orbit
-  </span>
-  <span *ngSwitchCase="stepType.landing">
-    <i class="fas fa-rocket rotate-left mr"></i>
-    <strong>Landing</strong> on
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
-  </span>
-  <span *ngSwitchCase="stepType.return">
-    <i class="fas fa-reply mr"></i>
-    <strong>Return</strong> trip from
-    <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> to
-    <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
-  </span>
-  <span *ngSwitchCase="stepType.total">
-    <i class="fas fa-flag mr"></i>
-    <strong>Total</strong>
-  </span>
-</ng-container>
+      <strong>Transit</strong> to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    </span>
+  }
+  @case (stepType.transitFromLowToLow) {
+    <span>
+      <i class="far fa-dot-circle mr"></i>
+      <strong>Transit</strong> from
+      <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    </span>
+  }
+  @case (stepType.transitToSOI) {
+    <span>
+      <i class="far fa-dot-circle mr"></i>
+      <strong>Transit</strong> to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
+    </span>
+  }
+  @case (stepType.transitFromSOIToLow) {
+    <span>
+      <i class="far fa-dot-circle mr"></i>
+      <strong>Transit</strong> from
+      <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> SOI to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> low orbit
+    </span>
+  }
+  @case (stepType.transitFromLowToSOI) {
+    <span>
+      <i class="far fa-dot-circle mr"></i>
+      <strong>Transit</strong> from
+      <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> low orbit to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong> SOI
+    </span>
+  }
+  @case (stepType.transitToKeostat) {
+    <span>
+      <i class="far fa-dot-circle mr"></i>
+      <strong>Transit</strong> to
+      <strong [ngStyle]="{ 'color': step.to.color }">Keostationary</strong> orbit
+    </span>
+  }
+  @case (stepType.landing) {
+    <span>
+      <i class="fas fa-rocket rotate-left mr"></i>
+      <strong>Landing</strong> on
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
+    </span>
+  }
+  @case (stepType.return) {
+    <span>
+      <i class="fas fa-reply mr"></i>
+      <strong>Return</strong> trip from
+      <strong [ngStyle]="{ 'color': step.from.color }">{{ step.from.name }}</strong> to
+      <strong [ngStyle]="{ 'color': step.to.color }">{{ step.to.name }}</strong>
+    </span>
+  }
+  @case (stepType.total) {
+    <span>
+      <i class="fas fa-flag mr"></i>
+      <strong>Total</strong>
+    </span>
+  }
+}

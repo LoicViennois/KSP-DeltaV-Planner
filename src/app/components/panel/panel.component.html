@@ -9,17 +9,17 @@
 
   <div class="my-3 align-self-center">
     <a aria-label="help" routerLink="help"
-       class="text-white mx-3">
+      class="text-white mx-3">
       <i class="fas fa-2x fa-question-circle"></i>
     </a>
     <a aria-label="github" href="https://github.com/LoicViennois/KSP-DeltaV-Planner"
-       target="_blank"
-       rel="noopener"
-       class="text-white mx-3">
+      target="_blank"
+      rel="noopener"
+      class="text-white mx-3">
       <i class="fab fa-2x fa-github"></i>
     </a>
     <a aria-label="about" routerLink="about"
-       class="text-white mx-3">
+      class="text-white mx-3">
       <i class="fas fa-2x fa-info-circle"></i>
     </a>
   </div>
@@ -31,23 +31,33 @@
   <div>
     <div ngbDropdown>
       <div id="fromBody"
-           class="btn btn-light btn-path-size toggle-right"
-           ngbDropdownToggle>
+        class="btn btn-light btn-path-size toggle-right"
+        ngbDropdownToggle>
         <div>
-          <span *ngIf="path.from == null" class="text-black-50">Select your starting point</span>
-          <img width="32" height="32" *ngIf="path.from != null" class="mr-2" [src]="path.from.imageUrl" alt="">
-          <span *ngIf="path.from != null">{{ path.from.name }}</span>
+          @if (path.from == null) {
+            <span class="text-black-50">Select your starting point</span>
+          }
+          @if (path.from != null) {
+            <img width="32" height="32" class="mr-2" [src]="path.from.imageUrl" alt="">
+          }
+          @if (path.from != null) {
+            <span>{{ path.from.name }}</span>
+          }
         </div>
       </div>
       <div ngbDropdownMenu>
-        <button *ngFor="let option of options"
-                class="text-left"
-                ngbDropdownItem
-                (click)="pathFromChanged(option)">
-          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
-          <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
-          <span>{{ option.name }}</span>
-        </button>
+        @for (option of options; track option) {
+          <button
+            class="text-left"
+            ngbDropdownItem
+            (click)="pathFromChanged(option)">
+            @if (!option.isPlanet) {
+              <i class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+            }
+            <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
+            <span>{{ option.name }}</span>
+          </button>
+        }
       </div>
     </div>
   </div>
@@ -68,22 +78,32 @@
   <div>
     <div ngbDropdown>
       <div id="toBody"
-           class="btn btn-light btn-path-size toggle-right"
-           ngbDropdownToggle>
+        class="btn btn-light btn-path-size toggle-right"
+        ngbDropdownToggle>
         <div>
-          <span *ngIf="path.to == null" class="text-black-50">Select your destination</span>
-          <img width="32" height="32" *ngIf="path.to != null" class="mr-2" [src]="path.to.imageUrl" alt="">
-          <span *ngIf="path.to != null">{{ path.to.name }}</span>
+          @if (path.to == null) {
+            <span class="text-black-50">Select your destination</span>
+          }
+          @if (path.to != null) {
+            <img width="32" height="32" class="mr-2" [src]="path.to.imageUrl" alt="">
+          }
+          @if (path.to != null) {
+            <span>{{ path.to.name }}</span>
+          }
         </div>
       </div>
       <div ngbDropdownMenu>
-        <button *ngFor="let option of options"
-                ngbDropdownItem
-                (click)="pathToChanged(option)">
-          <i *ngIf="!option.isPlanet" class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
-          <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
-          <span>{{ option.name }}</span>
-        </button>
+        @for (option of options; track option) {
+          <button
+            ngbDropdownItem
+            (click)="pathToChanged(option)">
+            @if (!option.isPlanet) {
+              <i class="fas fa-lg fa-caret-right ml-3 mr-2"></i>
+            }
+            <img width="32" height="32" class="mr-2" [src]="option.imageUrl" alt="">
+            <span>{{ option.name }}</span>
+          </button>
+        }
       </div>
     </div>
   </div>
@@ -92,11 +112,11 @@
     <div class="mx-2">
       <div class="form-check">
         <input class="form-check-input"
-               type="checkbox"
-               id="landingCheck"
-               (change)="astroPathService.pathChanged(path)"
-               [disabled]="astroPathService.isKerbinTrip"
-               [(ngModel)]="path.landing">
+          type="checkbox"
+          id="landingCheck"
+          (change)="astroPathService.pathChanged(path)"
+          [disabled]="astroPathService.isKerbinTrip"
+          [(ngModel)]="path.landing">
         <label class="form-check-label" for="landingCheck">
           Landing
         </label>
@@ -105,10 +125,10 @@
     <div class="mx-2">
       <div class="form-check">
         <input class="form-check-input"
-               type="checkbox"
-               id="aerobrakingCheck"
-               (change)="astroPathService.pathChanged(path)"
-               [(ngModel)]="path.aerobraking">
+          type="checkbox"
+          id="aerobrakingCheck"
+          (change)="astroPathService.pathChanged(path)"
+          [(ngModel)]="path.aerobraking">
         <label class="form-check-label" for="aerobrakingCheck">
           Aerobraking
         </label>
@@ -117,11 +137,11 @@
     <div class="mx-2">
       <div class="form-check">
         <input class="form-check-input"
-               type="checkbox"
-               id="returnCheck"
-               (change)=astroPathService.pathChanged(path)
-               [disabled]="astroPathService.isKerbinTrip"
-               [(ngModel)]="path.return">
+          type="checkbox"
+          id="returnCheck"
+          (change)=astroPathService.pathChanged(path)
+          [disabled]="astroPathService.isKerbinTrip"
+          [(ngModel)]="path.return">
         <label class="form-check-label" for="returnCheck">
           Return
         </label>
@@ -129,40 +149,52 @@
     </div>
   </div>
 
-  <div *ngIf="steps.length > 0">
-    <ul class="list-group">
-      <li *ngFor="let step of steps"
-          class="list-group-item d-flex justify-content-between align-items-center"
-          (mouseenter)="stepSelectionService.selectionChanged(step)"
-          (mouseleave)="stepSelectionService.selectionChanged(null)">
-        <ksp-step-message [step]="step"></ksp-step-message>
-        <div *ngIf="landingInAtmosphere(step)"
-             class="badge badge-dv"
-             [class.badge-secondary]="path.to.canLand"
-             [class.badge-danger]="!path.to.canLand"
-             [popoverTitle]="!path.to.canLand ? 'Landing here might not be a good idea...': ''"
-             ngbPopover="Aerobraking is possible"
-             triggers="mouseenter:mouseleave"
-             placement="top-right">
-          <i *ngIf="!path.to.canLand" class="fas fa-ban mr-2"></i>
-          <i class="fas fa-cloud-download-alt mr-2"></i>
-          <ksp-dv-pill [step]="step"></ksp-dv-pill>
-        </div>
-        <div *ngIf="!landingInAtmosphere(step)"
-             class="badge badge-secondary badge-dv">
-          <ksp-dv-pill [step]="step"></ksp-dv-pill>
-        </div>
-      </li>
-      <li *ngIf="path.total"
-          class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center"
-          (mouseenter)="stepSelectionService.selectionChanged(path.total)"
-          (mouseleave)="stepSelectionService.selectionChanged(null)">
-        <ksp-step-message [step]="path.total"></ksp-step-message>
-        <div class="badge badge-primary badge-dv">
-          <ksp-dv-pill [step]="path.total"></ksp-dv-pill>
-        </div>
-      </li>
-    </ul>
-  </div>
+  @if (steps.length > 0) {
+    <div>
+      <ul class="list-group">
+        @for (step of steps; track step) {
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center"
+            (mouseenter)="stepSelectionService.selectionChanged(step)"
+            (mouseleave)="stepSelectionService.selectionChanged(null)">
+            <ksp-step-message [step]="step"></ksp-step-message>
+            @if (landingInAtmosphere(step)) {
+              <div
+                class="badge badge-dv"
+                [class.badge-secondary]="path.to.canLand"
+                [class.badge-danger]="!path.to.canLand"
+                [popoverTitle]="!path.to.canLand ? 'Landing here might not be a good idea...': ''"
+                ngbPopover="Aerobraking is possible"
+                triggers="mouseenter:mouseleave"
+                placement="top-right">
+                @if (!path.to.canLand) {
+                  <i class="fas fa-ban mr-2"></i>
+                }
+                <i class="fas fa-cloud-download-alt mr-2"></i>
+                <ksp-dv-pill [step]="step"></ksp-dv-pill>
+              </div>
+            }
+            @if (!landingInAtmosphere(step)) {
+              <div
+                class="badge badge-secondary badge-dv">
+                <ksp-dv-pill [step]="step"></ksp-dv-pill>
+              </div>
+            }
+          </li>
+        }
+        @if (path.total) {
+          <li
+            class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center"
+            (mouseenter)="stepSelectionService.selectionChanged(path.total)"
+            (mouseleave)="stepSelectionService.selectionChanged(null)">
+            <ksp-step-message [step]="path.total"></ksp-step-message>
+            <div class="badge badge-primary badge-dv">
+              <ksp-dv-pill [step]="path.total"></ksp-dv-pill>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  }
 
 </div>
