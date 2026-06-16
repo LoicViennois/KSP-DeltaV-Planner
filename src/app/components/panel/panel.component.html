@@ -64,10 +64,14 @@
 
   <div class="d-flex justify-content-center mt-3 text-white">
     <div>
-      <i class="fas fa-lg fa-retweet mx-3 clickable" (click)="astroPathService.reversePath()"></i>
+      <button type="button" class="btn btn-link p-0 text-white" (click)="astroPathService.reversePath()" aria-label="Reverse path">
+        <i class="fas fa-lg fa-retweet mx-3 clickable"></i>
+      </button>
     </div>
     <div>
-      <i class="fas fa-lg fa-times mx-3 clickable" (click)="astroPathService.reset()"></i>
+      <button type="button" class="btn btn-link p-0 text-white" (click)="astroPathService.reset()" aria-label="Reset path">
+        <i class="fas fa-lg fa-times mx-3 clickable"></i>
+      </button>
     </div>
   </div>
 

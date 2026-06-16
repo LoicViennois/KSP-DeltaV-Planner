@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { AstroPath, Planet, Satellite } from '../models/planet.model';
@@ -10,10 +10,12 @@ import { BodiesService } from './bodies.service';
   providedIn: 'root'
 })
 export class AstroPathService {
+  private readonly bodiesService = inject(BodiesService);
+
   private readonly path: BehaviorSubject<AstroPath>;
   private readonly initialPath: AstroPath;
 
-  constructor(private readonly bodiesService: BodiesService) {
+  constructor() {
     this.initialPath = {
       from: this.kerbin,
       to: null,

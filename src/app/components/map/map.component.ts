@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import * as d3 from 'd3-selection';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -14,6 +14,9 @@ import { Step, StepType } from '../../models/step.model';
     styleUrls: ['./map.component.less']
 })
 export class MapComponent implements OnInit, OnDestroy {
+  private readonly astroPathService = inject(AstroPathService);
+  private readonly stepSelectionService = inject(StepSelectionService);
+
   private svg;
   private path: AstroPath;
   private readonly unsubscribe = new Subject<void>();
@@ -24,8 +27,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private readonly suffixStepSOI: string[];
   private readonly suffixStepLow: string[];
 
-  constructor(private readonly astroPathService: AstroPathService,
-              private readonly stepSelectionService: StepSelectionService) {
+  constructor() {
     this.suffixHub = ['transit', 'hub', 'com'];
     this.suffixLow = this.suffixHub.concat(['transit-low', 'low']);
     this.suffixLanding = this.suffixLow.concat(['ground']);

@@ -12,8 +12,4 @@ import { NgStyle } from '@angular/common';
 export class StepMessageComponent {
   @Input() step: Step;
   readonly stepType = StepType;
-
-  constructor() {
-  }
-
 }

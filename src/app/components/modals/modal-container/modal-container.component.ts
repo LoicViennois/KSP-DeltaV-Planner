@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -9,13 +9,14 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./modal-container.component.less']
 })
 export class ModalContainerComponent {
+  private modalService = inject(NgbModal);
+
   currentDialog = null;
 
-  constructor(
-    private modalService: NgbModal,
-    route: ActivatedRoute,
-    router: Router
-  ) {
+  constructor() {
+    const route = inject(ActivatedRoute);
+    const router = inject(Router);
+
     this.currentDialog = this.modalService.open(route.snapshot.data.component, { size: 'xl', scrollable: true });
     this.currentDialog.result.then(() => {
       router.navigateByUrl('/').then();

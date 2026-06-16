@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -21,6 +21,10 @@ import { DvPillComponent } from './dv-pill/dv-pill.component';
     imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, FormsModule, StepMessageComponent, NgbPopover, DvPillComponent]
 })
 export class PanelComponent implements OnInit, OnDestroy {
+  readonly astroPathService = inject(AstroPathService);
+  readonly stepSelectionService = inject(StepSelectionService);
+  private readonly bodiesService = inject(BodiesService);
+
   path: AstroPath;
 
   private readonly unsubscribe = new Subject<void>();
@@ -35,11 +39,6 @@ export class PanelComponent implements OnInit, OnDestroy {
 
   get steps(): Step[] {
     return this.path.steps;
-  }
-
-  constructor(public readonly astroPathService: AstroPathService,
-              public readonly stepSelectionService: StepSelectionService,
-              private readonly bodiesService: BodiesService) {
   }
 
   ngOnInit(): void {
