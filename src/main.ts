@@ -1,4 +1,4 @@
-import { enableProdMode, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
+import { enableProdMode, provideZonelessChangeDetection, importProvidersFrom } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -15,7 +15,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimations(),
     importProvidersFrom(NgbDropdownModule, NgbPopoverModule, NgbModalModule),
