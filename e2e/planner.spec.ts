@@ -39,6 +39,24 @@ test.describe('Delta-V planner', () => {
     await expect(steps.nth(2)).toContainText('4570 m/s');
   });
 
+  test('calculates a Kerbin to Kerbin trip', async ({ page }) => {
+    await openPlanner(page);
+    await selectBody(page, '#toBody', 'Kerbin');
+
+    const steps = page.locator('li');
+    await expect(page.locator('#fromBody')).toContainText('Kerbin');
+    await expect(page.locator('#toBody')).toContainText('Kerbin');
+    await expect(steps).toHaveCount(3);
+    await expect(steps.nth(0)).toContainText('TakeOff from Kerbin');
+    await expect(steps.nth(0)).toContainText('3400 m/s');
+    await expect(steps.nth(1)).toContainText('Transit to Kerbin SOI');
+    await expect(steps.nth(1)).toContainText('950 m/s');
+    await expect(steps.nth(2)).toContainText('Transit to Keostationary orbit');
+    await expect(steps.nth(2)).toContainText('1115 m/s');
+    await expect(page.locator('#landingCheck')).toBeDisabled();
+    await expect(page.locator('#returnCheck')).toBeDisabled();
+  });
+
   test('supports landing and return options for an interplanetary trip', async ({ page }) => {
     await openPlanner(page);
     await selectBody(page, '#toBody', 'Duna');
@@ -59,7 +77,7 @@ test.describe('Delta-V planner', () => {
     await expect(steps.nth(4)).toContainText('8230 - 8250 m/s');
   });
 
-  test('reverses and resets a selected path', async ({ page }) => {
+  test('switches the selected from and to bodies', async ({ page }) => {
     await openPlanner(page);
     await selectBody(page, '#toBody', 'Duna');
 
@@ -67,6 +85,11 @@ test.describe('Delta-V planner', () => {
     await expect(page.locator('#fromBody')).toContainText('Duna');
     await expect(page.locator('#toBody')).toContainText('Kerbin');
     await expect(page.locator('li').first()).toContainText('TakeOff from Duna');
+  });
+
+  test('resets a selected path', async ({ page }) => {
+    await openPlanner(page);
+    await selectBody(page, '#toBody', 'Duna');
 
     await page.getByRole('button', { name: 'Reset path' }).click();
     await expect(page.locator('#fromBody')).toContainText('Kerbin');
