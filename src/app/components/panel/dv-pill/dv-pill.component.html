@@ -1,3 +1,7 @@
-<span *ngIf="dvMax">{{ step.dv }} - {{ step.dvMax }} m/s</span>
-<span *ngIf="!dvMax">{{ step.dv }} m/s</span>
+@if (dvMax) {
+  <span>{{ step.dv }} - {{ step.dvMax }} m/s</span>
+}
+@if (!dvMax) {
+  <span>{{ step.dv }} m/s</span>
+}
 

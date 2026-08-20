@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "26.2.0"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run release
+        run: npm run release
+
+      - name: Push changes and tags
+        run: git push --follow-tags origin master
+
+      - name: Extract release notes
+        run: |
+          node -e '
+          const fs = require("fs");
+          const content = fs.readFileSync("CHANGELOG.md", "utf8");
+          const lines = content.split("\n");
+          let start = -1;
+          let end = -1;
+          for (let i = 0; i < lines.length; i++) {
+            if (/^#+\s+\[/.test(lines[i])) {
+              if (start === -1) {
+                start = i;
+              } else {
+                end = i;
+                break;
+              }
+            }
+          }
+          const releaseNotes = lines.slice(start, end !== -1 ? end : undefined).join("\n").trim();
+          fs.writeFileSync("RELEASE_NOTES.md", releaseNotes);
+          '
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          gh release create "$TAG" --title "$TAG" --notes-file RELEASE_NOTES.md

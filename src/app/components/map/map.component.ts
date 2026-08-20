@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import * as d3 from 'd3-selection';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -9,11 +9,14 @@ import { AstroPath } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
 
 @Component({
-  selector: 'ksp-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.less']
+    selector: 'ksp-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.less']
 })
 export class MapComponent implements OnInit, OnDestroy {
+  private readonly astroPathService = inject(AstroPathService);
+  private readonly stepSelectionService = inject(StepSelectionService);
+
   private svg;
   private path: AstroPath;
   private readonly unsubscribe = new Subject<void>();
@@ -24,8 +27,7 @@ export class MapComponent implements OnInit, OnDestroy {
   private readonly suffixStepSOI: string[];
   private readonly suffixStepLow: string[];
 
-  constructor(private readonly astroPathService: AstroPathService,
-              private readonly stepSelectionService: StepSelectionService) {
+  constructor() {
     this.suffixHub = ['transit', 'hub', 'com'];
     this.suffixLow = this.suffixHub.concat(['transit-low', 'low']);
     this.suffixLanding = this.suffixLow.concat(['ground']);
@@ -56,12 +58,12 @@ export class MapComponent implements OnInit, OnDestroy {
   private fadeAll(): void {
     this.svg.selectAll('.dv-map')
       .classed('fade-soft', false)
-      .classed('fade', true);
+      .classed('map-fade', true);
   }
 
   private showAll(): void {
     this.svg.selectAll('.dv-map')
-      .classed('fade', false);
+      .classed('map-fade', false);
     this.svg.selectAll('.dv-map')
       .classed('soft-fade', false);
   }
@@ -111,7 +113,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // fade elements in svg
     idsToShow.forEach((id) => {
       this.svg.select(`#${id}`)
-        .classed('fade', false);
+        .classed('map-fade', false);
     });
     if (options.soft) {
       idsToShow.forEach((id) => {

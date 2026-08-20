@@ -1,12 +1,11 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { HelpComponent } from './components/modals/help/help.component';
 import { AboutComponent } from './components/modals/about/about.component';
 import { ModalContainerComponent } from './components/modals/modal-container/modal-container.component';
 
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'help',
     component: ModalContainerComponent,
@@ -26,11 +25,3 @@ const routes: Routes = [
     redirectTo: '',
   },
 ];
-
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {
-}
