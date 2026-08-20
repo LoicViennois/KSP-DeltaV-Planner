@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.4.1...v1.5.0) (2026-08-20)
+
+
+### Features
+
+* upgrade Angular to v21 and go zoneless ([#25](https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/25)) ([f180b74](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/f180b743d065424b75272feca3d899d7db455baa))
+
 ### [1.4.1](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.4.0...v1.4.1) (2022-11-16)
 
 
