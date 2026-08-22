@@ -1,0 +1,21 @@
+{$PORT:80} {
+	root * /usr/share/caddy
+	encode zstd gzip
+	file_server
+
+	# Disable caching for PWA entry points and service worker manifest files
+	@no-cache {
+		path / /index.html /ngsw.json /ngsw-worker.js /manifest.webmanifest /manifest.json /safety-worker.js /worker-basic.min.js
+	}
+	header @no-cache Cache-Control "no-store, no-cache, must-revalidate"
+
+	# Enable long-term caching for static assets
+	@static {
+		path *.js *.css *.svg *.png *.jpg *.jpeg *.gif *.ico *.woff *.woff2 *.eot *.ttf *.avif *.webp *.cur
+		not path /ngsw-worker.js /safety-worker.js /worker-basic.min.js
+	}
+	header @static Cache-Control "public, max-age=2592000"
+
+	# SPA fallback for client-side routing
+	try_files {path} /index.html
+}

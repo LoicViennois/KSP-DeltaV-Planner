@@ -1,5 +1,5 @@
 # Build
-FROM node:lts-alpine AS build
+FROM node:lts-slim AS build
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build:prod
 
 # Prod
-FROM nginx:stable AS prod
+FROM caddy:2-alpine AS prod
 
-COPY --from=build /usr/src/app/dist/ksp-deltav-planner /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/dist/ksp-deltav-planner /usr/share/caddy
+COPY Caddyfile /etc/caddy/Caddyfile
