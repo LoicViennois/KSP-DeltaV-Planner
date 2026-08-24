@@ -1,0 +1,5 @@
+services:
+  ksp-deltav-planner:
+    build: .
+    ports:
+      - "3000:3000"

@@ -1,0 +1,27 @@
+{
+    admin off
+    persist_config off
+    auto_https off
+    log {
+        format json
+    }
+    servers {
+        trusted_proxies static private_ranges 100.0.0.0/8
+    }
+}
+
+:{$PORT:3000} {
+    log {
+        format json
+    }
+
+    rewrite /health /*
+
+    root * dist
+
+    encode gzip
+
+    file_server
+
+    try_files {path} /index.html
+}
