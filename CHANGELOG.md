@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.5.0...v1.6.0) (2026-08-24)
+
+
+### Features
+
+* migrate from nginx to Caddy ([#28](https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/28)) ([a6878bd](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/a6878bd09f09deecf709983b4768541b8377f2a9))
+
 ## [1.5.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.4.1...v1.5.0) (2026-08-20)
 
 
