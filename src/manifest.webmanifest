@@ -1,11 +1,15 @@
 {
+  "id": "/",
   "name": "KSP Delta-V Planner",
   "short_name": "KSP Δv Planner",
+  "description": "Calculate rocket Delta-V for interplanetary travel in Kerbal Space Program.",
+  "lang": "en",
+  "dir": "ltr",
   "theme_color": "#14111c",
   "background_color": "#14111c",
   "display": "standalone",
-  "scope": "./",
-  "start_url": "./",
+  "scope": "/",
+  "start_url": "/",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
