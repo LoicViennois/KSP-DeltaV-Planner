@@ -1,18 +1,21 @@
-# Build
-FROM node:lts-alpine AS build
+FROM node:lts-slim AS build
 
-WORKDIR /usr/src/app
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+ENV NPM_CONFIG_FUND=false
+
+WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm ci
 
 COPY . .
-
 RUN npm run build:prod
 
-# Prod
-FROM nginx:stable AS prod
+FROM caddy AS prod
 
-COPY --from=build /usr/src/app/dist/ksp-deltav-planner /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
+
+COPY Caddyfile ./
+COPY --from=build /app/dist/ksp-deltav-planner ./dist
+
+CMD ["caddy", "run", "--config", "Caddyfile"]

@@ -1,0 +1,45 @@
+{
+	admin off
+	persist_config off
+	auto_https off
+	log {
+		format json
+	}
+	servers {
+		trusted_proxies static private_ranges 100.0.0.0/8
+	}
+}
+
+:{$PORT:3000} {
+	log {
+		format json
+	}
+
+	root * /app/dist
+
+	encode zstd gzip
+
+	@health path /health
+	@static path_regexp static \.[^/]+$
+	@app-shell path / /index.html
+	@pwa-control path /manifest.webmanifest /ngsw.json /ngsw-worker.js /safety-worker.js /worker-basic.min.js
+	@immutable path_regexp immutable \.[a-f0-9]{16}\.(?:css|js)$
+
+	handle @health {
+		respond 200
+	}
+
+	handle @static {
+		header @app-shell Cache-Control "public, max-age=0, must-revalidate"
+		header @pwa-control Cache-Control "no-cache"
+		header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+		file_server
+	}
+
+	handle {
+		header Cache-Control "public, max-age=0, must-revalidate"
+		try_files {path} /index.html
+		file_server
+	}
+}
