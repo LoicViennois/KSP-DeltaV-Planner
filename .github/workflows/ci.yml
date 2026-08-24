@@ -27,6 +27,11 @@ jobs:
       - name: Lint application
         run: npm run lint
 
+      - name: Validate Caddy configuration
+        uses: docker://caddy:latest
+        with:
+          args: caddy validate --config /github/workspace/Caddyfile --adapter caddyfile
+
   build:
     runs-on: ubuntu-latest
 

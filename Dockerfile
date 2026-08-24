@@ -16,8 +16,7 @@ FROM caddy AS prod
 WORKDIR /app
 
 COPY Caddyfile ./
-RUN caddy fmt Caddyfile --overwrite \
-    && caddy validate --config Caddyfile --adapter caddyfile
+RUN caddy fmt Caddyfile --overwrite
 COPY --from=build /app/dist/ksp-deltav-planner ./dist
 
 CMD ["caddy", "run", "--config", "Caddyfile", "--adapter", "caddyfile"]
