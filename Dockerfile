@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS build
+FROM node:lts-slim AS build
 
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV NPM_CONFIG_FUND=false
