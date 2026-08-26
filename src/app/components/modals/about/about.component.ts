@@ -5,9 +5,9 @@ import { environment } from '../../../../environments/environment';
 
 
 @Component({
-    selector: 'ksp-about',
-    templateUrl: './about.component.html',
-    styleUrls: ['./about.component.less']
+  selector: 'ksp-about',
+  templateUrl: './about.component.html',
+  styleUrl: './about.component.less'
 })
 export class AboutComponent {
   activeModal = inject(NgbActiveModal);
@@ -15,4 +15,3 @@ export class AboutComponent {
   readonly version: string = environment.version;
 
 }
-

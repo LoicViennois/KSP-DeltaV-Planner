@@ -1,6 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, computed, inject } from '@angular/core';
 
 import { AstroBody, AstroPath } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
@@ -15,19 +13,18 @@ import { StepMessageComponent } from './step-message/step-message.component';
 import { DvPillComponent } from './dv-pill/dv-pill.component';
 
 @Component({
-    selector: 'ksp-panel',
-    templateUrl: './panel.component.html',
-    styleUrls: ['./panel.component.less'],
-    imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, FormsModule, StepMessageComponent, NgbPopover, DvPillComponent]
+  selector: 'ksp-panel',
+  templateUrl: './panel.component.html',
+  styleUrl: './panel.component.less',
+  imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, FormsModule, StepMessageComponent, NgbPopover, DvPillComponent]
 })
-export class PanelComponent implements OnInit, OnDestroy {
+export class PanelComponent {
   readonly astroPathService = inject(AstroPathService);
   readonly stepSelectionService = inject(StepSelectionService);
   private readonly bodiesService = inject(BodiesService);
 
-  path: AstroPath;
-
-  private readonly unsubscribe = new Subject<void>();
+  readonly path = this.astroPathService.path;
+  readonly steps = computed(() => this.path().steps);
 
   get kerbin(): Kerbin {
     return this.bodiesService.kerbin;
@@ -37,42 +34,32 @@ export class PanelComponent implements OnInit, OnDestroy {
     return this.bodiesService.bodies;
   }
 
-  get steps(): Step[] {
-    return this.path.steps;
-  }
-
-  ngOnInit(): void {
-    this.astroPathService.getPath()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(p => {
-        this.path = p;
-      });
+  constructor() {
     this.astroPathService.reset();
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
-  }
-
   pathFromChanged(body: AstroBody): void {
-    this.path.from = body;
-    if (this.path.from.name !== 'Kerbin') {
-      this.path.to = this.kerbin;
+    const path = { ...this.path(), from: body };
+    if (body.name !== 'Kerbin') {
+      path.to = this.kerbin;
     }
-    this.astroPathService.pathChanged(this.path);
+    this.astroPathService.pathChanged(path);
   }
 
   pathToChanged(body: AstroBody): void {
-    this.path.to = body;
-    if (this.path.to.name !== 'Kerbin') {
-      this.path.from = this.kerbin;
+    const path = { ...this.path(), to: body };
+    if (body.name !== 'Kerbin') {
+      path.from = this.kerbin;
     }
-    this.astroPathService.pathChanged(this.path);
+    this.astroPathService.pathChanged(path);
+  }
+
+  updateOptions(options: Partial<Pick<AstroPath, 'landing' | 'aerobraking' | 'return'>>): void {
+    this.astroPathService.pathChanged({ ...this.path(), ...options });
   }
 
   landingInAtmosphere(step: Step): boolean {
-    return step.type === StepType.landing && this.path.to.hasAtmosphere;
+    return step.type === StepType.landing && this.path().to?.hasAtmosphere === true;
   }
 
 }

@@ -1,7 +1,11 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  inject,
+  signal
+} from '@angular/core';
 import * as d3 from 'd3-selection';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 
 import { AstroPathService } from '../../services/astro-path.service';
 import { StepSelectionService } from '../../services/step-selection.service';
@@ -9,17 +13,17 @@ import { AstroPath } from '../../models/planet.model';
 import { Step, StepType } from '../../models/step.model';
 
 @Component({
-    selector: 'ksp-map',
-    templateUrl: './map.component.html',
-    styleUrls: ['./map.component.less']
+  selector: 'ksp-map',
+  templateUrl: './map.component.html',
+  styleUrl: './map.component.less'
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements AfterViewInit {
   private readonly astroPathService = inject(AstroPathService);
   private readonly stepSelectionService = inject(StepSelectionService);
 
-  private svg;
-  private path: AstroPath;
-  private readonly unsubscribe = new Subject<void>();
+  private svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown> | null = null;
+  private currentPath: AstroPath | null = null;
+  private readonly viewReady = signal(false);
   private readonly suffixHub: string[];
   private readonly suffixLow: string[];
   private readonly suffixLanding: string[];
@@ -35,51 +39,68 @@ export class MapComponent implements OnInit, OnDestroy {
     this.suffixStepGround = ['ground', 'low', 'com'];
     this.suffixStepSOI = ['transit', 'hub'];
     this.suffixStepLow = this.suffixStepSOI.concat(['transit-low', 'low']);
-  }
 
-  ngOnInit(): void {
-    this.svg = d3.select('svg');
-    this.astroPathService.getPath()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe((p) => {
-        this.path = p;
+    effect(() => {
+      const path = this.astroPathService.path();
+      const selection = this.stepSelectionService.selection();
+      if (!this.viewReady()) {
+        return;
+      }
+
+      this.currentPath = path;
+      if (selection == null) {
         this.pathChanged({ soft: false });
-      });
-    this.stepSelectionService.getSelection()
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe((s) => this.selectionChanged(s));
+      } else {
+        this.selectionChanged(selection);
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
+  ngAfterViewInit(): void {
+    this.svg = d3.select<SVGSVGElement, unknown>('svg');
+    this.viewReady.set(true);
   }
 
   private fadeAll(): void {
-    this.svg.selectAll('.dv-map')
+    const svg = this.svg;
+    if (svg == null) {
+      return;
+    }
+
+    svg.selectAll('.dv-map')
       .classed('fade-soft', false)
       .classed('map-fade', true);
   }
 
   private showAll(): void {
-    this.svg.selectAll('.dv-map')
-      .classed('map-fade', false);
-    this.svg.selectAll('.dv-map')
-      .classed('soft-fade', false);
+    const svg = this.svg;
+    if (svg == null) {
+      return;
+    }
+
+    svg.selectAll('.dv-map')
+      .classed('map-fade', false)
+      .classed('fade-soft', false);
   }
 
   private pathChanged(options: { soft: boolean }): void {
+    const path = this.currentPath;
+    const svg = this.svg;
+    if (path == null || svg == null) {
+      return;
+    }
+
     // not a full path
-    if (this.path.from == null || this.path.to == null) {
+    if (path.from == null || path.to == null) {
       this.showAll();
       return;
     }
 
     // init
     this.fadeAll();
-    const fromName = this.path.from.name.toLowerCase();
-    const toName = this.path.to.name.toLowerCase();
-    const suffixTo = this.path.landing ? this.suffixLanding : this.suffixLow;
+    const fromName = path.from.name.toLowerCase();
+    const toName = path.to.name.toLowerCase();
+    const suffixTo = path.landing ? this.suffixLanding : this.suffixLow;
 
     // build ids
     let idsToShow = [
@@ -91,12 +112,12 @@ export class MapComponent implements OnInit, OnDestroy {
     ];
 
     // destination is a satellite
-    if (!this.path.to.isPlanet) {
-      const parentName = this.path.to.parent.toLowerCase();
+    if (!path.to.isPlanet) {
+      const parentName = path.to.parent!.toLowerCase();
       idsToShow.push(...this.suffixHub.map(suffix => `${parentName}-${suffix}`));
     }
-    if (!this.path.from.isPlanet) {
-      const parentName = this.path.from.parent.toLowerCase();
+    if (!path.from.isPlanet) {
+      const parentName = path.from.parent!.toLowerCase();
       idsToShow.push(...this.suffixHub.map(suffix => `${parentName}-${suffix}`));
     }
 
@@ -112,21 +133,21 @@ export class MapComponent implements OnInit, OnDestroy {
 
     // fade elements in svg
     idsToShow.forEach((id) => {
-      this.svg.select(`#${id}`)
+      svg.select(`#${id}`)
         .classed('map-fade', false);
     });
     if (options.soft) {
       idsToShow.forEach((id) => {
-        this.svg.select(`#${id}`)
+        svg.select(`#${id}`)
           .classed('fade-soft', true);
       });
     }
   }
 
   private selectionChanged(step: Step): void {
-    // selection cleared (on mouse leave)
-    if (step == null) {
-      this.pathChanged({ soft: false });
+    const path = this.currentPath;
+    const svg = this.svg;
+    if (path?.from == null || path.to == null || svg == null) {
       return;
     }
 
@@ -136,9 +157,9 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     // init
-    const pathFromName = this.path.from.name.toLowerCase();
-    const pathToName = this.path.to.name.toLowerCase();
-    let idsToShow = [];
+    const pathFromName = path.from.name.toLowerCase();
+    const pathToName = path.to.name.toLowerCase();
+    let idsToShow: string[] = [];
 
     // build ids
     this.pathChanged({ soft: true });
@@ -151,25 +172,25 @@ export class MapComponent implements OnInit, OnDestroy {
     } else if (step.type === StepType.transitToLowOrbit) {
       idsToShow = [
         'hub',
-        ...this.suffixStepLow.map(suffix => `${this.path.from.isPlanet ?
-          pathFromName : this.path.from.parent.toLowerCase()}-${suffix}`),
+        ...this.suffixStepLow.map(suffix => `${path.from!.isPlanet ?
+          pathFromName : path.from!.parent!.toLowerCase()}-${suffix}`),
         ...this.suffixStepLow.map(suffix => `${pathToName}-${suffix}`)
       ];
     } else if (step.type === StepType.transitToSOI) {
       idsToShow = [
         'hub',
         ...this.suffixStepLow.map(suffix => `${pathFromName}-${suffix}`),
-        ...this.suffixStepSOI.map(suffix => `${step.to.name.toLowerCase()}-${suffix}`)
+        ...this.suffixStepSOI.map(suffix => `${step.to!.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromSOIToLow) {
       idsToShow = [
-        `${step.from.name.toLowerCase()}-hub`,
-        ...this.suffixStepLow.map(suffix => `${step.to.name.toLowerCase()}-${suffix}`)
+        `${step.from!.name.toLowerCase()}-hub`,
+        ...this.suffixStepLow.map(suffix => `${step.to!.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromLowToSOI) {
       idsToShow = [
-        `${step.to.name.toLowerCase()}-hub`,
-        ...this.suffixStepLow.map(suffix => `${step.from.name.toLowerCase()}-${suffix}`)
+        `${step.to!.name.toLowerCase()}-hub`,
+        ...this.suffixStepLow.map(suffix => `${step.from!.name.toLowerCase()}-${suffix}`)
       ];
     } else if (step.type === StepType.transitFromLowToLow) {
       // mun or minmus
@@ -186,7 +207,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     // fade elements in svg
     idsToShow.forEach((id) => {
-      this.svg.select(`#${id}`)
+      svg.select(`#${id}`)
         .classed('fade-soft', false);
     });
   }

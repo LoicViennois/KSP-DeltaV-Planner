@@ -1,12 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 
 import { AstroBody, Planet, Satellite } from '../models/planet.model';
 import { planets } from '../models/data/planets';
 import { Kerbin } from '../models/data/kerbin';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class BodiesService {
   readonly bodies: AstroBody[];
   readonly kerbin: Kerbin;

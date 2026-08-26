@@ -1,7 +1,6 @@
-@if (dvMax) {
-  <span>{{ step.dv }} - {{ step.dvMax }} m/s</span>
+@if (dvMax()) {
+  <span>{{ step().dv }} - {{ step().dvMax }} m/s</span>
 }
-@if (!dvMax) {
-  <span>{{ step.dv }} m/s</span>
+@if (!dvMax()) {
+  <span>{{ step().dv }} m/s</span>
 }
-
