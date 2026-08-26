@@ -23,7 +23,7 @@
 	@static path_regexp static \.[^/]+$
 	@app-shell path / /index.html
 	@pwa-control path /manifest.webmanifest /ngsw.json /ngsw-worker.js /safety-worker.js /worker-basic.min.js
-	@immutable path_regexp immutable \.[a-f0-9]{16}\.(?:css|js)$
+	@immutable path_regexp immutable -[A-Z0-9]{8}\.(?:css|js)$
 
 	handle @health {
 		respond 200
