@@ -8,15 +8,16 @@ import { StepSelectionService } from '../../services/step-selection.service';
 import { BodiesService } from '../../services/bodies.service';
 import { RouterLink } from '@angular/router';
 import { NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
 import { StepMessageComponent } from './step-message/step-message.component';
 import { DvPillComponent } from './dv-pill/dv-pill.component';
+
+type PathOption = keyof Pick<AstroPath, 'landing' | 'aerobraking' | 'return'>;
 
 @Component({
   selector: 'ksp-panel',
   templateUrl: './panel.component.html',
   styleUrl: './panel.component.less',
-  imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, FormsModule, StepMessageComponent, NgbPopover, DvPillComponent]
+  imports: [RouterLink, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownButtonItem, NgbDropdownItem, StepMessageComponent, NgbPopover, DvPillComponent]
 })
 export class PanelComponent {
   readonly astroPathService = inject(AstroPathService);
@@ -56,6 +57,15 @@ export class PanelComponent {
 
   updateOptions(options: Partial<Pick<AstroPath, 'landing' | 'aerobraking' | 'return'>>): void {
     this.astroPathService.pathChanged({ ...this.path(), ...options });
+  }
+
+  updateOption(option: PathOption, event: Event): void {
+    const checkbox = event.currentTarget;
+    if (!(checkbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    this.updateOptions({ [option]: checkbox.checked });
   }
 
   landingInAtmosphere(step: Step): boolean {

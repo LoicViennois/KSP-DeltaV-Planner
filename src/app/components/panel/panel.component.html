@@ -121,8 +121,8 @@
         type="checkbox"
         id="landingCheck"
         [disabled]="astroPathService.isKerbinTrip()"
-        [ngModel]="currentPath.landing"
-        (ngModelChange)="updateOptions({ landing: $event })">
+        [checked]="currentPath.landing"
+        (change)="updateOption('landing', $event)">
       <label class="form-check-label" for="landingCheck">
         Landing
       </label>
@@ -131,8 +131,8 @@
       <input class="form-check-input"
         type="checkbox"
         id="aerobrakingCheck"
-        [ngModel]="currentPath.aerobraking"
-        (ngModelChange)="updateOptions({ aerobraking: $event })">
+        [checked]="currentPath.aerobraking"
+        (change)="updateOption('aerobraking', $event)">
       <label class="form-check-label" for="aerobrakingCheck">
         Aerobraking
       </label>
@@ -142,8 +142,8 @@
         type="checkbox"
         id="returnCheck"
         [disabled]="astroPathService.isKerbinTrip()"
-        [ngModel]="currentPath.return"
-        (ngModelChange)="updateOptions({ return: $event })">
+        [checked]="currentPath.return"
+        (change)="updateOption('return', $event)">
       <label class="form-check-label" for="returnCheck">
         Return
       </label>
