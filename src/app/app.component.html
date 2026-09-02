@@ -1,6 +1,10 @@
 <div class="row g-0">
   <div class="col col-8 d-none d-md-block">
-    <ksp-map></ksp-map>
+    @defer (on viewport) {
+      <ksp-map></ksp-map>
+    } @placeholder {
+      <div class="map-placeholder" aria-hidden="true"></div>
+    }
   </div>
   <div class="col col-12 col-md-4">
     <div class="m-4">
