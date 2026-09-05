@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build:prod
+RUN npm run build
 
 FROM caddy AS prod
 

@@ -42,10 +42,13 @@ export class Kerbin implements Planet {
   ];
 
   transitToLowOrbit(planet: Planet): number {
-    return this.dvLE + planet.dvK + (planet.dvLI || planet.dvLE + planet.dvEI);
+    const dvK = planet.dvK ?? 0;
+    const dvLE = planet.dvLE ?? 0;
+    const dvEI = planet.dvEI ?? 0;
+    return this.dvLE + dvK + (planet.dvLI ?? dvLE + dvEI);
   }
 
   transitToSOI(planet: Planet): number {
-    return this.dvLE + planet.dvK + planet.dvEI;
+    return this.dvLE + (planet.dvK ?? 0) + (planet.dvEI ?? 0);
   }
 }

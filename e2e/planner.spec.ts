@@ -96,4 +96,30 @@ test.describe('Delta-V planner', () => {
     await expect(page.locator('#toBody')).toContainText('Select your destination');
     await expect(page.locator('li')).toHaveCount(0);
   });
+
+  test('opens and closes the help and about modals', async ({ page }) => {
+    await openPlanner(page);
+
+    await page.getByRole('link', { name: 'help' }).click();
+    const modal = page.locator('ngb-modal-window');
+    await expect(modal).toBeVisible();
+    await expect(modal).toContainText('This is a Δv planner');
+    await modal.getByRole('button', { name: 'Close' }).click();
+    await expect(modal).toHaveCount(0);
+
+    await page.getByRole('link', { name: 'about' }).click();
+    await expect(modal).toBeVisible();
+    await expect(modal).toContainText('KSP Delta-V Planner');
+    await modal.getByRole('button', { name: 'Close' }).click();
+    await expect(modal).toHaveCount(0);
+  });
+
+  test('keeps the responsive layout for narrow screens', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await openPlanner(page);
+
+    await expect(page.locator('ksp-map')).toBeHidden();
+    await expect(page.getByRole('heading', { name: 'KSP Delta-V Planner' })).toBeVisible();
+    await expect(page.locator('ksp-panel')).toBeVisible();
+  });
 });

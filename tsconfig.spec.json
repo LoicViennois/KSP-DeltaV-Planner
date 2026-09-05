@@ -3,14 +3,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "resolveJsonModule": true,
-    "types": []
+    "types": [
+      "vitest/globals"
+    ]
   },
   "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
+    "src/**/*.d.ts",
     "src/**/*.spec.ts"
   ]
 }

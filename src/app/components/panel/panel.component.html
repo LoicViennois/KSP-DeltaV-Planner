@@ -1,3 +1,6 @@
+@let currentPath = path();
+@let currentSteps = steps();
+
 <div class="d-flex flex-column align-items-stretch">
 
   <div class="d-none d-md-block text-center">
@@ -34,19 +37,19 @@
         class="btn btn-light btn-path-size toggle-right"
         ngbDropdownToggle>
         <div>
-          @if (path.from == null) {
+          @if (currentPath.from == null) {
             <span class="text-black-50">Select your starting point</span>
           }
-          @if (path.from != null) {
-            <img width="32" height="32" class="me-2" [src]="path.from.imageUrl" alt="">
+          @if (currentPath.from != null) {
+            <img width="32" height="32" class="me-2" [src]="currentPath.from.imageUrl" alt="">
           }
-          @if (path.from != null) {
-            <span>{{ path.from.name }}</span>
+          @if (currentPath.from != null) {
+            <span>{{ currentPath.from.name }}</span>
           }
         </div>
       </div>
       <div ngbDropdownMenu>
-        @for (option of options; track option) {
+        @for (option of options; track option.name) {
           <button
             class="text-left"
             ngbDropdownItem
@@ -85,19 +88,19 @@
         class="btn btn-light btn-path-size toggle-right"
         ngbDropdownToggle>
         <div>
-          @if (path.to == null) {
+          @if (currentPath.to == null) {
             <span class="text-black-50">Select your destination</span>
           }
-          @if (path.to != null) {
-            <img width="32" height="32" class="me-2" [src]="path.to.imageUrl" alt="">
+          @if (currentPath.to != null) {
+            <img width="32" height="32" class="me-2" [src]="currentPath.to.imageUrl" alt="">
           }
-          @if (path.to != null) {
-            <span>{{ path.to.name }}</span>
+          @if (currentPath.to != null) {
+            <span>{{ currentPath.to.name }}</span>
           }
         </div>
       </div>
       <div ngbDropdownMenu>
-        @for (option of options; track option) {
+        @for (option of options; track option.name) {
           <button
             ngbDropdownItem
             (click)="pathToChanged(option)">
@@ -117,9 +120,9 @@
       <input class="form-check-input"
         type="checkbox"
         id="landingCheck"
-        (change)="astroPathService.pathChanged(path)"
-        [disabled]="astroPathService.isKerbinTrip"
-        [(ngModel)]="path.landing">
+        [disabled]="astroPathService.isKerbinTrip()"
+        [ngModel]="currentPath.landing"
+        (ngModelChange)="updateOptions({ landing: $event })">
       <label class="form-check-label" for="landingCheck">
         Landing
       </label>
@@ -128,8 +131,8 @@
       <input class="form-check-input"
         type="checkbox"
         id="aerobrakingCheck"
-        (change)="astroPathService.pathChanged(path)"
-        [(ngModel)]="path.aerobraking">
+        [ngModel]="currentPath.aerobraking"
+        (ngModelChange)="updateOptions({ aerobraking: $event })">
       <label class="form-check-label" for="aerobrakingCheck">
         Aerobraking
       </label>
@@ -138,19 +141,19 @@
       <input class="form-check-input"
         type="checkbox"
         id="returnCheck"
-        (change)="astroPathService.pathChanged(path)"
-        [disabled]="astroPathService.isKerbinTrip"
-        [(ngModel)]="path.return">
+        [disabled]="astroPathService.isKerbinTrip()"
+        [ngModel]="currentPath.return"
+        (ngModelChange)="updateOptions({ return: $event })">
       <label class="form-check-label" for="returnCheck">
         Return
       </label>
     </div>
   </div>
 
-  @if (steps.length > 0) {
+  @if (currentSteps.length > 0) {
     <div>
       <ul class="list-group">
-        @for (step of steps; track step) {
+        @for (step of currentSteps; track step.type) {
           <li
             class="list-group-item d-flex justify-content-between align-items-center"
             (mouseenter)="stepSelectionService.selectionChanged(step)"
@@ -159,13 +162,13 @@
             @if (landingInAtmosphere(step)) {
               <div
                 class="badge badge-dv"
-                [class.text-bg-secondary]="path.to.canLand"
-                [class.text-bg-danger]="!path.to.canLand"
-                [popoverTitle]="!path.to.canLand ? 'Landing here might not be a good idea...': ''"
+                [class.text-bg-secondary]="currentPath.to?.canLand"
+                [class.text-bg-danger]="!currentPath.to?.canLand"
+                [popoverTitle]="!currentPath.to?.canLand ? 'Landing here might not be a good idea...': ''"
                 ngbPopover="Aerobraking is possible"
                 triggers="mouseenter:mouseleave"
                 placement="top-right">
-                @if (!path.to.canLand) {
+                @if (!currentPath.to?.canLand) {
                   <i class="fas fa-ban me-2"></i>
                 }
                 <i class="fas fa-cloud-download-alt me-2"></i>
@@ -180,14 +183,14 @@
             }
           </li>
         }
-        @if (path.total) {
+        @if (currentPath.total; as total) {
           <li
             class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center"
-            (mouseenter)="stepSelectionService.selectionChanged(path.total)"
+            (mouseenter)="stepSelectionService.selectionChanged(total)"
             (mouseleave)="stepSelectionService.selectionChanged(null)">
-            <ksp-step-message [step]="path.total"></ksp-step-message>
+            <ksp-step-message [step]="total"></ksp-step-message>
             <div class="badge text-bg-primary badge-dv">
-              <ksp-dv-pill [step]="path.total"></ksp-dv-pill>
+              <ksp-dv-pill [step]="total"></ksp-dv-pill>
             </div>
           </li>
         }

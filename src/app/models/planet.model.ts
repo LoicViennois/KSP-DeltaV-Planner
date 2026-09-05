@@ -3,12 +3,12 @@ import { Step } from './step.model';
 export type AstroBody = Planet | Satellite;
 
 export interface AstroPath {
-  from: AstroBody;
-  to: AstroBody;
+  from: AstroBody | null;
+  to: AstroBody | null;
   landing: boolean;
   aerobraking: boolean;
   steps: Step[];
-  total: Step;
+  total: Step | null;
   return: boolean;
 }
 
@@ -21,14 +21,14 @@ interface AbstractBody {
   readonly imageUrl: string;
   readonly dvGL: number; // Ground <-> Low Orbit
   readonly dvLI?: number; // Low Orbit <-> Intercept
-  readonly dvPlaneChange: number; // Maximum plane change dV
+  readonly dvPlaneChange: number | null; // Maximum plane change dV
   readonly color: string;
 }
 
 export interface Planet extends AbstractBody {
   readonly dvLE?: number; // Low Orbit <-> Elliptical Orbit to SOI Edge
   readonly dvEI?: number; // Elliptical Orbit to SOI Edge <-> Intercept
-  readonly dvK: number; // Intercept <-> Kerbin Elliptical Orbit to SOI Edge
+  readonly dvK: number | null; // Intercept <-> Kerbin Elliptical Orbit to SOI Edge
   readonly satellites: Satellite[];
 }
 
