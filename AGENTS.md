@@ -1,5 +1,7 @@
 # AGENTS.md
 
+You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+
 ## Commits
 
 - Respect conventional commits (https://www.conventionalcommits.org/)
@@ -9,8 +11,6 @@
 - Respect conventional commits for PR title
 - Assign myself when creating a PR
 - PR description should only contain a "Summary" section
-
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
 
