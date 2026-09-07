@@ -1,7 +1,14 @@
 {
   "name": "ksp-deltav-planner",
   "version": "1.7.1",
-  "packageManager": "npm@11.13.0",
+  "packageManager": "pnpm@12.3.4",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.8.1",
+      "onFail": "download"
+    }
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

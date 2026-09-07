@@ -1,6 +1,7 @@
 {
   "printWidth": 100,
   "singleQuote": true,
+  "endOfLine": "lf",
   "overrides": [
     {
       "files": "*.html",
