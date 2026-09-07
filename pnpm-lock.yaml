@@ -210,7 +210,7 @@ importers:
         specifier: ^4.9.0
         version: 4.9.1(supports-color@7.2.0)
       node:
-        specifier: runtime:26.8.1
+        specifier: runtime:26
         version: runtime:26.8.1
       prettier:
         specifier: ^3.8.1
