@@ -21,9 +21,6 @@ jobs:
           runtime: node@26.8.1
           cache: true
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Lint application
         run: pnpm run lint
 
@@ -45,9 +42,6 @@ jobs:
           runtime: node@26.8.1
           cache: true
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Build application
         run: pnpm run build
 
@@ -64,9 +58,6 @@ jobs:
           runtime: node@26.8.1
           cache: true
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Run unit tests
         run: pnpm test
 
@@ -82,9 +73,6 @@ jobs:
         with:
           runtime: node@26.8.1
           cache: true
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium

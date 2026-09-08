@@ -26,9 +26,6 @@ jobs:
           runtime: node@26.8.1
           cache: true
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
