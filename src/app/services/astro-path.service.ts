@@ -237,8 +237,7 @@ export class AstroPathService {
      */
     if (path.return) {
       const dv = path.steps
-        .map(step => step.returnDv != null ? step.returnDv : step.dv)
-        .reduce((dv1, dv2) => dv1 + dv2);
+        .reduce((acc, step) => acc + (step.returnDv != null ? step.returnDv : step.dv), 0);
 
       let dvMax = dv;
       if (to.isPlanet) {
@@ -256,10 +255,16 @@ export class AstroPathService {
       });
     }
 
+    const totalDvs = path.steps.reduce((acc, step) => {
+      acc.dv += step.dv;
+      acc.dvMax += step.dvMax ?? step.dv;
+      return acc;
+    }, { dv: 0, dvMax: 0 });
+
     path.total = {
       type: StepType.total,
-      dv: path.steps.map(step => step.dv).reduce((dv1, dv2) => dv1 + dv2),
-      dvMax: path.steps.map(step => step.dvMax ?? step.dv).reduce((dv1, dv2) => dv1 + dv2)
+      dv: totalDvs.dv,
+      dvMax: totalDvs.dvMax
     };
   }
 
