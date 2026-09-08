@@ -34,6 +34,7 @@ module.exports = defineConfig([
           style: "kebab-case",
         },
       ],
+      "linebreak-style": ["error", "unix"],
     },
   },
   {
