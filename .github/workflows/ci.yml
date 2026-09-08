@@ -18,7 +18,7 @@ jobs:
       - name: Set up pnpm and Node.js
         uses: pnpm/setup@v1
         with:
-          runtime: node@26
+          runtime: node@26.8.1
           cache: true
 
       - name: Install dependencies
@@ -42,7 +42,7 @@ jobs:
       - name: Set up pnpm and Node.js
         uses: pnpm/setup@v1
         with:
-          runtime: node@26
+          runtime: node@26.8.1
           cache: true
 
       - name: Install dependencies
@@ -61,7 +61,7 @@ jobs:
       - name: Set up pnpm and Node.js
         uses: pnpm/setup@v1
         with:
-          runtime: node@26
+          runtime: node@26.8.1
           cache: true
 
       - name: Install dependencies
@@ -80,7 +80,7 @@ jobs:
       - name: Set up pnpm and Node.js
         uses: pnpm/setup@v1
         with:
-          runtime: node@26
+          runtime: node@26.8.1
           cache: true
 
       - name: Install dependencies
