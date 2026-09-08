@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.7.1...v1.8.0) (2026-09-08)
+
+
+### Features
+
+* migrate from npm to pnpm ([#30](https://github.com/LoicViennois/KSP-DeltaV-Planner/issues/30)) ([5fe6ac1](https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/5fe6ac14c06881a63dad614a7c95a5aeccd83ba2))
+
 ### [1.7.1](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.7.0...v1.7.1) (2026-09-06)
 
 ## [1.7.0](https://github.com/LoicViennois/KSP-DeltaV-Planner/compare/v1.6.0...v1.7.0) (2026-09-05)
