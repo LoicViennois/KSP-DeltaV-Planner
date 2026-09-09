@@ -132,15 +132,14 @@ export class MapComponent implements AfterViewInit {
     }
 
     // fade elements in svg
-    idsToShow.forEach((id) => {
-      svg.select(`#${id}`)
+    if (idsToShow.length > 0) {
+      const selector = idsToShow.map((id) => `#${id}`).join(', ');
+      svg.selectAll(selector)
         .classed('map-fade', false);
-    });
-    if (options.soft) {
-      idsToShow.forEach((id) => {
-        svg.select(`#${id}`)
+      if (options.soft) {
+        svg.selectAll(selector)
           .classed('fade-soft', true);
-      });
+      }
     }
   }
 
@@ -206,9 +205,9 @@ export class MapComponent implements AfterViewInit {
     }
 
     // fade elements in svg
-    idsToShow.forEach((id) => {
-      svg.select(`#${id}`)
+    if (idsToShow.length > 0) {
+      svg.selectAll(idsToShow.map((id) => `#${id}`).join(', '))
         .classed('fade-soft', false);
-    });
+    }
   }
 }
