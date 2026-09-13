@@ -50,3 +50,6 @@ Thumbs.db
 # Playwright
 /playwright-report/
 /test-results/
+
+# Generated build files
+/src/environments/git-info.ts

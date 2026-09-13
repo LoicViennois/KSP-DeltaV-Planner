@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MapComponent } from './components/map/map.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { RouterOutlet } from '@angular/router';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'ksp-root',
@@ -10,4 +11,6 @@ import { RouterOutlet } from '@angular/router';
   imports: [MapComponent, PanelComponent, RouterOutlet]
 })
 export class AppComponent {
+  readonly shortSha = environment.shortSha;
+  readonly commitSha = environment.commitSha;
 }

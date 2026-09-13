@@ -12,6 +12,7 @@ import { environment } from '../../../../environments/environment';
 export class AboutComponent {
   activeModal = inject(NgbActiveModal);
 
-  readonly version: string = environment.version;
+  readonly commitSha = environment.commitSha;
+  readonly shortSha = environment.shortSha;
 
 }
