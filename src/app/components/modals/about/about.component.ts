@@ -14,5 +14,8 @@ export class AboutComponent {
 
   readonly commitSha = environment.commitSha;
   readonly shortSha = environment.shortSha;
+  readonly commitUrl = this.commitSha && this.commitSha !== 'dev'
+    ? `https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/${this.commitSha}`
+    : 'https://github.com/LoicViennois/KSP-DeltaV-Planner';
 
 }
