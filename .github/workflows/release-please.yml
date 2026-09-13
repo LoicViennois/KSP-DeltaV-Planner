@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: write
 
 jobs:
   release-please:
@@ -16,5 +15,4 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         with:
-          target-branch: master
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          release-type: node
