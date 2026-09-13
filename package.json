@@ -1,6 +1,6 @@
 {
   "name": "ksp-deltav-planner",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "packageManager": "pnpm@12.3.4",
   "devEngines": {
     "runtime": {
