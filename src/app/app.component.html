@@ -8,5 +8,12 @@
     </div>
   </div>
 </div>
-<div class="build-info" [title]="commitSha">build {{ shortSha }}</div>
+<div class="build-info">
+  Build
+  <a aria-label="commit"
+     [title]="commitSha"
+     [href]="'https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/' + commitSha"
+     target="_blank"
+     rel="noopener">{{ shortSha }}</a>
+</div>
 <router-outlet></router-outlet>
