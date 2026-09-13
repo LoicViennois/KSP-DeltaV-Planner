@@ -109,12 +109,13 @@ test.describe('Delta-V planner', () => {
 
     await page.getByRole('link', { name: 'about' }).click();
     await expect(modal).toBeVisible();
-    await expect(modal).toContainText('KSP Delta-V Planner - build');
+    await expect(modal).toContainText('KSP Delta-V Planner - Build');
     await expect(modal.getByRole('link', { name: 'commit' })).toBeVisible();
     await modal.getByRole('button', { name: 'Close' }).click();
     await expect(modal).toHaveCount(0);
 
-    await expect(page.locator('.build-info')).toContainText('build');
+    await expect(page.locator('.build-info')).toContainText('Build');
+    await expect(page.locator('.build-info a')).toBeVisible();
   });
 
   test('keeps the responsive layout for narrow screens', async ({ page }) => {
