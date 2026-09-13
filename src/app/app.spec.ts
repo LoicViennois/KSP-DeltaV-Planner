@@ -17,4 +17,15 @@ describe('AppComponent', () => {
 
     expect(app).toBeTruthy();
   });
+
+  it('should render build info in the bottom right corner', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const buildInfo = compiled.querySelector('.build-info');
+
+    expect(buildInfo).toBeTruthy();
+    expect(buildInfo?.textContent).toContain(`build ${fixture.componentInstance.shortSha}`);
+    expect(buildInfo?.getAttribute('title')).toBe(fixture.componentInstance.commitSha);
+  });
 });

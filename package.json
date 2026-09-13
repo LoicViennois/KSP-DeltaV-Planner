@@ -1,6 +1,5 @@
 {
   "name": "ksp-deltav-planner",
-  "version": "1.8.1",
   "packageManager": "pnpm@12.3.4",
   "devEngines": {
     "runtime": {
@@ -11,12 +10,17 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "prebuild": "node scripts/generate-git-info.mjs",
     "build": "ng build",
+    "prestart": "node scripts/generate-git-info.mjs",
+    "start": "ng serve",
+    "prewatch": "node scripts/generate-git-info.mjs",
     "watch": "ng build --watch --configuration development",
+    "pretest": "node scripts/generate-git-info.mjs",
     "test": "ng test",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
+    "prelint": "node scripts/generate-git-info.mjs",
     "lint": "ng lint"
   },
   "private": true,
