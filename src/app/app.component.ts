@@ -13,4 +13,7 @@ import { environment } from '../environments/environment';
 export class AppComponent {
   readonly shortSha = environment.shortSha;
   readonly commitSha = environment.commitSha;
+  readonly commitUrl = this.commitSha && this.commitSha !== 'dev'
+    ? `https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/${this.commitSha}`
+    : 'https://github.com/LoicViennois/KSP-DeltaV-Planner';
 }

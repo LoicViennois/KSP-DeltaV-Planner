@@ -24,6 +24,16 @@ describe('AboutComponent', () => {
 
     expect(commitLink).toBeTruthy();
     expect(commitLink.textContent?.trim()).toBe(fixture.componentInstance.shortSha);
-    expect(commitLink.href).toBe(`https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/${fixture.componentInstance.commitSha}`);
+    expect(commitLink.href).toBe(fixture.componentInstance.commitUrl);
+  });
+
+  it('should compute commitUrl as repository link when commitSha is dev', () => {
+    const fixture = TestBed.createComponent(AboutComponent);
+    const component = fixture.componentInstance;
+    expect(component.commitUrl).toBe(
+      component.commitSha && component.commitSha !== 'dev'
+        ? `https://github.com/LoicViennois/KSP-DeltaV-Planner/commit/${component.commitSha}`
+        : 'https://github.com/LoicViennois/KSP-DeltaV-Planner'
+    );
   });
 });
