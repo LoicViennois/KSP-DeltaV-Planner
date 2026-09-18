@@ -4,7 +4,7 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "26.8.1",
+      "version": "24.21.0",
       "onFail": "download"
     }
   },
@@ -16,8 +16,7 @@
     "start": "ng serve",
     "generate-svg": "node svg/convert.js",
     "prewatch": "node scripts/generate-git-info.mjs",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "watch": "ng build --watch",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "lint": "ng lint"
@@ -52,7 +51,7 @@
     "@playwright/test": "^1.62.1",
     "@types/d3-selection": "^1.4.2",
     "@types/jsdom": "^16.2.4",
-    "@types/node": "^26.0.0",
+    "@types/node": "^24.13.5",
     "@typescript-eslint/eslint-plugin": "^8.61.0",
     "@typescript-eslint/parser": "^8.61.0",
     "angular-eslint": "^22.0.0",
@@ -60,7 +59,7 @@
     "jsdom": "^16.4.0",
     "less": "^4.9.0",
     "prettier": "^3.8.1",
-    "svgo": "4.0.0",
+    "svgo": "4.1.0",
     "ts-node": "~10.9.1",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.61.1",
