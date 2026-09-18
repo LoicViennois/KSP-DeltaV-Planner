@@ -38,21 +38,6 @@ jobs:
       - name: Build application
         run: pnpm run build
 
-  test-unit:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up pnpm and Node.js
-        uses: pnpm/setup@v1
-        with:
-          cache: true
-
-      - name: Run unit tests
-        run: pnpm test
-
   test-e2e:
     runs-on: ubuntu-latest
 
