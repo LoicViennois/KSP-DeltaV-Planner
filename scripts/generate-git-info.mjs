@@ -6,16 +6,7 @@ import { dirname, resolve } from 'node:path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-let commitSha = (process.env.RAILWAY_GIT_COMMIT_SHA || '').trim();
-
-if (!commitSha) {
-  try {
-    commitSha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
-  } catch {
-    commitSha = 'dev';
-  }
-}
-
+const commitSha = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
 const shortSha = commitSha && commitSha !== 'dev' ? commitSha.slice(0, 7) : 'dev';
 
 const content = `// This file is auto-generated during build.
