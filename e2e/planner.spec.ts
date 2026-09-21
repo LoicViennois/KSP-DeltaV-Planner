@@ -116,6 +116,7 @@ test.describe('Delta-V planner', () => {
 
     await expect(page.locator('.build-info')).toContainText('Build');
     await expect(page.locator('.build-info a')).toBeVisible();
+    await expect(page.locator('.build-info a')).toHaveText(/^[0-9a-f]{7}$/);
   });
 
   test('keeps the responsive layout for narrow screens', async ({ page }) => {

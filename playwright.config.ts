@@ -7,14 +7,14 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: 'html',
   use: {
-    baseURL: 'http://127.0.0.1:4200',
+    baseURL: 'http://localhost:4200',
     serviceWorkers: 'block',
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'pnpm start --host 127.0.0.1 --port 4200',
-    url: 'http://127.0.0.1:4200',
+    command: 'pnpm start',
+    url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
