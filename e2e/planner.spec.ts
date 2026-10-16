@@ -286,6 +286,19 @@ test.describe('Full screen map', () => {
     await expect(dialog).toBeHidden();
   });
 
+  test('has a header as high as the page header', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    const pageHeader = await page.getByRole('banner').boundingBox();
+
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    const title = dialog.getByRole('heading', { name: 'Δv map' });
+    const header = await title.locator('..').boundingBox();
+    expect(header?.height).toBe(pageHeader?.height);
+  });
+
   test('zooms with the buttons', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const planner = new PlannerPage(page);

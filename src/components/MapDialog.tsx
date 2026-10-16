@@ -57,7 +57,10 @@ export default function MapDialog({
       onClose={onClose}
       title="Δv map"
       className="h-dvh max-h-none w-screen max-w-none flex-col rounded-none border-0 open:flex"
-      bodyClassName="flex min-h-0 flex-1 flex-col pt-3"
+      // The same height and spacing as the page header.
+      headerClassName="h-[calc(3.5rem+1px)] shrink-0 border-b border-line px-4 lg:px-6"
+      titleClassName="text-lg font-semibold tracking-tight"
+      bodyClassName="flex min-h-0 flex-1 flex-col"
     >
       <div className="min-h-0 flex-1">
         {open && <MapViewer trip={trip} step={step} focus={focus} />}

@@ -8,6 +8,8 @@ interface ModalProps {
   children: ReactNode;
   className?: string;
   bodyClassName?: string;
+  headerClassName?: string;
+  titleClassName?: string;
 }
 
 /** Native modal dialog: focus trapping, Escape and backdrop click close it. */
@@ -18,6 +20,8 @@ export function Modal({
   children,
   className,
   bodyClassName = 'px-6 pt-3 pb-6',
+  headerClassName = 'px-6 pt-5',
+  titleClassName = 'text-xl font-bold',
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -42,8 +46,10 @@ export function Modal({
       aria-labelledby={titleId}
       className={`m-auto rounded-2xl border border-line bg-surface p-0 text-left text-ink shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm open:animate-rise ${className ?? ''}`}
     >
-      <div className="flex items-center justify-between gap-4 px-6 pt-5">
-        <h2 id={titleId} className="text-xl font-bold">
+      <div
+        className={`flex items-center justify-between gap-4 ${headerClassName}`}
+      >
+        <h2 id={titleId} className={titleClassName}>
           {title}
         </h2>
         <button
