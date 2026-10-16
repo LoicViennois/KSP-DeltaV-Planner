@@ -12,7 +12,10 @@
   --ink: #1b1826;
   --ink-soft: #57536a;
   --line: #d8d5e3;
-  --stars: rgb(27 24 38 / 0.12);
+  --star-white: #1b1826;
+  --star-cool: #3a44c0;
+  --star-warm: #9a5119;
+  --stars-opacity: 0.3;
   --thrust: #3b7a14;
   --thrust-ink: #ffffff;
   --thrust-text: #376f13;
@@ -27,7 +30,10 @@
   --ink: #ece9f4;
   --ink-soft: #a6a1b8;
   --line: #2f2a40;
-  --stars: rgb(236 233 244 / 0.16);
+  --star-white: #e3e6f7;
+  --star-cool: #a8bcff;
+  --star-warm: #ffd3a1;
+  --stars-opacity: 0.45;
   --thrust: #8fd14f;
   --thrust-ink: #102004;
   --thrust-text: #a5dd72;
@@ -90,8 +96,10 @@
 /* ---------- Base ---------- */
 
 @layer base {
+  /* Only the root is painted, so the starfield (src/components/Starfield.tsx) shows through the body. */
   html {
     color-scheme: light;
+    background-color: var(--bg);
   }
 
   html[data-theme='dark'] {
@@ -101,24 +109,11 @@
   html,
   body {
     min-height: 100%;
-    background-color: var(--bg);
     color: var(--ink);
     font-family: var(--font-sans);
     transition:
       background-color 250ms,
       color 250ms;
-  }
-
-  /* A sparse star field under every page. */
-  body {
-    background-image:
-      radial-gradient(circle at 20% 30%, var(--stars) 1px, transparent 1.5px),
-      radial-gradient(circle at 70% 80%, var(--stars) 1px, transparent 1.5px),
-      radial-gradient(circle at 85% 15%, var(--stars) 0.75px, transparent 1px);
-    background-size:
-      97px 89px,
-      131px 113px,
-      61px 67px;
   }
 
   :focus-visible {
@@ -200,6 +195,56 @@
 
 .fade-soft {
   opacity: 0.5;
+}
+
+/* ---------- Starfield, from loicviennois.com ---------- */
+
+.starfield-sky {
+  opacity: var(--stars-opacity);
+  transition: opacity 250ms;
+}
+
+.star-white {
+  --tint: var(--star-white);
+}
+
+.star-cool {
+  --tint: var(--star-cool);
+}
+
+.star-warm {
+  --tint: var(--star-warm);
+}
+
+.star-white,
+.star-cool,
+.star-warm {
+  fill: var(--tint);
+}
+
+/* A new star flares above the rest of the sky, then settles among it. */
+.star-added {
+  fill-opacity: var(--brightness);
+  opacity: var(--stars-opacity);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: star-flare 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes star-flare {
+  from {
+    fill-opacity: 1;
+    opacity: 1;
+    transform: scale(3.2);
+    filter: drop-shadow(0 0 4px var(--tint)) drop-shadow(0 0 1.5px var(--tint));
+  }
+
+  to {
+    fill-opacity: var(--brightness);
+    opacity: var(--stars-opacity);
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent);
+  }
 }
 
 /* Cross-fade between pages (TanStack Router view transitions). */

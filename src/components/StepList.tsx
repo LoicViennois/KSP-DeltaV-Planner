@@ -152,7 +152,8 @@ export function StepList({ plan, onHover }: StepListProps) {
               <Icon
                 aria-hidden
                 className={`size-5 shrink-0 text-thrust-text ${
-                  step.type === 'landing' ? 'rotate-135' : ''
+                  // Coming down tail first, as rockets do.
+                  step.type === 'landing' ? '-rotate-90' : ''
                 }`}
               />
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">

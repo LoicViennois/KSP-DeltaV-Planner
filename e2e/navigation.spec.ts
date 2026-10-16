@@ -76,3 +76,21 @@ test.describe('Navigation', () => {
     await expect(html).toHaveAttribute('data-theme', 'light');
   });
 });
+
+test.describe('Starfield', () => {
+  test('adds a star where the background is tapped, not on controls', async ({
+    page,
+  }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    const added = page.getByTestId('added-stars').locator('circle');
+    // The title is static: wait for the app to be running.
+    await expect(planner.heading).toBeVisible();
+
+    await page.mouse.click(8, 700);
+    await expect(added).toHaveCount(1);
+
+    await planner.reverseButton.click();
+    await expect(added).toHaveCount(1);
+  });
+});
