@@ -1,0 +1,216 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/exo-2';
+@import '@fontsource-variable/jetbrains-mono';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ---------- Colour tokens: deep space by default, mission control in light ---------- */
+
+:root {
+  --bg: #f3f2f7;
+  --surface: #ffffff;
+  --ink: #1b1826;
+  --ink-soft: #57536a;
+  --line: #d8d5e3;
+  --stars: rgb(27 24 38 / 0.12);
+  --thrust: #3b7a14;
+  --thrust-ink: #ffffff;
+  --thrust-text: #376f13;
+  --alert: #b42d1a;
+  --tint: rgb(27 24 38 / 0.05);
+  --thrust-surface: color-mix(in oklab, var(--thrust) 9%, var(--surface));
+}
+
+:root[data-theme='dark'] {
+  --bg: #14111c;
+  --surface: #1c1927;
+  --ink: #ece9f4;
+  --ink-soft: #a6a1b8;
+  --line: #2f2a40;
+  --stars: rgb(236 233 244 / 0.16);
+  --thrust: #8fd14f;
+  --thrust-ink: #102004;
+  --thrust-text: #a5dd72;
+  --alert: #ff7a66;
+  --tint: rgb(236 233 244 / 0.05);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-thrust: var(--thrust);
+  --color-thrust-ink: var(--thrust-ink);
+  --color-thrust-text: var(--thrust-text);
+  --color-thrust-surface: var(--thrust-surface);
+  --color-alert: var(--alert);
+  --color-tint: var(--tint);
+}
+
+@theme {
+  --font-sans: 'Exo 2 Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --animate-pop: pop 380ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  --animate-rise: rise 420ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  --animate-fade-in: fade-in 300ms ease-out both;
+
+  @keyframes pop {
+    40% {
+      transform: scale(1.18);
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.96);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    transition:
+      background-color 250ms,
+      color 250ms;
+  }
+
+  /* A sparse star field under every page. */
+  body {
+    background-image:
+      radial-gradient(circle at 20% 30%, var(--stars) 1px, transparent 1.5px),
+      radial-gradient(circle at 70% 80%, var(--stars) 1px, transparent 1.5px),
+      radial-gradient(circle at 85% 15%, var(--stars) 0.75px, transparent 1px);
+    background-size:
+      97px 89px,
+      131px 113px,
+      61px 67px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--thrust);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@utility font-digits {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 120ms,
+    background-color 150ms,
+    color 150ms,
+    box-shadow 150ms;
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@utility btn-primary {
+  background-color: var(--thrust);
+  color: var(--thrust-ink);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 18px -8px var(--thrust);
+  }
+}
+
+@utility btn-ghost {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+
+  &:hover:not(:disabled) {
+    background-color: var(--tint);
+  }
+}
+
+@utility link {
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-color: var(--thrust);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: var(--thrust-text);
+  }
+}
+
+/* ---------- Δv map: the bodies off the planned path fade out ---------- */
+
+.dv-map {
+  transition: opacity 200ms ease-out;
+}
+
+.map-fade {
+  opacity: 0.15;
+}
+
+.fade-soft {
+  opacity: 0.5;
+}
+
+/* Cross-fade between pages (TanStack Router view transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
