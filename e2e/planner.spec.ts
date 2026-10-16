@@ -264,13 +264,14 @@ test.describe('Δv map', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await expect(planner.map).toBeVisible();
-    // A legend label on the sky, and a Δv value on its coloured route.
+    // A legend label, and a Δv value on its coloured route.
     const label = planner.mapElement('text4974');
-    const sky = planner.mapElement('stop6461');
+    // Its sky lets the starfield of the page show through.
+    const sky = planner.mapElement('rect4931');
     const dvOnRoute = planner.mapElement('text4935');
 
     await expect(label).toHaveCSS('fill', 'rgb(241, 240, 245)');
-    await expect(sky).toHaveCSS('stop-color', 'rgb(20, 17, 28)');
+    await expect(sky).toHaveCSS('fill', 'none');
     for (const total of ['tspan5876', 'tspan5852', 'tspan5850']) {
       await expect(planner.mapElement(total)).toHaveCSS(
         'fill',
@@ -281,7 +282,7 @@ test.describe('Δv map', () => {
 
     await planner.themeToggle.click();
     await expect(label).toHaveCSS('fill', 'rgb(27, 24, 38)');
-    await expect(sky).toHaveCSS('stop-color', 'rgb(230, 228, 238)');
+    await expect(sky).toHaveCSS('fill', 'none');
     await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
     // Every body's total Δv reads like Mun's, below its name.
     for (const total of ['tspan5876', 'tspan5852', 'tspan5850']) {

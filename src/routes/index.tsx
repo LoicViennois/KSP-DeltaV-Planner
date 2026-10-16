@@ -61,13 +61,13 @@ function PlannerPage() {
           <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
             <Suspense
               fallback={
-                <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-map-space" />
+                <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-tint" />
               }
             >
               <DvMap
                 trip={trip}
                 step={hovered}
-                className="overflow-hidden rounded-2xl border border-line shadow-xl"
+                className="overflow-hidden rounded-2xl border border-line"
               />
             </Suspense>
             <button

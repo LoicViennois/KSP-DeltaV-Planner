@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useId, useRef } from 'react';
 
 import { makeStar, scatter } from '../lib/stars';
 
@@ -89,17 +89,35 @@ export function Starfield() {
   }, []);
 
   return (
+    <StarSky className="fixed inset-0 -z-10" testId="starfield">
+      <g ref={groupRef} data-testid="added-stars" />
+    </StarSky>
+  );
+}
+
+interface StarSkyProps {
+  className?: string;
+  testId?: string;
+  children?: ReactNode;
+}
+
+/** The sky alone, without the stars added on tap: also behind the full screen map. */
+export function StarSky({ className, testId, children }: StarSkyProps) {
+  // Each sky has its own pattern ids, as there may be two on the page.
+  const prefix = useId();
+
+  return (
     <svg
       aria-hidden
       focusable="false"
-      data-testid="starfield"
-      className="pointer-events-none fixed inset-0 -z-10 size-full"
+      data-testid={testId}
+      className={`pointer-events-none size-full ${className ?? ''}`}
     >
       <defs>
         {LAYERS.map(({ id, size, stars }) => (
           <pattern
             key={id}
-            id={id}
+            id={`${prefix}${id}`}
             width={size}
             height={size}
             patternUnits="userSpaceOnUse"
@@ -123,10 +141,10 @@ export function Starfield() {
           className="starfield-sky"
           width="100%"
           height="100%"
-          fill={`url(#${id})`}
+          fill={`url(#${prefix}${id})`}
         />
       ))}
-      <g ref={groupRef} data-testid="added-stars" />
+      {children}
     </svg>
   );
 }

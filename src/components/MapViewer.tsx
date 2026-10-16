@@ -13,6 +13,7 @@ import {
 import type { MapHighlight } from '../lib/map-highlight';
 import type { Step, Trip } from '../lib/planner';
 import DvMap from './DvMap';
+import { StarSky } from './Starfield';
 
 const MAP_RATIO = 4 / 3;
 const MAX_SCALE = 8;
@@ -252,7 +253,8 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
   }
 
   return (
-    <div className="relative h-full overflow-hidden bg-map-space">
+    <div className="relative h-full overflow-hidden bg-bg">
+      <StarSky className="absolute inset-0" />
       <div
         ref={viewportRef}
         tabIndex={0}

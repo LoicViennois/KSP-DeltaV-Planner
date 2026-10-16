@@ -29,7 +29,7 @@ export default function DvMap({ trip, step, className }: DvMapProps) {
       role="img"
       aria-label="Δv map of the Kerbol system"
       dangerouslySetInnerHTML={markup}
-      className={`dv-map-art bg-map-space [&_svg]:block [&_svg]:h-auto [&_svg]:w-full ${className ?? ''}`}
+      className={`dv-map-art [&_svg]:block [&_svg]:h-auto [&_svg]:w-full ${className ?? ''}`}
     />
   );
 }
