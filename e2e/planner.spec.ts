@@ -222,6 +222,13 @@ test.describe('Δv map', () => {
     await expect(label).toHaveCSS('fill', 'rgb(27, 24, 38)');
     await expect(sky).toHaveCSS('stop-color', 'rgb(230, 228, 238)');
     await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
+    // The rays of Kerbol, the first one and its copies, all turn dark.
+    for (const ray of ['path4989', 'use4991', 'use5011']) {
+      await expect(planner.mapElement(ray)).toHaveCSS(
+        'stroke',
+        'rgb(27, 24, 38)',
+      );
+    }
   });
 
   test('highlights a step on keyboard focus', async ({ page }) => {

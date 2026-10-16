@@ -45,6 +45,42 @@ function prepareStyle(style) {
     .replace(/:0(?:px|%)(?=;|$)/g, ':0');
 }
 
+// Colours the app restyles for the light theme (src/index.css).
+const THEMED_COLORS = /(fill|stroke):#(f1f0f5|b3b3b3)\b/;
+
+/**
+ * Replaces each <use> of an element drawn in a themed colour with a copy of
+ * it: stylesheet rules do not reach into the clones of a <use>, which kept
+ * their dark-theme colour in light mode (the rays of Kerbol).
+ */
+function inlineThemedUses(node, root) {
+  node.children = (node.children ?? []).map((child) => {
+    if (child.type !== 'element') {
+      return child;
+    }
+    const href = child.attributes['xlink:href'] ?? child.attributes.href;
+    if (child.name === 'use' && href?.startsWith('#')) {
+      const target = findElementById(root, href.slice(1));
+      if (target && THEMED_COLORS.test(target.attributes.style ?? '')) {
+        const { x = '0', y = '0', transform = '' } = child.attributes;
+        const offset = x !== '0' || y !== '0' ? `translate(${x} ${y})` : '';
+        return {
+          ...structuredClone(target),
+          attributes: {
+            ...structuredClone(target.attributes),
+            id: child.attributes.id,
+            transform: [transform, offset, target.attributes.transform ?? '']
+              .filter(Boolean)
+              .join(' '),
+          },
+        };
+      }
+    }
+    inlineThemedUses(child, root);
+    return child;
+  });
+}
+
 const prepareForApplication = {
   name: 'prepareForApplication',
   fn: () => ({
@@ -58,6 +94,8 @@ const prepareForApplication = {
     },
     root: {
       exit: (root) => {
+        inlineThemedUses(root, root);
+
         const outerDuration = findElementById(root, 'tspan3933');
         const innerDuration = findElementById(root, 'tspan3937');
 
