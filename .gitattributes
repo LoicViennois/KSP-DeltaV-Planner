@@ -1,15 +1,31 @@
-# Auto-detect text files and normalize line endings to LF on commit and checkout
+# Auto-detect text files and normalize line endings to LF on checkout and commit
 * text=auto eol=lf
 
-# Explicitly designate binary files so Git never modifies them
+# Explicit text files
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.json5 text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.svg text eol=lf
+*.env* text eol=lf
+
+# Binary files
 *.png binary
-*.webp binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
-*.svg text
+*.webp binary
 *.woff binary
 *.woff2 binary
 *.ttf binary
 *.eot binary
+*.pdf binary
