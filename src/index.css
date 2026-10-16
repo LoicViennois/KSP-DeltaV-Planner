@@ -219,6 +219,12 @@
   fill: var(--map-ink) !important;
 }
 
+/* The total Δv under each body, in grey on the map but for Mun and Minmus:
+   too faint on either sky, so as bright as the name above it, like theirs. */
+.dv-map-art tspan[style*='fill:gray'] {
+  fill: var(--map-ink) !important;
+}
+
 .dv-map-art [style*='stroke:#f1f0f5'] {
   stroke: var(--map-ink) !important;
 }

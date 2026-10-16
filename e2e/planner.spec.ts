@@ -271,12 +271,25 @@ test.describe('Δv map', () => {
 
     await expect(label).toHaveCSS('fill', 'rgb(241, 240, 245)');
     await expect(sky).toHaveCSS('stop-color', 'rgb(20, 17, 28)');
+    for (const total of ['tspan5876', 'tspan5852', 'tspan5850']) {
+      await expect(planner.mapElement(total)).toHaveCSS(
+        'fill',
+        'rgb(241, 240, 245)',
+      );
+    }
     await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
 
     await planner.themeToggle.click();
     await expect(label).toHaveCSS('fill', 'rgb(27, 24, 38)');
     await expect(sky).toHaveCSS('stop-color', 'rgb(230, 228, 238)');
     await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
+    // Every body's total Δv reads like Mun's, below its name.
+    for (const total of ['tspan5876', 'tspan5852', 'tspan5850']) {
+      await expect(planner.mapElement(total)).toHaveCSS(
+        'fill',
+        'rgb(27, 24, 38)',
+      );
+    }
     // The rays of Kerbol, the first one and its copies, all turn dark.
     for (const ray of ['path4989', 'use4991', 'use5011']) {
       await expect(planner.mapElement(ray)).toHaveCSS(
