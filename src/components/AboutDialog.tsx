@@ -1,4 +1,4 @@
-import { MapIcon, MessageCircle } from 'lucide-react';
+import { BookOpen, Calculator, MapIcon, MessageCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { commitSha, commitUrl, repoUrl, shortSha } from '../lib/build-info';
@@ -13,6 +13,14 @@ interface AboutDialogProps {
 const CC_BY_NC_SA =
   'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode';
 
+const NOTES = [
+  'Low orbits are 10 km above the atmosphere or terrain obstacles.',
+  'All values are vacuum Δv, in m/s.',
+  'When two values are given, the lower one includes no plane change, the higher one the maximum plane change.',
+  'Atmospheric ascent values are typical: more or less efficient ascents are likely, depending on the ascent profile, the TWR and aerodynamic effects.',
+  "Flight times are based on 10 years of average flight possibilities simulated on AlexMoon's Launch Window Planner, from day 1.",
+];
+
 function External({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a href={href} target="_blank" rel="noopener" className="text-ink">
@@ -21,13 +29,34 @@ function External({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
+function Section({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: typeof MapIcon;
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="rounded-xl border border-line p-4">
+      <h3 className="mb-1 flex items-center gap-2 font-bold">
+        <Icon className="size-4" aria-hidden />
+        {title}
+      </h3>
+      <div className="text-ink-soft">{children}</div>
+    </section>
+  );
+}
+
+/** What the planner is, how to read it, and who made it and its map. */
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
   return (
     <Modal
       open={open}
       onClose={onClose}
       title="About"
-      className="w-[min(40rem,calc(100%-2rem))]"
+      className="w-[min(44rem,calc(100%-2rem))]"
     >
       <div className="space-y-4 leading-relaxed [&_a]:link">
         <div className="flex items-center gap-3">
@@ -57,12 +86,26 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
             </span>
           </p>
         </div>
-        <section className="rounded-xl border border-line p-4">
-          <h3 className="mb-1 flex items-center gap-2 font-bold">
-            <MapIcon className="size-4" aria-hidden />
-            The Δv map
-          </h3>
-          <div className="space-y-2 text-ink-soft">
+
+        <p>
+          This is a Δv planner for the game{' '}
+          <External href="https://www.kerbalspaceprogram.com">
+            Kerbal Space Program
+          </External>
+          . Pick where your rocket starts and where it goes: it adds up the Δv
+          of each step of the trip. Hover a step to find it on the map.
+        </p>
+
+        <Section icon={Calculator} title="Reading the numbers">
+          <ul className="list-disc space-y-1 pl-5 marker:text-thrust">
+            {NOTES.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section icon={MapIcon} title="The Δv map">
+          <div className="space-y-2">
             <p>
               The <span className="text-ink">Kerbal Space Program Δv Map</span>{' '}
               is licensed under{' '}
@@ -94,29 +137,43 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
               .
             </p>
           </div>
-        </section>
-        <section className="rounded-xl border border-line p-4">
-          <h3 className="mb-1 flex items-center gap-2 font-bold">
-            <MessageCircle className="size-4" aria-hidden />
-            Send feedback
-          </h3>
-          <ul className="space-y-1 text-ink-soft">
-            <li>
-              Found a bug or have an idea?
-              <br />
-              <External href={`${repoUrl}/issues/new`}>
-                Open an issue on GitHub
-              </External>
-            </li>
-            <li>
-              Want to say hi?
-              <br />
-              <External href="https://www.reddit.com/message/compose/?to=LoicViennois">
-                Message me on Reddit
-              </External>
-            </li>
-          </ul>
-        </section>
+        </Section>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Section icon={BookOpen} title="More information">
+            <ul className="space-y-1">
+              <li>
+                <External href="https://forum.kerbalspaceprogram.com">
+                  The KSP forum
+                </External>
+              </li>
+              <li>
+                <External href="https://www.reddit.com/r/KerbalSpaceProgram">
+                  r/KerbalSpaceProgram
+                </External>
+              </li>
+            </ul>
+          </Section>
+          <Section icon={MessageCircle} title="Send feedback">
+            <ul className="space-y-1">
+              <li>
+                Found a bug or have an idea?
+                <br />
+                <External href={`${repoUrl}/issues/new`}>
+                  Open an issue on GitHub
+                </External>
+              </li>
+              <li>
+                Want to say hi?
+                <br />
+                <External href="https://www.reddit.com/message/compose/?to=LoicViennois">
+                  Message me on Reddit
+                </External>
+              </li>
+            </ul>
+          </Section>
+        </div>
+
         <p className="border-t border-line pt-4 text-sm text-ink-soft">
           This program is free software, released under the{' '}
           <External href={`${repoUrl}/blob/master/LICENSE`}>

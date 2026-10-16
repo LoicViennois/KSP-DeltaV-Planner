@@ -14,7 +14,6 @@ export class PlannerPage {
   readonly total: Locator;
   readonly map: Locator;
   readonly githubLink: Locator;
-  readonly helpButton: Locator;
   readonly aboutButton: Locator;
   readonly themeToggle: Locator;
 
@@ -35,7 +34,6 @@ export class PlannerPage {
     this.map = page.getByRole('img', { name: 'Δv map of the Kerbol system' });
     const banner = page.getByRole('banner');
     this.githubLink = banner.getByRole('link', { name: 'GitHub repository' });
-    this.helpButton = banner.getByRole('button', { name: 'Help' });
     this.aboutButton = banner.getByRole('button', { name: 'About' });
     this.themeToggle = banner.getByRole('button', {
       name: /Switch to (light|dark) theme/,

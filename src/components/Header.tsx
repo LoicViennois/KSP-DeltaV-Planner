@@ -1,11 +1,10 @@
 import { Link } from '@tanstack/react-router';
-import { CircleHelp, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useState } from 'react';
 
 import { repoUrl } from '../lib/build-info';
 import { AboutDialog } from './AboutDialog';
 import { GitHubIcon } from './GitHubIcon';
-import { HelpDialog } from './HelpDialog';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -13,7 +12,6 @@ const iconButton =
   'grid size-9 cursor-pointer place-items-center rounded-lg text-ink-soft transition hover:bg-tint hover:text-ink active:scale-90';
 
 export function Header() {
-  const [helpOpen, setHelpOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
@@ -42,14 +40,6 @@ export function Header() {
           </a>
           <button
             type="button"
-            onClick={() => setHelpOpen(true)}
-            aria-label="Help"
-            className={iconButton}
-          >
-            <CircleHelp className="size-5" aria-hidden />
-          </button>
-          <button
-            type="button"
             onClick={() => setAboutOpen(true)}
             aria-label="About"
             className={iconButton}
@@ -59,7 +49,6 @@ export function Header() {
           <ThemeToggle />
         </nav>
       </div>
-      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </header>
   );

@@ -20,21 +20,6 @@ test.describe('Navigation', () => {
     );
   });
 
-  test('shows the help dialog', async ({ page }) => {
-    const planner = new PlannerPage(page);
-    await planner.goto();
-
-    await planner.helpButton.click();
-
-    const dialog = page.getByRole('dialog', { name: 'Help' });
-    await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText('This is a Δv planner');
-
-    await dialog.getByRole('button', { name: 'Close' }).click();
-    await expect(dialog).toBeHidden();
-    await expect(planner.helpButton).toBeFocused();
-  });
-
   test('shows the about dialog', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
@@ -57,6 +42,12 @@ test.describe('Navigation', () => {
       'https://github.com/LoicViennois/KSP-DeltaV-Planner/blob/master/LICENSE',
     );
     await expect(dialog).toContainText('CC BY-NC-SA 4.0');
+    // The help lives in the about dialog too.
+    await expect(dialog).toContainText('This is a Δv planner');
+    await expect(dialog).toContainText('All values are vacuum Δv, in m/s.');
+    await expect(
+      page.getByRole('banner').getByRole('button', { name: 'Help' }),
+    ).toHaveCount(0);
 
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();

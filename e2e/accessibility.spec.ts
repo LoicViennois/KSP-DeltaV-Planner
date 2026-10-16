@@ -84,17 +84,13 @@ for (const theme of ['dark', 'light'] as const) {
       await expectNoViolations(page);
     });
 
-    for (const dialog of ['Help', 'About'] as const) {
-      test(`${dialog.toLowerCase()} dialog`, async ({ page }) => {
-        const planner = new PlannerPage(page);
-        await planner.goto();
-        await (
-          dialog === 'Help' ? planner.helpButton : planner.aboutButton
-        ).click();
-        await expect(page.getByRole('dialog', { name: dialog })).toBeVisible();
+    test('about dialog', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.aboutButton.click();
+      await expect(page.getByRole('dialog', { name: 'About' })).toBeVisible();
 
-        await expectNoViolations(page);
-      });
-    }
+      await expectNoViolations(page);
+    });
   });
 }
