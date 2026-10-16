@@ -77,6 +77,37 @@ test.describe('Navigation', () => {
   });
 });
 
+test('switches the theme without the text flickering', async ({ page }) => {
+  const planner = new PlannerPage(page);
+  await planner.goto();
+  await expect(planner.heading).toBeVisible();
+
+  // Colours of a few panel texts before, then on each frame after, the switch.
+  const frames: string[] = await page.evaluate(`(async () => {
+    const texts = ['h1', 'h1 + p', 'fieldset label', 'fieldset legend'].map(
+      (selector) => document.querySelector(selector),
+    );
+    const read = () => texts.map((el) => getComputedStyle(el).color).join();
+    const colors = [read()];
+    document.querySelector('[aria-label^="Switch to"]').click();
+    for (let i = 0; i < 20; i++) {
+      await new Promise(requestAnimationFrame);
+      colors.push(read());
+    }
+    return colors;
+  })()`);
+
+  // The texts go straight from their old colours to their new ones, and stay.
+  const [before, ...after] = frames;
+  const changed = after.filter((colors) => colors !== before);
+  expect(changed.length).toBeGreaterThan(0);
+  expect(new Set(changed).size).toBe(1);
+  expect(after.slice(after.indexOf(changed[0] ?? ''))).toEqual(changed);
+  await expect(page.locator('html')).not.toHaveAttribute(
+    'data-theme-switching',
+  );
+});
+
 test.describe('Starfield', () => {
   test('adds a star where the background is tapped, not on controls', async ({
     page,

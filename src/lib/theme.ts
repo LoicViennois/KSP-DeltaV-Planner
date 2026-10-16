@@ -32,8 +32,32 @@ apply(theme.get());
 
 export const useTheme = theme.use;
 
+/**
+ * Switches the theme in one go. Colour transitions are off meanwhile: each
+ * element animating at its own pace, some from colours they inherit while
+ * those animate too, made the text flicker. Where supported, a view transition
+ * cross-fades the whole page instead.
+ */
 export function toggleTheme(): void {
   const next: Theme = theme.get() === 'dark' ? 'light' : 'dark';
   writeJson(STORAGE_KEY, next);
-  apply(next);
+
+  const root = document.documentElement;
+  root.dataset.themeSwitching = '';
+  const done = () => {
+    // Once the new colours are painted, so that nothing animates towards them.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => delete root.dataset.themeSwitching),
+    );
+  };
+
+  const reduceMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+  if (!document.startViewTransition || reduceMotion) {
+    apply(next);
+    done();
+    return;
+  }
+  document.startViewTransition(() => apply(next)).finished.finally(done);
 }

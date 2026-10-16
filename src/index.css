@@ -111,9 +111,13 @@
     min-height: 100%;
     color: var(--ink);
     font-family: var(--font-sans);
-    transition:
-      background-color 250ms,
-      color 250ms;
+  }
+
+  /* While the theme switches (see src/lib/theme.ts), colours change at once. */
+  :root[data-theme-switching] *,
+  :root[data-theme-switching] *::before,
+  :root[data-theme-switching] *::after {
+    transition: none !important;
   }
 
   :focus-visible {
