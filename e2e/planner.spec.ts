@@ -205,6 +205,25 @@ test.describe('Δv map', () => {
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });
 
+  test('follows the theme', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await expect(planner.map).toBeVisible();
+    // A legend label on the sky, and a Δv value on its coloured route.
+    const label = planner.mapElement('text4974');
+    const sky = planner.mapElement('stop6461');
+    const dvOnRoute = planner.mapElement('text4935');
+
+    await expect(label).toHaveCSS('fill', 'rgb(241, 240, 245)');
+    await expect(sky).toHaveCSS('stop-color', 'rgb(20, 17, 28)');
+    await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
+
+    await planner.themeToggle.click();
+    await expect(label).toHaveCSS('fill', 'rgb(27, 24, 38)');
+    await expect(sky).toHaveCSS('stop-color', 'rgb(230, 228, 238)');
+    await expect(dvOnRoute).toHaveCSS('fill', 'rgb(255, 255, 255)');
+  });
+
   test('highlights a step on keyboard focus', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

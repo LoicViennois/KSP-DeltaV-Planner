@@ -252,7 +252,7 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
   }
 
   return (
-    <div className="relative h-full overflow-hidden bg-[#14111c]">
+    <div className="relative h-full overflow-hidden bg-map-space">
       <div
         ref={viewportRef}
         tabIndex={0}

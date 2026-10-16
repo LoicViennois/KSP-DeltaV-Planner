@@ -22,6 +22,12 @@
   --alert: #b42d1a;
   --tint: rgb(27 24 38 / 0.05);
   --thrust-surface: color-mix(in oklab, var(--thrust) 9%, var(--surface));
+
+  /* The Δv map, drawn for a dark sky, redrawn on a light one. */
+  --map-glow: #ffffff;
+  --map-space: #e6e4ee;
+  --map-ink: #1b1826;
+  --map-ink-soft: #57536a;
 }
 
 :root[data-theme='dark'] {
@@ -39,6 +45,12 @@
   --thrust-text: #a5dd72;
   --alert: #ff7a66;
   --tint: rgb(236 233 244 / 0.05);
+
+  /* The map's own colours (svg/DvMap_KSPedia.svg). */
+  --map-glow: #262d3c;
+  --map-space: #14111c;
+  --map-ink: #f1f0f5;
+  --map-ink-soft: #b3b3b3;
 }
 
 /* ---------- Layout: the map is as big as the screen lets it be ---------- */
@@ -64,6 +76,7 @@
   --color-thrust-surface: var(--thrust-surface);
   --color-alert: var(--alert);
   --color-tint: var(--tint);
+  --color-map-space: var(--map-space);
 }
 
 @theme {
@@ -190,6 +203,29 @@
 }
 
 /* ---------- Δv map: the bodies off the planned path fade out ---------- */
+
+/* The map follows the theme: its sky, and the labels drawn on it. The Δv
+   values printed in white on the coloured routes stay white. The SVG sets its
+   colours inline, hence !important. */
+#stop6459 {
+  stop-color: var(--map-glow) !important;
+}
+
+#stop6461 {
+  stop-color: var(--map-space) !important;
+}
+
+.dv-map-art [style*='fill:#f1f0f5'] {
+  fill: var(--map-ink) !important;
+}
+
+.dv-map-art [style*='stroke:#f1f0f5'] {
+  stroke: var(--map-ink) !important;
+}
+
+.dv-map-art [style*='fill:#b3b3b3'] {
+  fill: var(--map-ink-soft) !important;
+}
 
 .dv-map {
   transition: opacity 200ms ease-out;

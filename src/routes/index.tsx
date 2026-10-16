@@ -61,7 +61,7 @@ function PlannerPage() {
           <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
             <Suspense
               fallback={
-                <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-[#14111c]" />
+                <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-map-space" />
               }
             >
               <DvMap
