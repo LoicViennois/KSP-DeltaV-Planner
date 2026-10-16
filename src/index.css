@@ -35,6 +35,15 @@
   --tint: rgb(236 233 244 / 0.05);
 }
 
+/* ---------- Layout: the map is as big as the screen lets it be ---------- */
+
+:root {
+  /* Widest 4:3 map fitting under the header, with the page margins. */
+  --map-width: calc((100dvh - 6.5rem) * 4 / 3);
+  /* The map, the gap, the planner panel and the side padding. */
+  --shell-width: max(80rem, calc(var(--map-width) + 2rem + 25rem + 3rem));
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);

@@ -13,7 +13,7 @@ function RootLayout() {
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-7xl px-4 pt-6 pb-12 lg:px-6 lg:pt-8">
+      <main className="mx-auto max-w-(--shell-width) px-4 pt-6 pb-24 md:pb-12 lg:px-6 lg:pt-8">
         <Outlet />
       </main>
       <UpdatePrompt />

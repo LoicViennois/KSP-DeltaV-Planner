@@ -9,10 +9,11 @@ const markup = { __html: mapSvg };
 interface DvMapProps {
   trip: Trip;
   step: Step | null;
+  className?: string;
 }
 
 /** The KSPedia Δv map, with the planned trip highlighted. */
-export default function DvMap({ trip, step }: DvMapProps) {
+export default function DvMap({ trip, step, className }: DvMapProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function DvMap({ trip, step }: DvMapProps) {
       role="img"
       aria-label="Δv map of the Kerbol system"
       dangerouslySetInnerHTML={markup}
-      className="overflow-hidden rounded-2xl border border-line bg-[#14111c] shadow-xl [&_svg]:block [&_svg]:h-auto [&_svg]:w-full"
+      className={`bg-[#14111c] [&_svg]:block [&_svg]:h-auto [&_svg]:w-full ${className ?? ''}`}
     />
   );
 }

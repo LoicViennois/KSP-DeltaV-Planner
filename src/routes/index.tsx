@@ -1,5 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { ArrowDownUp, RotateCcw, Telescope } from 'lucide-react';
+import {
+  ArrowDownUp,
+  MapIcon,
+  Maximize2,
+  RotateCcw,
+  Telescope,
+} from 'lucide-react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
@@ -17,8 +23,9 @@ import {
   withTo,
 } from '../lib/planner';
 
-// The map is too detailed for small screens, which never download it.
+// Small screens only download the map once it is opened in full screen.
 const DvMap = lazy(() => import('../components/DvMap'));
+const MapDialog = lazy(() => import('../components/MapDialog'));
 
 export const Route = createFileRoute('/')({
   component: PlannerPage,
@@ -33,6 +40,14 @@ function PlannerPage() {
   const plan = useMemo(() => planTrip(trip), [trip]);
   const showMap = useMediaQuery('(min-width: 48rem)');
   const homeTrip = isKerbinTrip(trip);
+  const [mapOpen, setMapOpen] = useState(false);
+  // Mounted on first open, so the map is only downloaded when needed.
+  const [mapOpened, setMapOpened] = useState(false);
+
+  function openMap() {
+    setMapOpened(true);
+    setMapOpen(true);
+  }
 
   function update(next: Trip) {
     setTrip(next);
@@ -40,7 +55,7 @@ function PlannerPage() {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_21rem] lg:grid-cols-[minmax(0,1fr)_25rem] lg:gap-8">
+    <div className="grid gap-6 md:grid-cols-[minmax(0,var(--map-width))_21rem] md:justify-center lg:grid-cols-[minmax(0,var(--map-width))_25rem] lg:gap-8">
       <div className="hidden md:block">
         {showMap && (
           <div className="sticky top-20">
@@ -49,8 +64,21 @@ function PlannerPage() {
                 <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-[#14111c]" />
               }
             >
-              <DvMap trip={trip} step={hovered} />
+              <DvMap
+                trip={trip}
+                step={hovered}
+                className="overflow-hidden rounded-2xl border border-line shadow-xl"
+              />
             </Suspense>
+            <button
+              type="button"
+              onClick={openMap}
+              aria-label="Open the map in full screen"
+              title="Full screen"
+              className="absolute top-3 right-3 grid size-10 cursor-pointer place-items-center rounded-xl bg-surface/80 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90"
+            >
+              <Maximize2 aria-hidden className="size-5" />
+            </button>
           </div>
         )}
       </div>
@@ -115,6 +143,26 @@ function PlannerPage() {
           </p>
         )}
       </section>
+
+      <button
+        type="button"
+        onClick={openMap}
+        className="fixed right-4 bottom-5 z-30 flex animate-rise cursor-pointer items-center gap-2 rounded-full bg-thrust py-3 pr-5 pl-4 font-semibold text-thrust-ink shadow-[0_8px_20px_-6px_var(--thrust)] transition hover:-translate-y-0.5 active:scale-95 md:hidden"
+      >
+        <MapIcon aria-hidden className="size-5" />
+        Map
+      </button>
+
+      {mapOpened && (
+        <Suspense fallback={null}>
+          <MapDialog
+            open={mapOpen}
+            onClose={() => setMapOpen(false)}
+            trip={trip}
+            plan={plan}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

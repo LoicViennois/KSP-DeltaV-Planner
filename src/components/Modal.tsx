@@ -7,6 +7,7 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   className?: string;
+  bodyClassName?: string;
 }
 
 /** Native modal dialog: focus trapping, Escape and backdrop click close it. */
@@ -16,6 +17,7 @@ export function Modal({
   title,
   children,
   className,
+  bodyClassName = 'px-6 pt-3 pb-6',
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -53,7 +55,7 @@ export function Modal({
           <X className="size-5" aria-hidden />
         </button>
       </div>
-      <div className="px-6 pt-3 pb-6">{children}</div>
+      <div className={bodyClassName}>{children}</div>
     </dialog>
   );
 }

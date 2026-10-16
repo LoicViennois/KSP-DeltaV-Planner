@@ -72,6 +72,18 @@ for (const theme of ['dark', 'light'] as const) {
       await expectNoViolations(page);
     });
 
+    test('full screen map', async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Duna');
+      await page.getByRole('button', { name: 'Map', exact: true }).click();
+      const dialog = page.getByRole('dialog', { name: 'Δv map' });
+      await dialog.getByRole('button', { name: /Take off · Kerbin/ }).click();
+
+      await expectNoViolations(page);
+    });
+
     for (const dialog of ['Help', 'About'] as const) {
       test(`${dialog.toLowerCase()} dialog`, async ({ page }) => {
         const planner = new PlannerPage(page);

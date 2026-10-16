@@ -18,7 +18,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 lg:px-6">
+      <div className="mx-auto flex h-14 max-w-(--shell-width) items-center justify-between gap-2 px-4 lg:px-6">
         <Link
           to="/"
           className="flex items-center gap-2.5 rounded-lg"

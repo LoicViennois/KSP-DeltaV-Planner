@@ -225,3 +225,84 @@ test.describe('Δv map', () => {
     await expect(planner.map).toHaveCount(0);
   });
 });
+
+test.describe('Full screen map', () => {
+  test('opens from the map button on narrow screens', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Laythe');
+
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('img', { name: /Δv map/ })).toBeVisible();
+
+    // It starts zoomed on the trip, then zooms on the tapped step.
+    const content = dialog.getByTestId('map-content');
+    await expect(content).not.toHaveAttribute('data-scale', '1.00');
+    await expect(planner.mapElement('eeloo')).toHaveClass(/map-fade/);
+    const takeOff = dialog.getByRole('button', { name: /Take off · Kerbin/ });
+    await takeOff.click();
+    await expect(takeOff).toHaveAttribute('aria-pressed', 'true');
+    await expect(planner.mapElement('kerbin-ground')).not.toHaveClass(
+      /fade-soft/,
+    );
+    await expect(planner.mapElement('laythe-low')).toHaveClass(/fade-soft/);
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  });
+
+  test('zooms with the buttons', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    const content = dialog.getByTestId('map-content');
+    await expect(content).toHaveAttribute('data-scale', '1.00');
+    await expect(
+      dialog.getByRole('button', { name: 'Zoom out' }),
+    ).toBeDisabled();
+
+    await dialog.getByRole('button', { name: 'Zoom in' }).click();
+    await expect(content).toHaveAttribute('data-scale', '1.60');
+    await dialog.getByRole('button', { name: 'Zoom out' }).click();
+    await expect(content).toHaveAttribute('data-scale', '1.00');
+  });
+
+  test('opens from the map on wide screens', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await expect(
+      page.getByRole('button', { name: 'Map', exact: true }),
+    ).toBeHidden();
+
+    await page
+      .getByRole('button', { name: 'Open the map in full screen' })
+      .click();
+    await expect(page.getByRole('dialog', { name: 'Δv map' })).toBeVisible();
+  });
+
+  test('grows the map with the screen, not the panel', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    const panel = page.getByRole('region', { name: 'Plan your trip' });
+
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await planner.goto();
+    await expect(planner.map).toBeVisible();
+    const small = await planner.map.boundingBox();
+    const panelSmall = await panel.boundingBox();
+
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await expect
+      .poll(async () => (await planner.map.boundingBox())?.width)
+      .toBeGreaterThan((small?.width ?? 0) * 1.3);
+    // The whole map fits under the header.
+    const large = await planner.map.boundingBox();
+    expect((large?.y ?? 0) + (large?.height ?? 0)).toBeLessThanOrEqual(1080);
+    expect((await panel.boundingBox())?.width).toBe(panelSmall?.width);
+  });
+});
