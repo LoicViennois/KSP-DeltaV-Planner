@@ -44,8 +44,10 @@
 /* ---------- Layout: the map is as big as the screen lets it be ---------- */
 
 :root {
-  /* Widest 4:3 map fitting under the header, with the page margins. */
-  --map-width: calc((100dvh - 6.5rem) * 4 / 3);
+  /* Widest 4:3 map fitting the screen height without scrolling: what is left
+     under the header (3.5rem and its 1px border) and the page's top and bottom
+     padding (1.25rem each, see src/routes/__root.tsx). */
+  --map-width: calc((100dvh - 6rem - 1px) * 4 / 3);
   /* The map, the gap, the planner panel and the side padding. */
   --shell-width: max(80rem, calc(var(--map-width) + 2rem + 25rem + 3rem));
 }

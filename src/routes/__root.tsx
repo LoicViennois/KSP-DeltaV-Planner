@@ -15,7 +15,7 @@ function RootLayout() {
     <>
       <Starfield />
       <Header />
-      <main className="mx-auto max-w-(--shell-width) px-4 pt-6 pb-24 md:pb-12 lg:px-6 lg:pt-8">
+      <main className="mx-auto max-w-(--shell-width) px-4 pt-6 pb-24 md:py-5 lg:px-6">
         <Outlet />
       </main>
       <UpdatePrompt />

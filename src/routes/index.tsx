@@ -58,7 +58,7 @@ function PlannerPage() {
     <div className="grid gap-6 md:grid-cols-[minmax(0,var(--map-width))_21rem] md:justify-center lg:grid-cols-[minmax(0,var(--map-width))_25rem] lg:gap-8">
       <div className="hidden md:block">
         {showMap && (
-          <div className="sticky top-20">
+          <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
             <Suspense
               fallback={
                 <div className="aspect-4/3 animate-pulse rounded-2xl border border-line bg-[#14111c]" />

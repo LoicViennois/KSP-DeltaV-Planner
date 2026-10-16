@@ -215,6 +215,38 @@ test.describe('Δv map', () => {
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });
 
+  for (const [width, height] of [
+    [1280, 720],
+    [1440, 900],
+    [1920, 1080],
+    [2560, 1440],
+  ] as const) {
+    test(`fits a ${width}x${height} screen without scrolling`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await expect(planner.map).toBeVisible();
+
+      const scrollHeight = await page.evaluate(
+        'document.documentElement.scrollHeight',
+      );
+      expect(scrollHeight).toBe(height);
+    });
+  }
+
+  test('never makes a short screen scroll by itself', async ({ page }) => {
+    // The planner panel is taller than this screen, the map is not.
+    await page.setViewportSize({ width: 1024, height: 600 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await expect(planner.map).toBeVisible();
+
+    const map = await planner.map.boundingBox();
+    expect((map?.y ?? 0) + (map?.height ?? 0)).toBeLessThanOrEqual(600);
+  });
+
   test('is left out on narrow screens', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const planner = new PlannerPage(page);
