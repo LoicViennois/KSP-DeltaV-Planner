@@ -1,27 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  ArrowDownUp,
-  MapIcon,
-  Maximize2,
-  RotateCcw,
-  Telescope,
-} from 'lucide-react';
+import { ArrowDownUp, MapIcon, Maximize2, RotateCcw, Telescope } from 'lucide-react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { useMediaQuery } from '../lib/media';
-import {
-  initialTrip,
-  isKerbinTrip,
-  planTrip,
-  reversed,
-  type Step,
-  type Trip,
-  withFrom,
-  withTo,
-} from '../lib/planner';
+import { initialTrip, isKerbinTrip, planTrip, reversed, type Step, type Trip, withFrom, withTo } from '../lib/planner';
 
 // Small screens only download the map once it is opened in full screen.
 const DvMap = lazy(() => import('../components/DvMap'));
@@ -88,9 +73,6 @@ function PlannerPage() {
           <h1 id="planner-title" className="text-2xl font-bold tracking-tight">
             Plan your trip
           </h1>
-          <p className="mt-1 text-ink-soft">
-            The Δv your rocket needs to travel the Kerbol system.
-          </p>
         </div>
 
         <div className="space-y-2">
