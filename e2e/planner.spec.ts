@@ -145,6 +145,61 @@ test.describe('Delta-V planner', () => {
     await expect(planner.landing).not.toBeChecked();
   });
 
+  for (const width of [320, 390]) {
+    test(`keeps the options on one row on a ${width}px screen`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+
+      const boxes = await Promise.all(
+        [planner.landing, planner.aerobraking, planner.return].map((option) =>
+          option.locator('..').boundingBox(),
+        ),
+      );
+      expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
+      // Wide enough for its label, which never overflows the button.
+      for (const option of [planner.landing, planner.aerobraking]) {
+        const label = option.locator('..');
+        expect(
+          await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
+        ).toBe(true);
+      }
+    });
+  }
+
+  test('centres the options on wide screens', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    const group = await page.locator('fieldset > div').boundingBox();
+    const first = await planner.landing.locator('..').boundingBox();
+    const last = await planner.return.locator('..').boundingBox();
+
+    const left = (first?.x ?? 0) - (group?.x ?? 0);
+    const right =
+      (group?.x ?? 0) +
+      (group?.width ?? 0) -
+      ((last?.x ?? 0) + (last?.width ?? 0));
+    expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
+    expect(left).toBeGreaterThan(0);
+  });
+
+  test('toggles an option from anywhere on its button', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+
+    const button = planner.return.locator('..');
+    const box = await button.boundingBox();
+    await page.mouse.click((box?.x ?? 0) + 4, (box?.y ?? 0) + 4);
+    await expect(planner.return).toBeChecked();
+
+    await planner.return.focus();
+    await page.keyboard.press('Space');
+    await expect(planner.return).not.toBeChecked();
+  });
+
   test('picks a body with the keyboard', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
@@ -321,8 +376,10 @@ test.describe('Full screen map', () => {
     await page.getByRole('button', { name: 'Map', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
     const title = dialog.getByRole('heading', { name: 'Δv map' });
-    const header = await title.locator('..').boundingBox();
-    expect(header?.height).toBe(pageHeader?.height);
+    // Measured once the dialog has finished growing in.
+    await expect
+      .poll(async () => (await title.locator('..').boundingBox())?.height)
+      .toBe(pageHeader?.height);
   });
 
   test('zooms with the buttons', async ({ page }) => {
