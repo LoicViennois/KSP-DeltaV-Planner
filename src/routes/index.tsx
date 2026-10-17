@@ -140,9 +140,9 @@ function PlannerPage() {
       <button
         type="button"
         onClick={openMap}
-        className="fixed right-4 bottom-5 z-30 flex animate-rise cursor-pointer items-center gap-2 rounded-full bg-thrust py-3 pr-5 pl-4 font-semibold text-thrust-ink shadow-[0_8px_20px_-6px_var(--thrust)] transition hover:-translate-y-0.5 active:scale-95 md:hidden"
+        className="fixed right-4 bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-30 flex animate-rise cursor-pointer items-center gap-2 rounded-full bg-surface/90 py-3 pr-5 pl-4 font-semibold text-ink shadow-[0_10px_28px_-6px_rgb(0_0_0/0.55)] ring-2 ring-thrust backdrop-blur transition hover:-translate-y-0.5 hover:bg-surface active:scale-95 md:hidden"
       >
-        <MapIcon aria-hidden className="size-5" />
+        <MapIcon aria-hidden className="size-5 text-thrust-text" />
         Map
       </button>
 
