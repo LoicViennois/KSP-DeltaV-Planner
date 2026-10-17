@@ -1,16 +1,9 @@
-import {
-  Ban,
-  CloudDownload,
-  Flag,
-  type LucideIcon,
-  Orbit,
-  Rocket,
-  Undo2,
-} from 'lucide-react';
+import { Ban, CloudDownload, Flag } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { AstroBody } from '../lib/bodies';
-import type { Step, StepType, TripPlan } from '../lib/planner';
+import type { Step, TripPlan } from '../lib/planner';
+import { StepIcon } from './StepIcon';
 
 function Body({ body }: { body?: AstroBody }) {
   if (!body) {
@@ -28,19 +21,6 @@ function Body({ body }: { body?: AstroBody }) {
     </strong>
   );
 }
-
-const ICONS: Record<StepType, LucideIcon> = {
-  takeOff: Rocket,
-  landing: Rocket,
-  transitToLowOrbit: Orbit,
-  transitFromLowToLow: Orbit,
-  transitToSOI: Orbit,
-  transitFromSOIToLow: Orbit,
-  transitFromLowToSOI: Orbit,
-  transitToKeostat: Orbit,
-  return: Undo2,
-  total: Flag,
-};
 
 function message({ type, from, to }: Step): ReactNode {
   const f = <Body body={from} />;
@@ -141,7 +121,6 @@ export function StepList({ plan, onHover }: StepListProps) {
     <div className="space-y-2">
       <ol aria-label="Trip steps" className="space-y-2">
         {plan.steps.map((step, index) => {
-          const Icon = ICONS[step.type];
           return (
             <li
               key={step.type}
@@ -149,13 +128,7 @@ export function StepList({ plan, onHover }: StepListProps) {
               style={{ animationDelay: `${index * 40}ms` }}
               className="flex animate-fade-in items-center gap-3 rounded-xl border border-line bg-surface p-3 transition hover:border-ink-soft"
             >
-              <Icon
-                aria-hidden
-                className={`size-5 shrink-0 text-thrust-text ${
-                  // Coming down tail first, as rockets do.
-                  step.type === 'landing' ? '-rotate-90' : ''
-                }`}
-              />
+              <StepIcon type={step.type} />
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">
                 <span>{message(step)}</span>
                 {step.type === 'landing' && step.to && (

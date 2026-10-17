@@ -358,7 +358,7 @@ test.describe('Full screen map', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const planner = new PlannerPage(page);
     await planner.goto();
-    await planner.select(planner.to, 'Laythe');
+    await planner.select(planner.to, 'Duna');
 
     await page.getByRole('button', { name: 'Map', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
@@ -375,19 +375,55 @@ test.describe('Full screen map', () => {
     await expect(planner.mapElement('kerbin-ground')).not.toHaveClass(
       /fade-soft/,
     );
-    await expect(planner.mapElement('laythe-low')).toHaveClass(/fade-soft/);
+    await expect(planner.mapElement('duna-low')).toHaveClass(/fade-soft/);
 
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
   });
 
-  test('has a header as high as the page header', async ({ page }) => {
+  test('takes the whole narrow screen and closes from the bottom', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    await expect(dialog.getByRole('heading', { name: 'Δv map' })).toBeHidden();
+
+    // The steps are stacked on the right, with their Δv only.
+    const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
+    const takeOff = steps.getByRole('button', { name: /Take off · Kerbin/ });
+    await expect(takeOff).toHaveText('3400');
+    const total = steps.getByRole('button', { name: /Total/ });
+    const takeOffBox = await takeOff.boundingBox();
+    const totalBox = await total.boundingBox();
+    expect(totalBox?.y).toBeGreaterThan(takeOffBox?.y ?? Infinity);
+    expect(
+      (totalBox?.x ?? 0) +
+        (totalBox?.width ?? 0) -
+        ((takeOffBox?.x ?? 0) + (takeOffBox?.width ?? 0)),
+      // A few pixels while the dialog grows in.
+    ).toBeCloseTo(0, -1);
+
+    const close = dialog.getByRole('button', { name: 'Close' });
+    const closeBox = await close.boundingBox();
+    expect((closeBox?.x ?? 0) + (closeBox?.width ?? 0)).toBeGreaterThan(358);
+    expect((closeBox?.y ?? 0) + (closeBox?.height ?? 0)).toBeGreaterThan(796);
+    await close.click();
+    await expect(dialog).toBeHidden();
+  });
+
+  test('has a header as high as the page header', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
     const pageHeader = await page.getByRole('banner').boundingBox();
 
-    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    await page
+      .getByRole('button', { name: 'Open the map in full screen' })
+      .click();
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
     const title = dialog.getByRole('heading', { name: 'Δv map' });
     // Measured once the dialog has finished growing in.

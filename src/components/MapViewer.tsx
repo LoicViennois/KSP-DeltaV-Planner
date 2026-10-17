@@ -2,6 +2,7 @@ import { Focus, Minus, Plus } from 'lucide-react';
 import {
   type KeyboardEvent,
   type PointerEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -31,16 +32,21 @@ interface MapViewerProps {
   step: Step | null;
   /** Map element ids to zoom on, refitted whenever they change. */
   focus: MapHighlight;
+  /** Shown under the zoom buttons, on the right of the map. */
+  aside?: ReactNode;
 }
 
 const controlButton =
-  'grid size-11 cursor-pointer place-items-center rounded-xl bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
+  'grid size-11 shrink-0 cursor-pointer place-items-center rounded-xl bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
 
 /** The Δv map, zoomed and panned with touch, mouse wheel, buttons or arrow keys. */
-export function MapViewer({ trip, step, focus }: MapViewerProps) {
+export function MapViewer({ trip, step, focus, aside }: MapViewerProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+  // The width the buttons on the right take, kept clear when fitting.
+  const [railWidth, setRailWidth] = useState(0);
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 });
   const viewRef = useRef(view);
   useEffect(() => {
@@ -127,21 +133,22 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
     };
     // Small elements, like a landing, keep some of the map around them.
     const minSide = baseWidth / 3;
+    const width = Math.max(size.width - railWidth, size.width / 2);
     const scale =
       0.85 *
       Math.min(
-        size.width / Math.max(box.width, minSide),
+        width / Math.max(box.width, minSide),
         size.height / Math.max(box.height, minSide),
       );
     const s = Math.min(Math.max(scale, 1), MAX_SCALE);
     setView(
       clamp({
         scale: s,
-        x: size.width / 2 - (box.x + box.width / 2) * s,
+        x: width / 2 - (box.x + box.width / 2) * s,
         y: size.height / 2 - (box.y + box.height / 2) * s,
       }),
     );
-  }, [focus, baseWidth, size, clamp]);
+  }, [focus, baseWidth, size, railWidth, clamp]);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -155,7 +162,20 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
       }
     });
     observer.observe(viewport);
-    return () => observer.disconnect();
+    const rail = railRef.current;
+    const railObserver = new ResizeObserver(([entry]) => {
+      if (entry) {
+        // Its right offset, and as much again between it and the trip.
+        setRailWidth(entry.contentRect.width + 24);
+      }
+    });
+    if (rail) {
+      railObserver.observe(rail);
+    }
+    return () => {
+      observer.disconnect();
+      railObserver.disconnect();
+    };
   }, []);
 
   // Zoom on the trip, or the selected step, once laid out and when it changes.
@@ -284,7 +304,10 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
         </div>
       </div>
 
-      <div className="absolute top-3 right-3 flex flex-col gap-2">
+      <div
+        ref={railRef}
+        className="absolute top-3 right-3 pointer-events-none bottom-24 flex flex-col items-end gap-2 *:pointer-events-auto md:bottom-3"
+      >
         <button
           type="button"
           onClick={() =>
@@ -315,6 +338,7 @@ export function MapViewer({ trip, step, focus }: MapViewerProps) {
         >
           <Focus aria-hidden className="size-5" />
         </button>
+        {aside}
       </div>
     </div>
   );

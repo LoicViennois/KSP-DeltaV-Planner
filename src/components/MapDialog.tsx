@@ -1,9 +1,12 @@
+import { X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
+import { floatingButton } from '../lib/styles';
 import { MapViewer } from './MapViewer';
 import { Modal } from './Modal';
+import { StepIcon } from './StepIcon';
 
 const SHORT_LABELS: Record<StepType, string> = {
   takeOff: 'Take off',
@@ -26,10 +29,11 @@ function shortLabel(step: Step): string {
     : label;
 }
 
-function dv(step: Step): string {
+/** The Δv of a step, without its unit. */
+function amount(step: Step): string {
   return step.dvMax != null && step.dvMax !== step.dv
-    ? `${step.dv} – ${step.dvMax} m/s`
-    : `${step.dv} m/s`;
+    ? `${step.dv}–${step.dvMax}`
+    : `${step.dv}`;
 }
 
 interface MapDialogProps {
@@ -57,50 +61,58 @@ export default function MapDialog({
       onClose={onClose}
       title="Δv map"
       className="h-dvh max-h-none w-screen max-w-none flex-col rounded-none border-0 open:flex"
-      // The same height and spacing as the page header.
-      headerClassName="h-[calc(3.5rem+1px)] shrink-0 border-b border-line px-4 lg:px-6"
+      // The same height and spacing as the page header; on phones, the map
+      // takes the whole screen and closes from the floating button.
+      headerClassName="h-[calc(3.5rem+1px)] shrink-0 border-b border-line px-4 max-md:hidden lg:px-6"
       titleClassName="text-lg font-semibold tracking-tight"
-      bodyClassName="flex min-h-0 flex-1 flex-col"
+      bodyClassName="relative min-h-0 flex-1"
     >
-      <div className="min-h-0 flex-1">
-        {open && <MapViewer trip={trip} step={step} focus={focus} />}
-      </div>
-      <div className="border-t border-line bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {steps.length > 0 ? (
-          <ul
-            aria-label="Show a step on the map"
-            className="flex gap-2 overflow-x-auto pb-1"
-          >
-            {steps.map((s) => (
-              <li key={s.type} className="shrink-0">
-                <button
-                  type="button"
-                  aria-pressed={s.type === selected}
-                  onClick={() =>
-                    setSelected(s.type === selected ? null : s.type)
-                  }
-                  className={`flex cursor-pointer flex-col items-start rounded-lg border px-3 py-1.5 text-left text-sm transition aria-pressed:border-thrust aria-pressed:bg-thrust-surface ${
-                    s.type === 'total'
-                      ? 'border-thrust font-bold'
-                      : 'border-line hover:border-ink-soft'
-                  }`}
-                >
-                  <span className="font-semibold whitespace-nowrap">
-                    {shortLabel(s)}
-                  </span>
-                  <span className="font-digits text-xs whitespace-nowrap text-ink-soft">
-                    {dv(s)}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-ink-soft">
-            Pick a destination to see your trip on the map.
-          </p>
-        )}
-      </div>
+      {open && (
+        <MapViewer
+          trip={trip}
+          step={step}
+          focus={focus}
+          aside={
+            steps.length > 0 && (
+              <ul
+                aria-label="Show a step on the map"
+                className="-m-1 flex min-h-0 flex-col items-end gap-2 overflow-y-auto p-1 pt-2"
+              >
+                {steps.map((s) => (
+                  <li key={s.type}>
+                    <button
+                      type="button"
+                      aria-pressed={s.type === selected}
+                      aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
+                      title={`${shortLabel(s)}, ${amount(s)} m/s`}
+                      onClick={() =>
+                        setSelected(s.type === selected ? null : s.type)
+                      }
+                      className={`flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-surface/90 pr-3 pl-2.5 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
+                    >
+                      <StepIcon type={s.type} />
+                      {amount(s)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        />
+      )}
+      {steps.length === 0 && (
+        <p className="absolute top-3 left-3 max-w-[calc(100%-5.5rem)] rounded-xl bg-surface/90 px-3 py-2 text-sm text-ink-soft shadow-lg ring-1 ring-line backdrop-blur">
+          Pick a destination to see your trip on the map.
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={onClose}
+        className={`${floatingButton} md:hidden`}
+      >
+        <X aria-hidden className="size-5 text-thrust-text" />
+        Close
+      </button>
     </Modal>
   );
 }
