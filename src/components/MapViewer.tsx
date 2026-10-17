@@ -32,6 +32,8 @@ interface MapViewerProps {
   step: Step | null;
   /** Map element ids to zoom on, refitted whenever they change. */
   focus: MapHighlight;
+  /** Zooms back on the trip whenever it changes. */
+  resets?: number;
   /** Shown over the bottom of the map, which keeps the trip clear of it. */
   footer?: ReactNode;
 }
@@ -40,7 +42,13 @@ const controlButton =
   'grid size-11 cursor-pointer place-items-center rounded-xl bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
 
 /** The Δv map, zoomed and panned with touch, mouse wheel, buttons or arrow keys. */
-export function MapViewer({ trip, step, focus, footer }: MapViewerProps) {
+export function MapViewer({
+  trip,
+  step,
+  focus,
+  resets,
+  footer,
+}: MapViewerProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -48,10 +56,6 @@ export function MapViewer({ trip, step, focus, footer }: MapViewerProps) {
   // The height the footer takes, kept clear when fitting.
   const [footerHeight, setFooterHeight] = useState(0);
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 });
-  const viewRef = useRef(view);
-  useEffect(() => {
-    viewRef.current = view;
-  }, [view]);
   // Glide to fitted views, but follow fingers and the wheel at once.
   const [animate, setAnimate] = useState(false);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -111,9 +115,10 @@ export function MapViewer({ trip, step, focus, footer }: MapViewerProps) {
       return;
     }
 
-    // Bounds of the elements on the map at scale 1.
-    const current = viewRef.current;
+    // Bounds of the elements on the map at scale 1, from the scale shown,
+    // which is not the one set yet while gliding.
     const origin = content.getBoundingClientRect();
+    const shown = origin.width / baseWidth;
     let left = Infinity;
     let top = Infinity;
     let right = -Infinity;
@@ -126,10 +131,10 @@ export function MapViewer({ trip, step, focus, footer }: MapViewerProps) {
       bottom = Math.max(bottom, rect.bottom);
     }
     const box = {
-      x: (left - origin.left) / current.scale,
-      y: (top - origin.top) / current.scale,
-      width: (right - left) / current.scale,
-      height: (bottom - top) / current.scale,
+      x: (left - origin.left) / shown,
+      y: (top - origin.top) / shown,
+      width: (right - left) / shown,
+      height: (bottom - top) / shown,
     };
     // Small elements, like a landing, keep some of the map around them.
     const minSide = baseWidth / 3;
@@ -176,12 +181,13 @@ export function MapViewer({ trip, step, focus, footer }: MapViewerProps) {
     };
   }, []);
 
-  // Zoom on the trip, or the selected step, once laid out and when it changes.
+  // Zoom on the trip, or the selected step, once laid out, when it changes
+  // and when reset.
   useEffect(() => {
     // The highlight classes are applied by the map in the same commit.
     const frame = requestAnimationFrame(fit);
     return () => cancelAnimationFrame(frame);
-  }, [fit]);
+  }, [fit, resets]);
 
   function local(event: { clientX: number; clientY: number }) {
     const rect = viewportRef.current?.getBoundingClientRect();

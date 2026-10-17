@@ -1,9 +1,9 @@
-import { X } from 'lucide-react';
+import { RotateCcw, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
-import { floatingButton } from '../lib/styles';
+import { floatingBar, floatingButton } from '../lib/styles';
 import { MapViewer } from './MapViewer';
 import { Modal } from './Modal';
 import { StepIcon } from './StepIcon';
@@ -51,6 +51,8 @@ export default function MapDialog({
   plan,
 }: MapDialogProps) {
   const [selected, setSelected] = useState<StepType | null>(null);
+  // Bumped to zoom back on the trip, even when nothing else changed.
+  const [resets, setResets] = useState(0);
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
   const step = steps.find((s) => s.type === selected) ?? null;
   const focus = useMemo(() => mapHighlight(trip, step), [trip, step]);
@@ -72,6 +74,7 @@ export default function MapDialog({
           trip={trip}
           step={step}
           focus={focus}
+          resets={resets}
           footer={
             // On phones, the steps sit just above the close button.
             <div className="pb-[calc(max(1.25rem,env(safe-area-inset-bottom))+3.75rem)] md:pb-4">
@@ -107,14 +110,24 @@ export default function MapDialog({
           }
         />
       )}
-      <button
-        type="button"
-        onClick={onClose}
-        className={`${floatingButton} md:hidden`}
-      >
-        <X aria-hidden className="size-5 text-thrust-text" />
-        Close
-      </button>
+      <div className={`${floatingBar} md:hidden`}>
+        <button
+          type="button"
+          onClick={() => {
+            setSelected(null);
+            setResets((n) => n + 1);
+          }}
+          aria-label="Reset the map"
+          className={floatingButton}
+        >
+          <RotateCcw aria-hidden className="size-5 text-thrust-text" />
+          Reset
+        </button>
+        <button type="button" onClick={onClose} className={floatingButton}>
+          <X aria-hidden className="size-5 text-thrust-text" />
+          Close
+        </button>
+      </div>
     </Modal>
   );
 }

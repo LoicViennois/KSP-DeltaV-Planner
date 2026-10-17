@@ -12,7 +12,7 @@ import { BodyPicker } from '../components/BodyPicker';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { useMediaQuery } from '../lib/media';
-import { floatingButton } from '../lib/styles';
+import { floatingBar, floatingButton } from '../lib/styles';
 import {
   initialTrip,
   isKerbinTrip,
@@ -138,14 +138,12 @@ function PlannerPage() {
         )}
       </section>
 
-      <button
-        type="button"
-        onClick={openMap}
-        className={`${floatingButton} md:hidden`}
-      >
-        <MapIcon aria-hidden className="size-5 text-thrust-text" />
-        Map
-      </button>
+      <div className={`${floatingBar} md:hidden`}>
+        <button type="button" onClick={openMap} className={floatingButton}>
+          <MapIcon aria-hidden className="size-5 text-thrust-text" />
+          Map
+        </button>
+      </div>
 
       {mapOpened && (
         <Suspense fallback={null}>

@@ -420,6 +420,24 @@ test.describe('Full screen map', () => {
         );
       })
       .toBe(true);
+
+    // Reset, on the left of close, zooms back on the whole trip.
+    const reset = dialog.getByRole('button', { name: 'Reset the map' });
+    const resetBox = await reset.boundingBox();
+    const closeBox = await close.boundingBox();
+    expect((resetBox?.x ?? 0) + (resetBox?.width ?? 0)).toBeLessThan(
+      closeBox?.x ?? 0,
+    );
+    const content = dialog.getByTestId('map-content');
+    await expect(content).not.toHaveAttribute('data-scale', '1.00');
+    const fitted = await content.getAttribute('data-scale');
+    await takeOff.click();
+    await expect(content).not.toHaveAttribute('data-scale', fitted ?? '');
+    await dialog.getByRole('button', { name: 'Zoom in' }).click();
+    await reset.click();
+    await expect(takeOff).toHaveAttribute('aria-pressed', 'false');
+    await expect(content).toHaveAttribute('data-scale', fitted ?? '');
+
     await close.click();
     await expect(dialog).toBeHidden();
   });
