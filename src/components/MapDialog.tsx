@@ -72,38 +72,40 @@ export default function MapDialog({
           trip={trip}
           step={step}
           focus={focus}
-          aside={
-            steps.length > 0 && (
-              <ul
-                aria-label="Show a step on the map"
-                className="-m-1 flex min-h-0 flex-col items-end gap-2 overflow-y-auto p-1 pt-2"
-              >
-                {steps.map((s) => (
-                  <li key={s.type}>
-                    <button
-                      type="button"
-                      aria-pressed={s.type === selected}
-                      aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
-                      title={`${shortLabel(s)}, ${amount(s)} m/s`}
-                      onClick={() =>
-                        setSelected(s.type === selected ? null : s.type)
-                      }
-                      className={`flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-surface/90 pr-3 pl-2.5 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
-                    >
-                      <StepIcon type={s.type} />
-                      {amount(s)}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )
+          footer={
+            // On phones, the steps sit just above the close button.
+            <div className="pb-[calc(max(1.25rem,env(safe-area-inset-bottom))+3.75rem)] md:pb-4">
+              {steps.length > 0 ? (
+                <ul
+                  aria-label="Show a step on the map"
+                  className="pointer-events-auto flex gap-2 overflow-x-auto px-4 py-1 justify-center-safe [mask-image:linear-gradient(to_right,transparent,#000_1rem,#000_calc(100%-1rem),transparent)] [scrollbar-width:none]"
+                >
+                  {steps.map((s) => (
+                    <li key={s.type} className="shrink-0">
+                      <button
+                        type="button"
+                        aria-pressed={s.type === selected}
+                        aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
+                        title={`${shortLabel(s)}, ${amount(s)} m/s`}
+                        onClick={() =>
+                          setSelected(s.type === selected ? null : s.type)
+                        }
+                        className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-full bg-surface/90 pr-3.5 pl-3 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
+                      >
+                        <StepIcon type={s.type} />
+                        {amount(s)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mx-4 w-fit rounded-full bg-surface/90 px-4 py-2 text-sm text-ink-soft shadow-lg ring-1 ring-line backdrop-blur md:mx-auto">
+                  Pick a destination to see your trip on the map.
+                </p>
+              )}
+            </div>
           }
         />
-      )}
-      {steps.length === 0 && (
-        <p className="absolute top-3 left-3 max-w-[calc(100%-5.5rem)] rounded-xl bg-surface/90 px-3 py-2 text-sm text-ink-soft shadow-lg ring-1 ring-line backdrop-blur">
-          Pick a destination to see your trip on the map.
-        </p>
       )}
       <button
         type="button"

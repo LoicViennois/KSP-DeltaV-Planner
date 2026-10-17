@@ -393,25 +393,33 @@ test.describe('Full screen map', () => {
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
     await expect(dialog.getByRole('heading', { name: 'Δv map' })).toBeHidden();
 
-    // The steps are stacked on the right, with their Δv only.
+    // The steps are a row of pills, with their Δv only, above the close
+    // button.
     const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
     const takeOff = steps.getByRole('button', { name: /Take off · Kerbin/ });
     await expect(takeOff).toHaveText('3400');
     const total = steps.getByRole('button', { name: /Total/ });
-    const takeOffBox = await takeOff.boundingBox();
-    const totalBox = await total.boundingBox();
-    expect(totalBox?.y).toBeGreaterThan(takeOffBox?.y ?? Infinity);
-    expect(
-      (totalBox?.x ?? 0) +
-        (totalBox?.width ?? 0) -
-        ((takeOffBox?.x ?? 0) + (takeOffBox?.width ?? 0)),
-      // A few pixels while the dialog grows in.
-    ).toBeCloseTo(0, -1);
-
     const close = dialog.getByRole('button', { name: 'Close' });
-    const closeBox = await close.boundingBox();
-    expect((closeBox?.x ?? 0) + (closeBox?.width ?? 0)).toBeGreaterThan(358);
-    expect((closeBox?.y ?? 0) + (closeBox?.height ?? 0)).toBeGreaterThan(796);
+    // Measured once the dialog has finished growing in.
+    await expect
+      .poll(async () => {
+        const [first, last, button] = await Promise.all([
+          takeOff.boundingBox(),
+          total.boundingBox(),
+          close.boundingBox(),
+        ]);
+        return (
+          !!first &&
+          !!last &&
+          !!button &&
+          last.x > first.x &&
+          Math.abs(last.y - first.y) < 1 &&
+          first.y + first.height < button.y &&
+          button.x + button.width > 358 &&
+          button.y + button.height > 796
+        );
+      })
+      .toBe(true);
     await close.click();
     await expect(dialog).toBeHidden();
   });
