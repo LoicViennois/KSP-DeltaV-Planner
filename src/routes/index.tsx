@@ -20,6 +20,7 @@ import {
   planTrip,
   reversed,
   type Step,
+  type StepType,
   type Trip,
   withFrom,
   withTo,
@@ -36,7 +37,12 @@ export const Route = createFileRoute('/')({
 function PlannerPage() {
   const [trip, setTrip] = useState<Trip>(initialTrip);
   const [hovered, setHovered] = useState<Step | null>(null);
+  const [selected, setSelected] = useState<StepType>('total');
   const plan = useMemo(() => planTrip(trip), [trip]);
+  const shown =
+    hovered ??
+    [...plan.steps, plan.total].find((step) => step?.type === selected) ??
+    null;
   const showMap = useMediaQuery('(min-width: 48rem)');
   const homeTrip = isKerbinTrip(trip);
   const [mapOpen, setMapOpen] = useState(false);
@@ -52,6 +58,7 @@ function PlannerPage() {
   function update(next: Trip) {
     setTrip(next);
     setHovered(null);
+    setSelected('total');
   }
 
   return (
@@ -64,7 +71,7 @@ function PlannerPage() {
                 <div className="aspect-4/3 animate-pulse rounded-2xl bg-tint" />
               }
             >
-              <DvMap trip={trip} step={hovered} />
+              <DvMap trip={trip} step={shown} />
             </Suspense>
             <div className="absolute top-4 right-4 flex flex-col gap-3">
               <button
@@ -144,7 +151,12 @@ function PlannerPage() {
         />
 
         {plan.steps.length > 0 ? (
-          <StepList plan={plan} onHover={setHovered} />
+          <StepList
+            plan={plan}
+            selected={selected}
+            onSelect={setSelected}
+            onHover={setHovered}
+          />
         ) : (
           <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
             <Telescope aria-hidden className="size-8" />

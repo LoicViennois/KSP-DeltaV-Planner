@@ -305,6 +305,33 @@ test.describe('Δv map', () => {
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });
 
+  test('shows the picked step, the total by default', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    const takeOff = planner.steps.nth(0).getByRole('button');
+    await expect(planner.total).toHaveAttribute('aria-pressed', 'true');
+    await expect(takeOff).toHaveAttribute('aria-pressed', 'false');
+
+    // Picked, the step stays on the map once the pointer leaves it.
+    await takeOff.click();
+    await expect(takeOff).toHaveAttribute('aria-pressed', 'true');
+    await expect(planner.total).toHaveAttribute('aria-pressed', 'false');
+    await planner.heading.hover();
+    await expect(planner.mapElement('duna-low')).toHaveClass(/fade-soft/);
+
+    // Picked again, it gives way to the total.
+    await takeOff.click();
+    await expect(planner.total).toHaveAttribute('aria-pressed', 'true');
+    await planner.heading.hover();
+    await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
+
+    // A new trip starts on its total.
+    await planner.steps.nth(1).getByRole('button').click();
+    await planner.select(planner.to, 'Eve');
+    await expect(planner.total).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('follows the theme', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
@@ -350,7 +377,7 @@ test.describe('Δv map', () => {
     await planner.goto();
     await planner.select(planner.to, 'Duna');
 
-    await planner.steps.nth(1).focus();
+    await planner.steps.nth(1).getByRole('button').focus();
     await expect(planner.mapElement('kerbin-ground')).toHaveClass(/fade-soft/);
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });

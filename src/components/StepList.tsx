@@ -2,7 +2,7 @@ import { Ban, CloudDownload, Flag } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { AstroBody } from '../lib/bodies';
-import type { Step, TripPlan } from '../lib/planner';
+import type { Step, StepType, TripPlan } from '../lib/planner';
 import { StepIcon } from './StepIcon';
 
 function Body({ body }: { body?: AstroBody }) {
@@ -107,13 +107,25 @@ function LandingNote({ body }: { body: AstroBody }) {
 
 interface StepListProps {
   plan: TripPlan;
+  /** The step shown on the map, the total unless another one is picked. */
+  selected: StepType;
+  onSelect: (type: StepType) => void;
   onHover: (step: Step | null) => void;
 }
 
-/** The steps of a trip; hovering or focusing one highlights it on the map. */
-export function StepList({ plan, onHover }: StepListProps) {
-  const highlight = (step: Step) => ({
-    tabIndex: 0,
+const card =
+  'flex w-full animate-fade-in cursor-pointer items-center gap-3 rounded-xl border border-line bg-surface p-3 text-left transition hover:border-ink-soft aria-pressed:border-thrust aria-pressed:bg-thrust-surface aria-pressed:ring-1 aria-pressed:ring-thrust';
+
+/**
+ * The steps of a trip; picking one shows it on the map, and hovering or
+ * focusing one shows it there for a while.
+ */
+export function StepList({ plan, selected, onSelect, onHover }: StepListProps) {
+  const button = (step: Step) => ({
+    type: 'button' as const,
+    'aria-pressed': step.type === selected,
+    // Picking the step shown again goes back to the total.
+    onClick: () => onSelect(step.type === selected ? 'total' : step.type),
     onMouseEnter: () => onHover(step),
     onMouseLeave: () => onHover(null),
     onFocus: () => onHover(step),
@@ -123,13 +135,12 @@ export function StepList({ plan, onHover }: StepListProps) {
   return (
     <div className="space-y-2">
       <ol aria-label="Trip steps" className="space-y-2">
-        {plan.steps.map((step, index) => {
-          return (
-            <li
-              key={step.type}
-              {...highlight(step)}
+        {plan.steps.map((step, index) => (
+          <li key={step.type}>
+            <button
+              {...button(step)}
               style={{ animationDelay: `${index * 40}ms` }}
-              className="flex animate-fade-in items-center gap-3 rounded-xl border border-line bg-surface p-3 transition hover:border-ink-soft"
+              className={card}
             >
               <StepIcon type={step.type} />
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">
@@ -139,20 +150,16 @@ export function StepList({ plan, onHover }: StepListProps) {
                 )}
               </span>
               <DvValue step={step} />
-            </li>
-          );
-        })}
+            </button>
+          </li>
+        ))}
       </ol>
       {plan.total && (
-        <div
-          {...highlight(plan.total)}
-          data-testid="total"
-          className="flex animate-fade-in items-center gap-3 rounded-xl border border-thrust bg-thrust-surface p-3"
-        >
+        <button {...button(plan.total)} data-testid="total" className={card}>
           <Flag aria-hidden className="size-5 shrink-0 text-thrust-text" />
           <span className="flex-1 text-lg font-bold">Total</span>
           <DvValue step={plan.total} total />
-        </div>
+        </button>
       )}
     </div>
   );
