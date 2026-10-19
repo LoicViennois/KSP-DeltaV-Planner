@@ -531,6 +531,49 @@ test.describe('Full screen map', () => {
     );
   });
 
+  for (const [width, height] of [
+    [1280, 720],
+    [1107, 887],
+  ] as const) {
+    test(`pans the map clear of the steps on a ${width}x${height} screen`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Duna');
+      await planner.return.check();
+      await page
+        .getByRole('button', { name: 'Open the map in full screen' })
+        .click();
+      const dialog = page.getByRole('dialog', { name: 'Δv map' });
+      const steps = dialog.getByRole('list', {
+        name: 'Show a step on the map',
+      });
+      await steps.getByRole('button', { name: /^Return/ }).click();
+
+      // Drag the map up, as far as it goes, without zooming.
+      const content = dialog.getByTestId('map-content');
+      await expect(content).toHaveAttribute('data-scale', '1.00');
+      for (let i = 0; i < 3; i++) {
+        await page.mouse.move(400, height - 150);
+        await page.mouse.down();
+        await page.mouse.move(400, 100, { steps: 5 });
+        await page.mouse.up();
+        // Too soon, the next drag would be a double tap.
+        await page.waitForTimeout(350);
+      }
+      await expect(content).toHaveAttribute('data-scale', '1.00');
+      const [map, bar] = await Promise.all([
+        content.boundingBox(),
+        steps.boundingBox(),
+      ]);
+      expect((map?.y ?? 0) + (map?.height ?? 0)).toBeLessThanOrEqual(
+        (bar?.y ?? 0) + 1,
+      );
+    });
+  }
+
   test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

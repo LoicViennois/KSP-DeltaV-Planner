@@ -22,6 +22,24 @@ const MAX_SCALE = 8;
 const ZOOM_STEP = 1.6;
 const PAN_STEP = 80;
 
+/**
+ * The offset of the map along one axis of the viewport, whose end is covered
+ * by `covered` pixels of buttons or steps: centred when the map fits in what
+ * is left, kept from leaving a gap otherwise, and free to move its end out
+ * from under what covers it.
+ */
+function place(
+  offset: number,
+  length: number,
+  viewport: number,
+  covered: number,
+): number {
+  const room = viewport - covered;
+  return length <= room
+    ? Math.min((viewport - length) / 2, room - length)
+    : Math.min(0, Math.max(room - length, offset));
+}
+
 interface View {
   scale: number;
   x: number;
@@ -74,17 +92,11 @@ export function MapViewer({
       const s = Math.min(Math.max(scale, 1), MAX_SCALE);
       const w = baseWidth * s;
       const h = baseHeight * s;
-      const cx =
-        w <= size.width
-          ? (size.width - w) / 2
-          : Math.min(0, Math.max(size.width - railWidth - w, x));
-      // The right and bottom of the map can move past the buttons and the
-      // footer, to show what they cover.
-      const cy =
-        h <= size.height
-          ? (size.height - h) / 2
-          : Math.min(0, Math.max(size.height - footerHeight - h, y));
-      return { scale: s, x: cx, y: cy };
+      return {
+        scale: s,
+        x: place(x, w, size.width, railWidth),
+        y: place(y, h, size.height, footerHeight),
+      };
     },
     [baseWidth, baseHeight, size, footerHeight, railWidth],
   );
