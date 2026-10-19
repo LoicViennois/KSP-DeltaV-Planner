@@ -6,10 +6,7 @@ export const floatingBar =
 const floating =
   'cursor-pointer rounded-full bg-surface/80 text-ink-soft shadow-lg ring-[1.5px] ring-line backdrop-blur transition hover:bg-surface hover:text-ink hover:ring-thrust active:scale-95 disabled:pointer-events-none disabled:opacity-50';
 
-/** A button over the map with a label. */
-export const floatingButton = `flex animate-rise items-center gap-2 py-3 pr-5 pl-4 font-semibold ${floating}`;
-
-/** A button over the map with an icon only, as high as the labelled ones. */
+/** A round button over the map, with an icon only. */
 export const floatingIconButton = `grid size-11 shrink-0 place-items-center ${floating}`;
 
 /** The button opening the map on phones, the one call to action there. */

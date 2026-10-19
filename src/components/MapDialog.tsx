@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
-import { floatingButton, floatingIconButton } from '../lib/styles';
+import { floatingIconButton } from '../lib/styles';
 import { MapViewer } from './MapViewer';
 import { Modal } from './Modal';
 import { StepIcon } from './StepIcon';
@@ -80,8 +80,8 @@ export default function MapDialog({
           resets={resets}
           controls={
             <>
-              {/* On phones, reset and close have a label, side by side. */}
-              <div className="flex gap-3 md:hidden">
+              {/* Reset stays in the panel on wide screens. */}
+              <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -90,29 +90,21 @@ export default function MapDialog({
                     onReset();
                   }}
                   aria-label="Reset path"
-                  className={floatingButton}
+                  title="Reset"
+                  className={`${floatingIconButton} md:hidden`}
                 >
                   <RotateCcw aria-hidden className="size-5" />
-                  Reset
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className={floatingButton}
+                  aria-label="Close"
+                  title="Close"
+                  className={floatingIconButton}
                 >
                   <X aria-hidden className="size-5" />
-                  Close
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                title="Close"
-                className={`${floatingIconButton} max-md:hidden`}
-              >
-                <X aria-hidden className="size-5" />
-              </button>
               <button
                 type="button"
                 onClick={onShowNotes}
