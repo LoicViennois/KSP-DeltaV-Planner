@@ -75,13 +75,15 @@ export function MapViewer({
         w <= size.width
           ? (size.width - w) / 2
           : Math.min(0, Math.max(size.width - w, x));
+      // The bottom of the map can rise above the footer, to show what it
+      // covers.
       const cy =
         h <= size.height
           ? (size.height - h) / 2
-          : Math.min(0, Math.max(size.height - h, y));
+          : Math.min(0, Math.max(size.height - footerHeight - h, y));
       return { scale: s, x: cx, y: cy };
     },
-    [baseWidth, baseHeight, size],
+    [baseWidth, baseHeight, size, footerHeight],
   );
 
   /** Zooms by a factor, keeping the point (px, py) of the viewport still. */

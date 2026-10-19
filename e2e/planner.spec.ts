@@ -499,6 +499,34 @@ test.describe('Full screen map', () => {
     await expect(planner.to).toContainText('Select…');
   });
 
+  test('pans the bottom of the map above the steps', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
+    await steps.getByRole('button', { name: /Low orbit · Duna/ }).click();
+
+    // Drag the map up, as far as it goes.
+    const content = dialog.getByTestId('map-content');
+    await expect(content).not.toHaveAttribute('data-scale', '1.00');
+    for (let i = 0; i < 4; i++) {
+      await page.mouse.move(150, 600);
+      await page.mouse.down();
+      await page.mouse.move(150, 100, { steps: 5 });
+      await page.mouse.up();
+    }
+    const [map, bar] = await Promise.all([
+      content.boundingBox(),
+      steps.boundingBox(),
+    ]);
+    expect((map?.y ?? 0) + (map?.height ?? 0)).toBeLessThanOrEqual(
+      (bar?.y ?? 0) + 1,
+    );
+  });
+
   test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
