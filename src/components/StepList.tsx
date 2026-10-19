@@ -77,7 +77,10 @@ function DvValue({ step, total }: { step: Step; total?: boolean }) {
     <span
       data-testid="dv"
       className={`shrink-0 rounded-lg px-2.5 py-1 font-digits text-sm font-semibold whitespace-nowrap ${
-        total ? 'bg-thrust text-thrust-ink' : 'bg-tint text-ink'
+        // Outlined, so as not to look like the green map button on phones.
+        total
+          ? 'text-thrust-text ring-[1.5px] ring-thrust ring-inset'
+          : 'bg-tint text-ink'
       }`}
     >
       {range ? `${step.dv} – ${step.dvMax}` : step.dv} m/s

@@ -88,7 +88,7 @@ export default function MapDialog({
                 title="Close"
                 className={`${floatingIconButton} max-md:hidden`}
               >
-                <X aria-hidden className="size-5 text-thrust-text" />
+                <X aria-hidden className="size-5" />
               </button>
               <button
                 type="button"
@@ -97,7 +97,7 @@ export default function MapDialog({
                 title="Reading the numbers"
                 className={floatingIconButton}
               >
-                <Calculator aria-hidden className="size-5 text-thrust-text" />
+                <Calculator aria-hidden className="size-5" />
               </button>
             </>
           }
@@ -147,11 +147,11 @@ export default function MapDialog({
           aria-label="Reset path"
           className={floatingButton}
         >
-          <RotateCcw aria-hidden className="size-5 text-thrust-text" />
+          <RotateCcw aria-hidden className="size-5" />
           Reset
         </button>
         <button type="button" onClick={onClose} className={floatingButton}>
-          <X aria-hidden className="size-5 text-thrust-text" />
+          <X aria-hidden className="size-5" />
           Close
         </button>
       </div>

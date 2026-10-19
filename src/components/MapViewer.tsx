@@ -13,6 +13,7 @@ import {
 
 import type { MapHighlight } from '../lib/map-highlight';
 import type { Step, Trip } from '../lib/planner';
+import { floatingIconButton } from '../lib/styles';
 import DvMap from './DvMap';
 import { StarSky } from './Starfield';
 
@@ -39,9 +40,6 @@ interface MapViewerProps {
   /** Buttons shown above the zoom buttons. */
   controls?: ReactNode;
 }
-
-const controlButton =
-  'grid size-11 cursor-pointer place-items-center rounded-full bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
 
 /** The Δv map, zoomed and panned with touch, mouse wheel, buttons or arrow keys. */
 export function MapViewer({
@@ -320,7 +318,7 @@ export function MapViewer({
           }
           disabled={view.scale >= MAX_SCALE}
           aria-label="Zoom in"
-          className={controlButton}
+          className={floatingIconButton}
         >
           <Plus aria-hidden className="size-5" />
         </button>
@@ -331,7 +329,7 @@ export function MapViewer({
           }
           disabled={view.scale <= 1}
           aria-label="Zoom out"
-          className={controlButton}
+          className={floatingIconButton}
         >
           <Minus aria-hidden className="size-5" />
         </button>
@@ -339,7 +337,7 @@ export function MapViewer({
           type="button"
           onClick={fit}
           aria-label="Zoom to the trip"
-          className={controlButton}
+          className={floatingIconButton}
         >
           <Focus aria-hidden className="size-5" />
         </button>

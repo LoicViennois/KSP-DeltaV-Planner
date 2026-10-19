@@ -14,7 +14,7 @@ import { NotesDialog } from '../components/NotesDialog';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { useMediaQuery } from '../lib/media';
-import { floatingBar, floatingButton, floatingIconButton } from '../lib/styles';
+import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
 import {
   initialTrip,
   isKerbinTrip,
@@ -78,7 +78,7 @@ function PlannerPage() {
                 title="Full screen"
                 className={floatingIconButton}
               >
-                <Maximize2 aria-hidden className="size-5 text-thrust-text" />
+                <Maximize2 aria-hidden className="size-5" />
               </button>
               <button
                 type="button"
@@ -87,7 +87,7 @@ function PlannerPage() {
                 title="Reading the numbers"
                 className={floatingIconButton}
               >
-                <Calculator aria-hidden className="size-5 text-thrust-text" />
+                <Calculator aria-hidden className="size-5" />
               </button>
             </div>
           </div>
@@ -146,15 +146,15 @@ function PlannerPage() {
           <StepList plan={plan} onHover={setHovered} />
         ) : (
           <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
-            <Telescope aria-hidden className="size-8 text-thrust-text" />
+            <Telescope aria-hidden className="size-8" />
             Pick a destination to see the Δv of each step of the trip.
           </p>
         )}
       </section>
 
       <div className={`${floatingBar} md:hidden`}>
-        <button type="button" onClick={openMap} className={floatingButton}>
-          <MapIcon aria-hidden className="size-5 text-thrust-text" />
+        <button type="button" onClick={openMap} className={mapButton}>
+          <MapIcon aria-hidden className="size-5" />
           Map
         </button>
       </div>
