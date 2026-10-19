@@ -53,7 +53,10 @@ interface MapViewerProps {
   focus: MapHighlight;
   /** Zooms back on the trip whenever it changes. */
   resets?: number;
-  /** Shown over the bottom of the map, which keeps the trip clear of it. */
+  /**
+   * Shown over the bottom of the map on phones, and in its bottom right
+   * corner on wider screens, below the buttons; the trip is kept clear of it.
+   */
   footer?: ReactNode;
   /** Buttons shown above the zoom buttons. */
   controls?: ReactNode;
@@ -73,8 +76,9 @@ export function MapViewer({
   const footerRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
-  // The height the footer takes, kept clear when fitting.
-  const [footerHeight, setFooterHeight] = useState(0);
+  // What the footer covers: the bottom of the map when it spans the width,
+  // its right side otherwise. Kept clear when fitting.
+  const [footerInset, setFooterInset] = useState({ right: 0, bottom: 0 });
   // The width the buttons take on the right, from the edge.
   const [railWidth, setRailWidth] = useState(0);
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 });
@@ -94,11 +98,11 @@ export function MapViewer({
       const h = baseHeight * s;
       return {
         scale: s,
-        x: place(x, w, size.width, railWidth),
-        y: place(y, h, size.height, footerHeight),
+        x: place(x, w, size.width, Math.max(railWidth, footerInset.right)),
+        y: place(y, h, size.height, footerInset.bottom),
       };
     },
-    [baseWidth, baseHeight, size, footerHeight, railWidth],
+    [baseWidth, baseHeight, size, footerInset, railWidth],
   );
 
   /** Zooms by a factor, keeping the point (px, py) of the viewport still. */
@@ -156,22 +160,23 @@ export function MapViewer({
     };
     // Small elements, like a landing, keep some of the map around them.
     const minSide = baseWidth / 3;
-    const height = Math.max(size.height - footerHeight, size.height / 2);
+    const width = Math.max(size.width - footerInset.right, size.width / 2);
+    const height = Math.max(size.height - footerInset.bottom, size.height / 2);
     const scale =
       0.85 *
       Math.min(
-        size.width / Math.max(box.width, minSide),
+        width / Math.max(box.width, minSide),
         height / Math.max(box.height, minSide),
       );
     const s = Math.min(Math.max(scale, 1), MAX_SCALE);
     setView(
       clamp({
         scale: s,
-        x: size.width / 2 - (box.x + box.width / 2) * s,
+        x: width / 2 - (box.x + box.width / 2) * s,
         y: height / 2 - (box.y + box.height / 2) * s,
       }),
     );
-  }, [focus, baseWidth, size, footerHeight, clamp]);
+  }, [focus, baseWidth, size, footerInset, clamp]);
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -186,8 +191,16 @@ export function MapViewer({
     });
     observer.observe(viewport);
     const footerObserver = new ResizeObserver(([entry]) => {
-      if (entry) {
-        setFooterHeight(entry.borderBoxSize[0]?.blockSize ?? 0);
+      const footer = entry?.target;
+      if (footer instanceof HTMLElement && footer.offsetParent) {
+        setFooterInset(
+          footer.offsetLeft > 0
+            ? {
+                right: footer.offsetParent.clientWidth - footer.offsetLeft,
+                bottom: 0,
+              }
+            : { right: 0, bottom: footer.offsetHeight },
+        );
       }
     });
     if (footerRef.current) {
@@ -377,7 +390,7 @@ export function MapViewer({
 
       <div
         ref={footerRef}
-        className="pointer-events-none absolute inset-x-0 bottom-0"
+        className="pointer-events-none absolute inset-x-0 bottom-0 md:left-auto md:right-3"
       >
         {footer}
       </div>

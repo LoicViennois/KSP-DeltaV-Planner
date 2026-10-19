@@ -121,7 +121,8 @@ export default function MapDialog({
               {steps.length > 0 ? (
                 <ul
                   aria-label="Show a step on the map"
-                  className="pointer-events-auto flex gap-2 overflow-x-auto px-4 py-1 justify-center-safe [mask-image:linear-gradient(to_right,transparent,#000_1rem,#000_calc(100%-1rem),transparent)] [scrollbar-width:none]"
+                  // A row on phones, a column under the buttons on wider screens.
+                  className="pointer-events-auto flex gap-2 overflow-x-auto px-4 py-1 justify-center-safe [mask-image:linear-gradient(to_right,transparent,#000_1rem,#000_calc(100%-1rem),transparent)] [scrollbar-width:none] md:max-h-[calc(100dvh-20rem)] md:flex-col md:items-end md:justify-start md:overflow-y-auto md:px-1 md:[mask-image:none]"
                 >
                   {steps.map((s) => (
                     <li key={s.type} className="shrink-0">
@@ -142,7 +143,7 @@ export default function MapDialog({
                   ))}
                 </ul>
               ) : (
-                <p className="mx-4 w-fit rounded-full bg-surface/90 px-4 py-2 text-sm text-ink-soft shadow-lg ring-1 ring-line backdrop-blur md:mx-auto">
+                <p className="mx-4 w-fit rounded-full bg-surface/90 px-4 py-2 text-sm text-ink-soft shadow-lg ring-1 ring-line backdrop-blur md:mx-1">
                   Pick a destination to see your trip on the map.
                 </p>
               )}

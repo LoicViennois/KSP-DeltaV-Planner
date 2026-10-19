@@ -535,7 +535,7 @@ test.describe('Full screen map', () => {
     [1280, 720],
     [1107, 887],
   ] as const) {
-    test(`pans the map clear of the steps on a ${width}x${height} screen`, async ({
+    test(`stacks the steps under the buttons on a ${width}x${height} screen`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height });
@@ -550,26 +550,53 @@ test.describe('Full screen map', () => {
       const steps = dialog.getByRole('list', {
         name: 'Show a step on the map',
       });
+      const buttons = steps.getByRole('button');
+      await buttons.filter({ hasText: /./ }).first().waitFor();
       await steps.getByRole('button', { name: /^Return/ }).click();
 
-      // Drag the map up, as far as it goes, without zooming.
+      // A column at the bottom right, under the zoom buttons.
+      const fit = dialog.getByRole('button', { name: 'Zoom to the trip' });
+      await expect
+        .poll(async () => {
+          const [list, last, zoom] = await Promise.all([
+            steps.boundingBox(),
+            steps.getByRole('button', { name: /^Total/ }).boundingBox(),
+            fit.boundingBox(),
+          ]);
+          return (
+            !!list &&
+            !!last &&
+            !!zoom &&
+            list.y > zoom.y + zoom.height &&
+            Math.abs(last.x + last.width - (zoom.x + zoom.width)) < 1 &&
+            last.y + last.height > height - 32
+          );
+        })
+        .toBe(true);
+      const boxes = await buttons.evaluateAll((all) =>
+        all.map((b) => b.getBoundingClientRect()),
+      );
+      expect(new Set(boxes.map((r) => Math.round(r.right))).size).toBe(1);
+
+      // Drag the map left, as far as it goes, without zooming.
       const content = dialog.getByTestId('map-content');
-      await expect(content).toHaveAttribute('data-scale', '1.00');
+      await page.waitForTimeout(400);
+      const scale = (await content.getAttribute('data-scale')) ?? '';
       for (let i = 0; i < 3; i++) {
-        await page.mouse.move(400, height - 150);
+        await page.mouse.move(width - 300, height / 2);
         await page.mouse.down();
-        await page.mouse.move(400, 100, { steps: 5 });
+        await page.mouse.move(50, height / 2, { steps: 5 });
         await page.mouse.up();
         // Too soon, the next drag would be a double tap.
         await page.waitForTimeout(350);
       }
-      await expect(content).toHaveAttribute('data-scale', '1.00');
-      const [map, bar] = await Promise.all([
+      await expect(content).toHaveAttribute('data-scale', scale);
+      const [map, list] = await Promise.all([
         content.boundingBox(),
         steps.boundingBox(),
       ]);
-      expect((map?.y ?? 0) + (map?.height ?? 0)).toBeLessThanOrEqual(
-        (bar?.y ?? 0) + 1,
+      expect((map?.x ?? 0) + (map?.width ?? 0)).toBeLessThanOrEqual(
+        (list?.x ?? 0) + 1,
       );
     });
   }
