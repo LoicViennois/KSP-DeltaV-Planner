@@ -107,22 +107,20 @@ function PlannerPage() {
           </button>
         </div>
 
-        <div className="relative flex items-center gap-2 rounded-xl border border-line bg-surface p-1.5">
-          <div className="min-w-0 flex-1">
-            <BodyPicker
-              label="From"
-              placeholder="Select…"
-              value={trip.from}
-              onChange={(body) => update(withFrom(trip, body))}
-            />
-            <div aria-hidden className="mx-2.5 border-t border-line" />
-            <BodyPicker
-              label="To"
-              placeholder="Select…"
-              value={trip.to}
-              onChange={(body) => update(withTo(trip, body))}
-            />
-          </div>
+        <div className="relative rounded-xl border border-line bg-surface p-1.5">
+          <BodyPicker
+            label="From"
+            placeholder="Select…"
+            value={trip.from}
+            onChange={(body) => update(withFrom(trip, body))}
+          />
+          <div aria-hidden className="mx-2.5 border-t border-line" />
+          <BodyPicker
+            label="To"
+            placeholder="Select…"
+            value={trip.to}
+            onChange={(body) => update(withTo(trip, body))}
+          />
           {/* The route, from one planet down to the other. */}
           <span
             aria-hidden
@@ -133,7 +131,7 @@ function PlannerPage() {
             onClick={() => update(reversed(trip))}
             aria-label="Reverse path"
             title="Reverse"
-            className="mr-1 grid size-10 shrink-0 cursor-pointer place-items-center rounded-full border border-line text-ink-soft transition hover:border-thrust hover:text-ink active:scale-90"
+            className="absolute top-1/2 right-4 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink-soft transition hover:border-thrust hover:text-ink active:scale-90"
           >
             <ArrowUpDown aria-hidden className="size-4" />
           </button>

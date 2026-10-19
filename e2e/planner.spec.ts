@@ -185,7 +185,8 @@ test.describe('Delta-V planner', () => {
       await planner.select(planner.from, 'Minmus');
       await planner.select(planner.to, 'Laythe');
 
-      // One under the other, like an itinerary, with Reverse on their right.
+      // One under the other, like an itinerary, as wide as each other, with
+      // Reverse over their right end, between them.
       const [from, to, reverse] = await Promise.all([
         planner.from.boundingBox(),
         planner.to.boundingBox(),
@@ -195,9 +196,16 @@ test.describe('Delta-V planner', () => {
       expect((from?.y ?? 0) + (from?.height ?? 0)).toBeLessThanOrEqual(
         to?.y ?? 0,
       );
-      expect(reverse?.x ?? 0).toBeGreaterThanOrEqual(
+      expect(from?.width).toBe(to?.width);
+      expect((reverse?.x ?? 0) + (reverse?.width ?? 0)).toBeLessThan(
         (from?.x ?? 0) + (from?.width ?? 0),
       );
+      expect(reverse?.x ?? 0).toBeGreaterThan(
+        (from?.x ?? 0) + (from?.width ?? 0) - 72,
+      );
+      expect(
+        Math.abs((reverse?.y ?? 0) + (reverse?.height ?? 0) / 2 - (to?.y ?? 0)),
+      ).toBeLessThan(2);
       // The longest names fit, without being cut.
       for (const field of [planner.from, planner.to]) {
         expect(await fits(field)).toBe(true);
