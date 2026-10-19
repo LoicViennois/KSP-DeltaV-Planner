@@ -44,9 +44,6 @@ interface MapDialogProps {
   onShowNotes: () => void;
   trip: Trip;
   plan: TripPlan;
-  /** The step zoomed on, shared with the panel: the total by default. */
-  selected: StepType;
-  onSelect: (type: StepType) => void;
 }
 
 /** The Δv map in full screen, where tapping a step zooms on it. */
@@ -57,9 +54,8 @@ export default function MapDialog({
   onShowNotes,
   trip,
   plan,
-  selected,
-  onSelect,
 }: MapDialogProps) {
+  const [selected, setSelected] = useState<StepType | null>(null);
   // Bumped to zoom back out, even when the trip was already empty.
   const [resets, setResets] = useState(0);
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
@@ -89,6 +85,7 @@ export default function MapDialog({
                 <button
                   type="button"
                   onClick={() => {
+                    setSelected(null);
                     setResets((n) => n + 1);
                     onReset();
                   }}
@@ -135,8 +132,7 @@ export default function MapDialog({
                         aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
                         title={`${shortLabel(s)}, ${amount(s)} m/s`}
                         onClick={(event) => {
-                          // Tapped again, the step gives way to the total.
-                          onSelect(s.type === selected ? 'total' : s.type);
+                          setSelected(s.type === selected ? null : s.type);
                           // Bring a step cut by the edge of the row in full.
                           event.currentTarget.scrollIntoView({
                             behavior: matchMedia(
