@@ -14,4 +14,4 @@ export const floatingIconButton = `grid size-11 shrink-0 place-items-center ${fl
 
 /** The button opening the map on phones, the one call to action there. */
 export const mapButton =
-  'flex animate-rise cursor-pointer items-center gap-2 rounded-full bg-thrust py-3 pr-5 pl-4 font-semibold text-thrust-ink shadow-[0_8px_20px_-6px_var(--thrust)] transition hover:-translate-y-0.5 active:scale-95';
+  'flex animate-rise cursor-pointer items-center gap-2 rounded-full bg-thrust py-3 pr-5 pl-4 font-semibold text-thrust-ink shadow-lg transition hover:-translate-y-0.5 active:scale-95';
