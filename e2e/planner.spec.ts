@@ -170,7 +170,7 @@ test.describe('Delta-V planner', () => {
   }
 
   for (const width of [320, 390, 1280]) {
-    test(`puts from and to side by side on a ${width}px screen`, async ({
+    test(`lays from and to out as an itinerary on a ${width}px screen`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 800 });
@@ -185,25 +185,28 @@ test.describe('Delta-V planner', () => {
       await planner.select(planner.from, 'Minmus');
       await planner.select(planner.to, 'Laythe');
 
-      const [from, to] = await Promise.all([
+      // One under the other, like an itinerary, with Reverse on their right.
+      const [from, to, reverse] = await Promise.all([
         planner.from.boundingBox(),
         planner.to.boundingBox(),
+        planner.reverseButton.boundingBox(),
       ]);
-      expect(from?.y).toBe(to?.y);
-      expect((from?.x ?? 0) + (from?.width ?? 0)).toBeLessThanOrEqual(
-        to?.x ?? 0,
+      expect(from?.x).toBe(to?.x);
+      expect((from?.y ?? 0) + (from?.height ?? 0)).toBeLessThanOrEqual(
+        to?.y ?? 0,
       );
-      // Reverse sits on the line between them.
-      const reverse = await planner.reverseButton.boundingBox();
-      expect(
-        Math.abs((reverse?.x ?? 0) + (reverse?.width ?? 0) / 2 - (to?.x ?? 0)),
-      ).toBeLessThan(1);
+      expect(reverse?.x ?? 0).toBeGreaterThanOrEqual(
+        (from?.x ?? 0) + (from?.width ?? 0),
+      );
       // The longest names fit, without being cut.
       for (const field of [planner.from, planner.to]) {
         expect(await fits(field)).toBe(true);
       }
+      expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
+        width,
+      );
 
-      // The list of the right field stays on the screen.
+      // The body list stays on the screen.
       await planner.to.click();
       const list = await page.getByRole('listbox').boundingBox();
       expect(list?.x ?? -1).toBeGreaterThanOrEqual(0);

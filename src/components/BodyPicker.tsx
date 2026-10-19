@@ -8,8 +8,6 @@ interface BodyPickerProps {
   placeholder: string;
   value: AstroBody | null;
   onChange: (body: AstroBody) => void;
-  /** The half of the trip card the field takes, which its list lines up with. */
-  side: 'start' | 'end';
 }
 
 /** Select-only combobox (WAI-ARIA APG pattern): focus stays on the button. */
@@ -18,7 +16,6 @@ export function BodyPicker({
   placeholder,
   value,
   onChange,
-  side,
 }: BodyPickerProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -132,34 +129,29 @@ export function BodyPicker({
         aria-activedescendant={open ? optionId(active) : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
-        className={`flex h-16 w-full cursor-pointer items-center gap-2 text-left transition hover:bg-tint focus-visible:-outline-offset-2 aria-expanded:bg-tint ${
-          // Room for the reverse button, on the line between the two fields.
-          side === 'start' ? 'rounded-l-xl pr-5 pl-3' : 'rounded-r-xl pr-3 pl-5'
-        }`}
+        className="flex h-12 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-left transition hover:bg-tint aria-expanded:bg-tint"
       >
         {value ? (
-          <img src={value.imageUrl} alt="" className="size-8 shrink-0" />
+          <img src={value.imageUrl} alt="" className="size-7 shrink-0" />
         ) : (
           <span
             aria-hidden
-            className="grid size-8 shrink-0 place-items-center rounded-full border border-dashed border-ink-soft text-sm text-ink-soft"
+            className="grid size-7 shrink-0 place-items-center rounded-full border border-dashed border-ink-soft bg-surface text-xs text-ink-soft"
           >
             ?
           </span>
         )}
-        <span className="flex min-w-0 flex-col leading-tight">
-          <span
-            id={labelId}
-            className="text-xs font-semibold tracking-wide text-ink-soft uppercase"
-          >
-            {label}
-          </span>
-          <span
-            data-testid="body-name"
-            className={`truncate text-lg font-semibold ${value ? '' : 'text-ink-soft'}`}
-          >
-            {value?.name ?? placeholder}
-          </span>
+        <span
+          id={labelId}
+          className="w-10 shrink-0 text-sm font-semibold text-ink-soft"
+        >
+          {label}
+        </span>
+        <span
+          data-testid="body-name"
+          className={`min-w-0 truncate text-lg font-semibold ${value ? '' : 'text-ink-soft'}`}
+        >
+          {value?.name ?? placeholder}
         </span>
       </button>
       <ul
@@ -168,7 +160,7 @@ export function BodyPicker({
         role="listbox"
         aria-labelledby={labelId}
         hidden={!open}
-        className={`absolute top-full z-30 mt-2 max-h-80 w-max min-w-full ${side === 'end' ? 'right-0' : 'left-0'} animate-fade-in overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface p-1.5 shadow-2xl`}
+        className="absolute top-full left-0 z-30 mt-2 max-h-80 w-max min-w-full animate-fade-in overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface p-1.5 shadow-2xl"
       >
         {bodies.map((body, index) => (
           <li
