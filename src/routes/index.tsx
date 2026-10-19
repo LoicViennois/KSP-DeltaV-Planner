@@ -4,7 +4,6 @@ import {
   Calculator,
   MapIcon,
   Maximize2,
-  Rocket,
   Telescope,
 } from 'lucide-react';
 import { lazy, Suspense, useMemo, useState } from 'react';
@@ -122,17 +121,11 @@ function PlannerPage() {
               onChange={(body) => update(withTo(trip, body))}
             />
           </div>
-          {/* The route, from one planet down to the other, and the rocket on it. */}
+          {/* The route, from one planet down to the other. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute top-13.5 bottom-13.5 left-[2.0625rem] border-l-2 border-dotted border-ink-soft"
+            className="pointer-events-none absolute top-13 bottom-13 left-[2.0625rem] border-l-2 border-dotted border-ink-soft"
           />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute top-1/2 left-[2.125rem] grid -translate-1/2 place-items-center rounded-full bg-surface p-0.5"
-          >
-            <Rocket className="size-3.5 rotate-135 text-thrust-text" />
-          </span>
           <button
             type="button"
             onClick={() => update(reversed(trip))}

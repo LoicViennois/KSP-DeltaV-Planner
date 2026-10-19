@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
-import { floatingBar, floatingButton, floatingIconButton } from '../lib/styles';
+import { floatingButton, floatingIconButton } from '../lib/styles';
 import { MapViewer } from './MapViewer';
 import { Modal } from './Modal';
 import { StepIcon } from './StepIcon';
@@ -80,7 +80,30 @@ export default function MapDialog({
           resets={resets}
           controls={
             <>
-              {/* On phones, close sits at the bottom, by reset. */}
+              {/* On phones, reset and close have a label, side by side. */}
+              <div className="flex gap-3 md:hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelected(null);
+                    setResets((n) => n + 1);
+                    onReset();
+                  }}
+                  aria-label="Reset path"
+                  className={floatingButton}
+                >
+                  <RotateCcw aria-hidden className="size-5" />
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className={floatingButton}
+                >
+                  <X aria-hidden className="size-5" />
+                  Close
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={onClose}
@@ -102,8 +125,7 @@ export default function MapDialog({
             </>
           }
           footer={
-            // On phones, the steps sit just above the close button.
-            <div className="pb-[calc(max(1.25rem,env(safe-area-inset-bottom))+3.75rem)] md:pb-4">
+            <div className="pb-[max(1rem,env(safe-area-inset-bottom))]">
               {steps.length > 0 ? (
                 <ul
                   aria-label="Show a step on the map"
@@ -136,25 +158,6 @@ export default function MapDialog({
           }
         />
       )}
-      <div className={`${floatingBar} md:hidden`}>
-        <button
-          type="button"
-          onClick={() => {
-            setSelected(null);
-            setResets((n) => n + 1);
-            onReset();
-          }}
-          aria-label="Reset path"
-          className={floatingButton}
-        >
-          <RotateCcw aria-hidden className="size-5" />
-          Reset
-        </button>
-        <button type="button" onClick={onClose} className={floatingButton}>
-          <X aria-hidden className="size-5" />
-          Close
-        </button>
-      </div>
     </Modal>
   );
 }

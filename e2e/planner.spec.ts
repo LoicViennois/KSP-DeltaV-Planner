@@ -426,7 +426,7 @@ test.describe('Full screen map', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('takes the whole narrow screen and closes from the bottom', async ({
+  test('takes the whole narrow screen and closes from the top', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -438,8 +438,8 @@ test.describe('Full screen map', () => {
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
     await expect(dialog.getByRole('heading', { name: 'Δv map' })).toBeHidden();
 
-    // The steps are a row of pills, with their Δv only, above the close
-    // button.
+    // The steps are a row of pills, with their Δv only, at the bottom; close
+    // is in the top right corner.
     const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
     const takeOff = steps.getByRole('button', { name: /Take off · Kerbin/ });
     await expect(takeOff).toHaveText('3400');
@@ -459,9 +459,9 @@ test.describe('Full screen map', () => {
           !!button &&
           last.x > first.x &&
           Math.abs(last.y - first.y) < 1 &&
-          first.y + first.height < button.y &&
+          first.y + first.height > 796 &&
           button.x + button.width > 358 &&
-          button.y + button.height > 796
+          button.y < 24
         );
       })
       .toBe(true);
@@ -469,11 +469,20 @@ test.describe('Full screen map', () => {
     // Reset, on the left of close, empties the trip as the panel's does,
     // and zooms back out.
     const reset = dialog.getByRole('button', { name: 'Reset path' });
-    const resetBox = await reset.boundingBox();
-    const closeBox = await close.boundingBox();
-    expect((resetBox?.x ?? 0) + (resetBox?.width ?? 0)).toBeLessThan(
-      closeBox?.x ?? 0,
-    );
+    await expect
+      .poll(async () => {
+        const [left, right] = await Promise.all([
+          reset.boundingBox(),
+          close.boundingBox(),
+        ]);
+        return (
+          !!left &&
+          !!right &&
+          left.x + left.width < right.x &&
+          Math.abs(left.y - right.y) < 1
+        );
+      })
+      .toBe(true);
     const content = dialog.getByTestId('map-content');
     await expect(content).not.toHaveAttribute('data-scale', '1.00');
     await takeOff.click();

@@ -129,7 +129,7 @@ export function BodyPicker({
         aria-activedescendant={open ? optionId(active) : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
-        className="flex h-15 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-left transition hover:bg-tint aria-expanded:bg-tint"
+        className="flex h-14 w-full cursor-pointer items-center gap-3 rounded-lg px-2.5 text-left transition hover:bg-tint aria-expanded:bg-tint"
       >
         {value ? (
           <img src={value.imageUrl} alt="" className="size-9 shrink-0" />
