@@ -53,9 +53,12 @@ export function MapViewer({
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   // The height the footer takes, kept clear when fitting.
   const [footerHeight, setFooterHeight] = useState(0);
+  // The width the buttons take on the right, from the edge.
+  const [railWidth, setRailWidth] = useState(0);
   const [view, setView] = useState<View>({ scale: 1, x: 0, y: 0 });
   // Glide to fitted views, but follow fingers and the wheel at once.
   const [animate, setAnimate] = useState(false);
@@ -74,16 +77,16 @@ export function MapViewer({
       const cx =
         w <= size.width
           ? (size.width - w) / 2
-          : Math.min(0, Math.max(size.width - w, x));
-      // The bottom of the map can rise above the footer, to show what it
-      // covers.
+          : Math.min(0, Math.max(size.width - railWidth - w, x));
+      // The right and bottom of the map can move past the buttons and the
+      // footer, to show what they cover.
       const cy =
         h <= size.height
           ? (size.height - h) / 2
           : Math.min(0, Math.max(size.height - footerHeight - h, y));
       return { scale: s, x: cx, y: cy };
     },
-    [baseWidth, baseHeight, size, footerHeight],
+    [baseWidth, baseHeight, size, footerHeight, railWidth],
   );
 
   /** Zooms by a factor, keeping the point (px, py) of the viewport still. */
@@ -178,9 +181,19 @@ export function MapViewer({
     if (footerRef.current) {
       footerObserver.observe(footerRef.current);
     }
+    const railObserver = new ResizeObserver(([entry]) => {
+      const rail = entry?.target;
+      if (rail instanceof HTMLElement && rail.offsetParent) {
+        setRailWidth(rail.offsetParent.clientWidth - rail.offsetLeft);
+      }
+    });
+    if (railRef.current) {
+      railObserver.observe(railRef.current);
+    }
     return () => {
       observer.disconnect();
       footerObserver.disconnect();
+      railObserver.disconnect();
     };
   }, []);
 
@@ -311,7 +324,10 @@ export function MapViewer({
         </div>
       </div>
 
-      <div className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 flex flex-col items-end gap-2">
+      <div
+        ref={railRef}
+        className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 flex flex-col items-end gap-2"
+      >
         {controls && (
           <div className="mb-2 flex flex-col items-end gap-3">{controls}</div>
         )}
