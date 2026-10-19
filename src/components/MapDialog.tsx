@@ -131,9 +131,19 @@ export default function MapDialog({
                         aria-pressed={s.type === selected}
                         aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
                         title={`${shortLabel(s)}, ${amount(s)} m/s`}
-                        onClick={() =>
-                          setSelected(s.type === selected ? null : s.type)
-                        }
+                        onClick={(event) => {
+                          setSelected(s.type === selected ? null : s.type);
+                          // Bring a step cut by the edge of the row in full.
+                          event.currentTarget.scrollIntoView({
+                            behavior: matchMedia(
+                              '(prefers-reduced-motion: reduce)',
+                            ).matches
+                              ? 'auto'
+                              : 'smooth',
+                            block: 'nearest',
+                            inline: 'center',
+                          });
+                        }}
                         className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-full bg-surface/90 pr-3.5 pl-3 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
                       >
                         <StepIcon type={s.type} />

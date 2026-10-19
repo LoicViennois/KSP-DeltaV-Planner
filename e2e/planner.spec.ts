@@ -541,6 +541,38 @@ test.describe('Full screen map', () => {
     await expect(planner.to).toContainText('Select…');
   });
 
+  test('scrolls a step cut by the edge into view', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    await planner.landing.check();
+    await planner.return.check();
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
+    const ret = steps.getByRole('button', { name: /^Return/ });
+
+    // Tap the part of the step still on the screen, as a finger would.
+    await expect
+      .poll(async () => (await ret.boundingBox())?.x ?? 0)
+      .toBeLessThan(390);
+    const list = await steps.boundingBox();
+    const cut = await ret.boundingBox();
+    expect((cut?.x ?? 0) + (cut?.width ?? 0)).toBeGreaterThan(390);
+    await page.mouse.click(
+      ((cut?.x ?? 0) + (list?.x ?? 0) + (list?.width ?? 0)) / 2,
+      (cut?.y ?? 0) + (cut?.height ?? 0) / 2,
+    );
+    await expect(ret).toHaveAttribute('aria-pressed', 'true');
+    await expect
+      .poll(async () => {
+        const box = await ret.boundingBox();
+        return (box?.x ?? 0) + (box?.width ?? 0) <= 390 - 16;
+      })
+      .toBe(true);
+  });
+
   test('pans the map clear of the steps and the buttons', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const planner = new PlannerPage(page);
