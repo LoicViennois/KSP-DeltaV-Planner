@@ -675,6 +675,45 @@ test.describe('Full screen map', () => {
     });
   }
 
+  test('shares the picked step with the panel', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    const transit = planner.steps.nth(1).getByRole('button');
+    await transit.click();
+
+    // Picked in the panel, the step is picked on the full screen map.
+    await page
+      .getByRole('button', { name: 'Open the map in full screen' })
+      .click();
+    const dialog = page.getByRole('dialog', { name: 'Δv map' });
+    const steps = dialog.getByRole('list', { name: 'Show a step on the map' });
+    await expect(
+      steps.getByRole('button', { name: /^Low orbit · Duna/ }),
+    ).toHaveAttribute('aria-pressed', 'true');
+
+    // And back: picked on the map, it is picked in the panel.
+    await steps.getByRole('button', { name: /^Take off · Kerbin/ }).click();
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await expect(planner.steps.nth(0).getByRole('button')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await expect(transit).toHaveAttribute('aria-pressed', 'false');
+
+    // Tapped again on the map, the step gives way to the total.
+    await page
+      .getByRole('button', { name: 'Open the map in full screen' })
+      .click();
+    await steps.getByRole('button', { name: /^Take off · Kerbin/ }).click();
+    await expect(steps.getByRole('button', { name: /^Total/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.keyboard.press('Escape');
+    await expect(planner.total).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

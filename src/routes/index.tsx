@@ -169,6 +169,8 @@ function PlannerPage() {
             onShowNotes={() => setNotesOpen(true)}
             trip={trip}
             plan={plan}
+            selected={selected}
+            onSelect={setSelected}
           />
         </Suspense>
       )}
