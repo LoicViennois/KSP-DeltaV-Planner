@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import {
-  ArrowDownUp,
+  ArrowLeftRight,
   Calculator,
   MapIcon,
   Maximize2,
@@ -102,12 +102,21 @@ function PlannerPage() {
         </div>
 
         <div className="space-y-2">
-          <BodyPicker
-            label="From"
-            placeholder="Select your starting point"
-            value={trip.from}
-            onChange={(body) => update(withFrom(trip, body))}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <BodyPicker
+              label="From"
+              placeholder="Select…"
+              value={trip.from}
+              onChange={(body) => update(withFrom(trip, body))}
+            />
+            <BodyPicker
+              label="To"
+              placeholder="Select…"
+              value={trip.to}
+              onChange={(body) => update(withTo(trip, body))}
+              align="end"
+            />
+          </div>
           <div className="flex justify-center gap-1">
             <button
               type="button"
@@ -115,7 +124,7 @@ function PlannerPage() {
               aria-label="Reverse path"
               className={toolButton}
             >
-              <ArrowDownUp aria-hidden className="size-4" />
+              <ArrowLeftRight aria-hidden className="size-4" />
               Reverse
             </button>
             <button
@@ -128,12 +137,6 @@ function PlannerPage() {
               Reset
             </button>
           </div>
-          <BodyPicker
-            label="To"
-            placeholder="Select your destination"
-            value={trip.to}
-            onChange={(body) => update(withTo(trip, body))}
-          />
         </div>
 
         <TripOptions

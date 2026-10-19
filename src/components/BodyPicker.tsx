@@ -8,6 +8,8 @@ interface BodyPickerProps {
   placeholder: string;
   value: AstroBody | null;
   onChange: (body: AstroBody) => void;
+  /** The side of the field the list lines up with, when wider than it. */
+  align?: 'start' | 'end';
 }
 
 /** Select-only combobox (WAI-ARIA APG pattern): focus stays on the button. */
@@ -16,6 +18,7 @@ export function BodyPicker({
   placeholder,
   value,
   onChange,
+  align = 'start',
 }: BodyPickerProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -135,19 +138,27 @@ export function BodyPicker({
         aria-activedescendant={open ? optionId(active) : undefined}
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
-        className="flex h-14 w-full cursor-pointer items-center gap-3 rounded-xl border border-line bg-surface px-3 text-left transition hover:border-ink-soft aria-expanded:border-thrust"
+        className="flex h-14 w-full cursor-pointer items-center gap-1.5 rounded-xl border border-line bg-surface pr-2.5 pl-3 md:gap-2 text-left transition hover:border-ink-soft aria-expanded:border-thrust"
       >
         {value ? (
           <>
-            <img src={value.imageUrl} alt="" className="size-8" />
-            <span className="flex-1 text-lg font-semibold">{value.name}</span>
+            <img
+              src={value.imageUrl}
+              alt=""
+              className="size-6 shrink-0 md:size-7"
+            />
+            <span className="min-w-0 flex-1 truncate font-semibold md:text-lg">
+              {value.name}
+            </span>
           </>
         ) : (
-          <span className="flex-1 pl-1 text-ink-soft">{placeholder}</span>
+          <span className="min-w-0 flex-1 truncate pl-1 text-ink-soft">
+            {placeholder}
+          </span>
         )}
         <ChevronDown
           aria-hidden
-          className={`size-5 text-ink-soft transition ${open ? 'rotate-180' : ''}`}
+          className={`size-4 shrink-0 text-ink-soft transition md:size-5 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       <ul
@@ -156,7 +167,7 @@ export function BodyPicker({
         role="listbox"
         aria-labelledby={labelId}
         hidden={!open}
-        className="absolute inset-x-0 top-full z-30 mt-2 max-h-80 animate-fade-in overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface p-1.5 shadow-2xl"
+        className={`absolute top-full z-30 mt-2 max-h-80 w-max min-w-full ${align === 'end' ? 'right-0' : 'left-0'} animate-fade-in overflow-y-auto overscroll-contain rounded-xl border border-line bg-surface p-1.5 shadow-2xl`}
       >
         {bodies.map((body, index) => (
           <li

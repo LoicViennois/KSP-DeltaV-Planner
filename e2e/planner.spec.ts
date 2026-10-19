@@ -9,7 +9,7 @@ test.describe('Delta-V planner', () => {
 
     await expect(planner.heading).toHaveText('Plan your trip');
     await expect(planner.from).toContainText('Kerbin');
-    await expect(planner.to).toContainText('Select your destination');
+    await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
     await expect(page.getByText('Pick a destination')).toBeVisible();
     await expect(planner.landing).toBeEnabled();
@@ -140,7 +140,7 @@ test.describe('Delta-V planner', () => {
 
     await planner.resetButton.click();
     await expect(planner.from).toContainText('Kerbin');
-    await expect(planner.to).toContainText('Select your destination');
+    await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
     await expect(planner.landing).not.toBeChecked();
   });
@@ -166,6 +166,38 @@ test.describe('Delta-V planner', () => {
           await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
         ).toBe(true);
       }
+    });
+  }
+
+  for (const width of [320, 390, 1280]) {
+    test(`puts from and to side by side on a ${width}px screen`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.from, 'Minmus');
+      await planner.select(planner.to, 'Laythe');
+
+      const [from, to] = await Promise.all([
+        planner.from.boundingBox(),
+        planner.to.boundingBox(),
+      ]);
+      expect(from?.y).toBe(to?.y);
+      expect((from?.x ?? 0) + (from?.width ?? 0)).toBeLessThan(to?.x ?? 0);
+      // The longest names fit, without being cut.
+      for (const field of [planner.from, planner.to]) {
+        const name = field.locator('span');
+        expect(
+          await name.evaluate((el) => el.scrollWidth <= el.clientWidth),
+        ).toBe(true);
+      }
+
+      // The list of the right field stays on the screen.
+      await planner.to.click();
+      const list = await page.getByRole('listbox').boundingBox();
+      expect(list?.x ?? -1).toBeGreaterThanOrEqual(0);
+      expect((list?.x ?? 0) + (list?.width ?? 0)).toBeLessThanOrEqual(width);
     });
   }
 
@@ -442,7 +474,7 @@ test.describe('Full screen map', () => {
 
     await close.click();
     await expect(dialog).toBeHidden();
-    await expect(planner.to).toContainText('Select your destination');
+    await expect(planner.to).toContainText('Select…');
   });
 
   test('closes from the top right corner on wide screens', async ({ page }) => {
