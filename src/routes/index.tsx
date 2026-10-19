@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import {
   ArrowDownUp,
+  Calculator,
   MapIcon,
   Maximize2,
   RotateCcw,
@@ -9,10 +10,11 @@ import {
 import { lazy, Suspense, useMemo, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
+import { NotesDialog } from '../components/NotesDialog';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { useMediaQuery } from '../lib/media';
-import { floatingBar, floatingButton } from '../lib/styles';
+import { floatingBar, floatingButton, floatingIconButton } from '../lib/styles';
 import {
   initialTrip,
   isKerbinTrip,
@@ -44,6 +46,7 @@ function PlannerPage() {
   const [mapOpen, setMapOpen] = useState(false);
   // Mounted on first open, so the map is only downloaded when needed.
   const [mapOpened, setMapOpened] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
 
   function openMap() {
     setMapOpened(true);
@@ -67,15 +70,26 @@ function PlannerPage() {
             >
               <DvMap trip={trip} step={hovered} />
             </Suspense>
-            <button
-              type="button"
-              onClick={openMap}
-              aria-label="Open the map in full screen"
-              title="Full screen"
-              className="absolute top-3 right-3 grid size-10 cursor-pointer place-items-center rounded-xl bg-surface/80 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90"
-            >
-              <Maximize2 aria-hidden className="size-5" />
-            </button>
+            <div className="absolute top-4 right-4 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={openMap}
+                aria-label="Open the map in full screen"
+                title="Full screen"
+                className={floatingIconButton}
+              >
+                <Maximize2 aria-hidden className="size-5 text-thrust-text" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setNotesOpen(true)}
+                aria-label="Reading the numbers"
+                title="Reading the numbers"
+                className={floatingIconButton}
+              >
+                <Calculator aria-hidden className="size-5 text-thrust-text" />
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -150,11 +164,16 @@ function PlannerPage() {
           <MapDialog
             open={mapOpen}
             onClose={() => setMapOpen(false)}
+            onReset={() => update(initialTrip)}
+            onShowNotes={() => setNotesOpen(true)}
             trip={trip}
             plan={plan}
           />
         </Suspense>
       )}
+
+      {/* Opened from the map, or over it in full screen. */}
+      <NotesDialog open={notesOpen} onClose={() => setNotesOpen(false)} />
     </div>
   );
 }

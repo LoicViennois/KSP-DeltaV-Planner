@@ -1,4 +1,4 @@
-import { BookOpen, Calculator, MapIcon, MessageCircle } from 'lucide-react';
+import { BookOpen, MapIcon, MessageCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { commitSha, commitUrl, repoUrl, shortSha } from '../lib/build-info';
@@ -12,14 +12,6 @@ interface AboutDialogProps {
 
 const CC_BY_NC_SA =
   'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode';
-
-const NOTES = [
-  'Low orbits are 10 km above the atmosphere or terrain obstacles.',
-  'All values are vacuum Δv, in m/s.',
-  'When two values are given, the lower one includes no plane change, the higher one the maximum plane change.',
-  'Atmospheric ascent values are typical: more or less efficient ascents are likely, depending on the ascent profile, the TWR and aerodynamic effects.',
-  "Flight times are based on 10 years of average flight possibilities simulated on AlexMoon's Launch Window Planner, from day 1.",
-];
 
 function External({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -49,7 +41,7 @@ function Section({
   );
 }
 
-/** What the planner is, how to read it, and who made it and its map. */
+/** What the planner is, and who made it and its map. */
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
   return (
     <Modal
@@ -95,14 +87,6 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
           . Pick where your rocket starts and where it goes: it adds up the Δv
           of each step of the trip. Hover a step to find it on the map.
         </p>
-
-        <Section icon={Calculator} title="Reading the numbers">
-          <ul className="list-disc space-y-1 pl-5 marker:text-thrust">
-            {NOTES.map((note) => (
-              <li key={note}>{note}</li>
-            ))}
-          </ul>
-        </Section>
 
         <Section icon={MapIcon} title="The Δv map">
           <div className="space-y-2">

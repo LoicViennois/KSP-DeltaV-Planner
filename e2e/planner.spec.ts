@@ -421,8 +421,9 @@ test.describe('Full screen map', () => {
       })
       .toBe(true);
 
-    // Reset, on the left of close, zooms back on the whole trip.
-    const reset = dialog.getByRole('button', { name: 'Reset the map' });
+    // Reset, on the left of close, empties the trip as the panel's does,
+    // and zooms back out.
+    const reset = dialog.getByRole('button', { name: 'Reset path' });
     const resetBox = await reset.boundingBox();
     const closeBox = await close.boundingBox();
     expect((resetBox?.x ?? 0) + (resetBox?.width ?? 0)).toBeLessThan(
@@ -430,32 +431,58 @@ test.describe('Full screen map', () => {
     );
     const content = dialog.getByTestId('map-content');
     await expect(content).not.toHaveAttribute('data-scale', '1.00');
-    const fitted = await content.getAttribute('data-scale');
     await takeOff.click();
-    await expect(content).not.toHaveAttribute('data-scale', fitted ?? '');
     await dialog.getByRole('button', { name: 'Zoom in' }).click();
     await reset.click();
-    await expect(takeOff).toHaveAttribute('aria-pressed', 'false');
-    await expect(content).toHaveAttribute('data-scale', fitted ?? '');
+    await expect(steps).toHaveCount(0);
+    await expect(dialog).toContainText(
+      'Pick a destination to see your trip on the map.',
+    );
+    await expect(content).toHaveAttribute('data-scale', '1.00');
 
     await close.click();
     await expect(dialog).toBeHidden();
+    await expect(planner.to).toContainText('Select your destination');
   });
 
-  test('has a header as high as the page header', async ({ page }) => {
+  test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
-    const pageHeader = await page.getByRole('banner').boundingBox();
 
     await page
       .getByRole('button', { name: 'Open the map in full screen' })
       .click();
     const dialog = page.getByRole('dialog', { name: 'Δv map' });
-    const title = dialog.getByRole('heading', { name: 'Δv map' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading')).toHaveCount(0);
+    // Reset stays in the panel on wide screens.
+    await expect(
+      dialog.getByRole('button', { name: 'Reset path' }),
+    ).toBeHidden();
+
+    const close = dialog.getByRole('button', { name: 'Close' });
+    const notes = dialog.getByRole('button', { name: 'Reading the numbers' });
+    const viewport = page.viewportSize();
     // Measured once the dialog has finished growing in.
     await expect
-      .poll(async () => (await title.locator('..').boundingBox())?.height)
-      .toBe(pageHeader?.height);
+      .poll(async () => {
+        const [button, below] = await Promise.all([
+          close.boundingBox(),
+          notes.boundingBox(),
+        ]);
+        return (
+          !!button &&
+          !!below &&
+          button.y < 24 &&
+          button.x + button.width > (viewport?.width ?? 0) - 24 &&
+          Math.abs(below.x - button.x) < 1 &&
+          below.y > button.y + button.height
+        );
+      })
+      .toBe(true);
+
+    await close.click();
+    await expect(dialog).toBeHidden();
   });
 
   test('zooms with the buttons', async ({ page }) => {
@@ -509,4 +536,57 @@ test.describe('Full screen map', () => {
     expect((large?.y ?? 0) + (large?.height ?? 0)).toBeLessThanOrEqual(1080);
     expect((await panel.boundingBox())?.width).toBe(panelSmall?.width);
   });
+});
+
+test.describe('Reading the numbers', () => {
+  test('opens from below the full screen button', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    const fullScreen = page.getByRole('button', {
+      name: 'Open the map in full screen',
+    });
+    const button = page.getByRole('button', { name: 'Reading the numbers' });
+    const [above, below] = await Promise.all([
+      fullScreen.boundingBox(),
+      button.boundingBox(),
+    ]);
+    expect(Math.abs((below?.x ?? 0) - (above?.x ?? 0))).toBeLessThan(1);
+    expect(below?.y ?? 0).toBeGreaterThan(
+      (above?.y ?? 0) + (above?.height ?? 0),
+    );
+
+    await button.click();
+    const dialog = page.getByRole('dialog', { name: 'Reading the numbers' });
+    await expect(dialog).toContainText('All values are vacuum Δv, in m/s.');
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(button).toBeFocused();
+  });
+
+  for (const [name, width, height, open] of [
+    ['wide', 1280, 720, 'Open the map in full screen'],
+    ['narrow', 390, 844, 'Map'],
+  ] as const) {
+    test(`opens over the full screen map on ${name} screens`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await page.getByRole('button', { name: open, exact: true }).click();
+      const map = page.getByRole('dialog', { name: 'Δv map' });
+
+      await map.getByRole('button', { name: 'Reading the numbers' }).click();
+      const dialog = page.getByRole('dialog', { name: 'Reading the numbers' });
+      await expect(dialog).toContainText('All values are vacuum Δv, in m/s.');
+
+      // Escape closes the notes only, back to the map.
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
+      await expect(map).toBeVisible();
+      await expect(
+        map.getByRole('button', { name: 'Reading the numbers' }),
+      ).toBeFocused();
+    });
+  }
 });

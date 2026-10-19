@@ -1,9 +1,9 @@
-import { RotateCcw, X } from 'lucide-react';
+import { Calculator, RotateCcw, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
-import { floatingBar, floatingButton } from '../lib/styles';
+import { floatingBar, floatingButton, floatingIconButton } from '../lib/styles';
 import { MapViewer } from './MapViewer';
 import { Modal } from './Modal';
 import { StepIcon } from './StepIcon';
@@ -39,6 +39,9 @@ function amount(step: Step): string {
 interface MapDialogProps {
   open: boolean;
   onClose: () => void;
+  /** Empties the trip, as the reset button of the panel does. */
+  onReset: () => void;
+  onShowNotes: () => void;
   trip: Trip;
   plan: TripPlan;
 }
@@ -47,11 +50,13 @@ interface MapDialogProps {
 export default function MapDialog({
   open,
   onClose,
+  onReset,
+  onShowNotes,
   trip,
   plan,
 }: MapDialogProps) {
   const [selected, setSelected] = useState<StepType | null>(null);
-  // Bumped to zoom back on the trip, even when nothing else changed.
+  // Bumped to zoom back out, even when the trip was already empty.
   const [resets, setResets] = useState(0);
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
   const step = steps.find((s) => s.type === selected) ?? null;
@@ -62,11 +67,9 @@ export default function MapDialog({
       open={open}
       onClose={onClose}
       title="Δv map"
+      // The map takes the whole screen, and closes from its own buttons.
+      hideHeader
       className="h-dvh max-h-none w-screen max-w-none flex-col rounded-none border-0 open:flex"
-      // The same height and spacing as the page header; on phones, the map
-      // takes the whole screen and closes from the floating button.
-      headerClassName="h-[calc(3.5rem+1px)] shrink-0 border-b border-line px-4 max-md:hidden lg:px-6"
-      titleClassName="text-lg font-semibold tracking-tight"
       bodyClassName="relative min-h-0 flex-1"
     >
       {open && (
@@ -75,6 +78,29 @@ export default function MapDialog({
           step={step}
           focus={focus}
           resets={resets}
+          controls={
+            <>
+              {/* On phones, close sits at the bottom, by reset. */}
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                title="Close"
+                className={`${floatingIconButton} max-md:hidden`}
+              >
+                <X aria-hidden className="size-5 text-thrust-text" />
+              </button>
+              <button
+                type="button"
+                onClick={onShowNotes}
+                aria-label="Reading the numbers"
+                title="Reading the numbers"
+                className={floatingIconButton}
+              >
+                <Calculator aria-hidden className="size-5 text-thrust-text" />
+              </button>
+            </>
+          }
           footer={
             // On phones, the steps sit just above the close button.
             <div className="pb-[calc(max(1.25rem,env(safe-area-inset-bottom))+3.75rem)] md:pb-4">
@@ -116,8 +142,9 @@ export default function MapDialog({
           onClick={() => {
             setSelected(null);
             setResets((n) => n + 1);
+            onReset();
           }}
-          aria-label="Reset the map"
+          aria-label="Reset path"
           className={floatingButton}
         >
           <RotateCcw aria-hidden className="size-5 text-thrust-text" />

@@ -36,10 +36,12 @@ interface MapViewerProps {
   resets?: number;
   /** Shown over the bottom of the map, which keeps the trip clear of it. */
   footer?: ReactNode;
+  /** Buttons shown above the zoom buttons. */
+  controls?: ReactNode;
 }
 
 const controlButton =
-  'grid size-11 cursor-pointer place-items-center rounded-xl bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
+  'grid size-11 cursor-pointer place-items-center rounded-full bg-surface/90 text-ink shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface active:scale-90 disabled:cursor-not-allowed disabled:opacity-50';
 
 /** The Δv map, zoomed and panned with touch, mouse wheel, buttons or arrow keys. */
 export function MapViewer({
@@ -48,6 +50,7 @@ export function MapViewer({
   focus,
   resets,
   footer,
+  controls,
 }: MapViewerProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -308,7 +311,8 @@ export function MapViewer({
         </div>
       </div>
 
-      <div className="absolute top-3 right-3 flex flex-col gap-2">
+      <div className="absolute top-[max(1rem,env(safe-area-inset-top))] right-4 flex flex-col gap-2">
+        {controls && <div className="mb-2 flex flex-col gap-3">{controls}</div>}
         <button
           type="button"
           onClick={() =>

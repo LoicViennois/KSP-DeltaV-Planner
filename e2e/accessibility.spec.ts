@@ -84,6 +84,29 @@ for (const theme of ['dark', 'light'] as const) {
       await expectNoViolations(page);
     });
 
+    test('full screen map on wide screens', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Duna');
+      await page
+        .getByRole('button', { name: 'Open the map in full screen' })
+        .click();
+      await expect(page.getByRole('dialog', { name: 'Δv map' })).toBeVisible();
+
+      await expectNoViolations(page);
+    });
+
+    test('reading the numbers dialog', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await page.getByRole('button', { name: 'Reading the numbers' }).click();
+      await expect(
+        page.getByRole('dialog', { name: 'Reading the numbers' }),
+      ).toBeVisible();
+
+      await expectNoViolations(page);
+    });
+
     test('about dialog', async ({ page }) => {
       const planner = new PlannerPage(page);
       await planner.goto();

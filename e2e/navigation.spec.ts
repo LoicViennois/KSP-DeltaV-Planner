@@ -42,9 +42,9 @@ test.describe('Navigation', () => {
       'https://github.com/LoicViennois/KSP-DeltaV-Planner/blob/master/LICENSE',
     );
     await expect(dialog).toContainText('CC BY-NC-SA 4.0');
-    // The help lives in the about dialog too.
+    // The help lives in the about dialog too, the notes in their own.
     await expect(dialog).toContainText('This is a Δv planner');
-    await expect(dialog).toContainText('All values are vacuum Δv, in m/s.');
+    await expect(dialog).not.toContainText('All values are vacuum Δv');
     await expect(
       page.getByRole('banner').getByRole('button', { name: 'Help' }),
     ).toHaveCount(0);
