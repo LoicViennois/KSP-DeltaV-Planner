@@ -29,6 +29,36 @@ function shortLabel(step: Step): string {
     : label;
 }
 
+/** The faded edges of the list of steps, which a step is brought out of. */
+const EDGE = 16;
+
+/**
+ * Scrolls the list of steps just enough to show a step in full, out of its
+ * faded edges. Only the list scrolls: scrollIntoView would also scroll the
+ * map and the dialog around it.
+ */
+function reveal(step: HTMLElement) {
+  const list = step.closest('ul');
+  if (!list) {
+    return;
+  }
+  const outer = list.getBoundingClientRect();
+  const inner = step.getBoundingClientRect();
+  const by = (start: number, end: number, from: number, to: number) =>
+    start < from + EDGE
+      ? start - from - EDGE
+      : end > to - EDGE
+        ? end - to + EDGE
+        : 0;
+  list.scrollBy({
+    left: by(inner.left, inner.right, outer.left, outer.right),
+    top: by(inner.top, inner.bottom, outer.top, outer.bottom),
+    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'auto'
+      : 'smooth',
+  });
+}
+
 /** The Δv of a step, without its unit. */
 function amount(step: Step): string {
   return step.dvMax != null && step.dvMax !== step.dv
@@ -133,16 +163,7 @@ export default function MapDialog({
                         title={`${shortLabel(s)}, ${amount(s)} m/s`}
                         onClick={(event) => {
                           setSelected(s.type === selected ? null : s.type);
-                          // Bring a step cut by the edge of the row in full.
-                          event.currentTarget.scrollIntoView({
-                            behavior: matchMedia(
-                              '(prefers-reduced-motion: reduce)',
-                            ).matches
-                              ? 'auto'
-                              : 'smooth',
-                            block: 'nearest',
-                            inline: 'center',
-                          });
+                          reveal(event.currentTarget);
                         }}
                         className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-full bg-surface/90 pr-3.5 pl-3 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
                       >

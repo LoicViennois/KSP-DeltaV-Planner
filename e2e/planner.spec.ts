@@ -568,9 +568,27 @@ test.describe('Full screen map', () => {
     await expect
       .poll(async () => {
         const box = await ret.boundingBox();
-        return (box?.x ?? 0) + (box?.width ?? 0) <= 390 - 16;
+        return (box?.x ?? 0) + (box?.width ?? 0) <= 390 - 16 + 1;
       })
       .toBe(true);
+
+    // The last step stays on the right, and nothing else moves.
+    const close = dialog.getByRole('button', { name: 'Close' });
+    const before = await close.boundingBox();
+    const total = steps.getByRole('button', { name: /^Total/ });
+    const end = await total.boundingBox();
+    await page.mouse.click(
+      ((end?.x ?? 0) + 390) / 2,
+      (end?.y ?? 0) + (end?.height ?? 0) / 2,
+    );
+    await expect(total).toHaveAttribute('aria-pressed', 'true');
+    await expect
+      .poll(async () => {
+        const box = await total.boundingBox();
+        return Math.round((box?.x ?? 0) + (box?.width ?? 0));
+      })
+      .toBe(390 - 16);
+    expect(await close.boundingBox()).toEqual(before);
   });
 
   test('pans the map clear of the steps and the buttons', async ({ page }) => {
@@ -591,6 +609,8 @@ test.describe('Full screen map', () => {
       await page.mouse.down();
       await page.mouse.move(20, 100, { steps: 5 });
       await page.mouse.up();
+      // Too soon, the next drag would be a double tap.
+      await page.waitForTimeout(350);
     }
     const [map, bar, zoom] = await Promise.all([
       content.boundingBox(),
