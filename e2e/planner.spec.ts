@@ -176,6 +176,12 @@ test.describe('Delta-V planner', () => {
       await page.setViewportSize({ width, height: 800 });
       const planner = new PlannerPage(page);
       await planner.goto();
+      const fits = (field: typeof planner.from) =>
+        field
+          .getByTestId('body-name')
+          .evaluate((el) => el.scrollWidth <= el.clientWidth);
+      // The placeholder fits too.
+      expect(await fits(planner.to)).toBe(true);
       await planner.select(planner.from, 'Minmus');
       await planner.select(planner.to, 'Laythe');
 
@@ -184,13 +190,17 @@ test.describe('Delta-V planner', () => {
         planner.to.boundingBox(),
       ]);
       expect(from?.y).toBe(to?.y);
-      expect((from?.x ?? 0) + (from?.width ?? 0)).toBeLessThan(to?.x ?? 0);
+      expect((from?.x ?? 0) + (from?.width ?? 0)).toBeLessThanOrEqual(
+        to?.x ?? 0,
+      );
+      // Reverse sits on the line between them.
+      const reverse = await planner.reverseButton.boundingBox();
+      expect(
+        Math.abs((reverse?.x ?? 0) + (reverse?.width ?? 0) / 2 - (to?.x ?? 0)),
+      ).toBeLessThan(1);
       // The longest names fit, without being cut.
       for (const field of [planner.from, planner.to]) {
-        const name = field.locator('span');
-        expect(
-          await name.evaluate((el) => el.scrollWidth <= el.clientWidth),
-        ).toBe(true);
+        expect(await fits(field)).toBe(true);
       }
 
       // The list of the right field stays on the screen.

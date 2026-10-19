@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 import {
   ArrowLeftRight,
+  ArrowRight,
   Calculator,
   MapIcon,
   Maximize2,
-  RotateCcw,
   Telescope,
 } from 'lucide-react';
 import { lazy, Suspense, useMemo, useState } from 'react';
@@ -33,9 +33,6 @@ const MapDialog = lazy(() => import('../components/MapDialog'));
 export const Route = createFileRoute('/')({
   component: PlannerPage,
 });
-
-const toolButton =
-  'flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-ink-soft transition hover:bg-tint hover:text-ink active:scale-95';
 
 function PlannerPage() {
   const [trip, setTrip] = useState<Trip>(initialTrip);
@@ -95,48 +92,55 @@ function PlannerPage() {
       </div>
 
       <section aria-labelledby="planner-title" className="space-y-5">
-        <div>
+        <div className="flex items-baseline justify-between gap-4">
           <h1 id="planner-title" className="text-2xl font-bold tracking-tight">
             Plan your trip
           </h1>
+          <button
+            type="button"
+            onClick={() => update(initialTrip)}
+            aria-label="Reset path"
+            className="cursor-pointer text-sm font-semibold text-ink-soft underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-thrust"
+          >
+            Reset
+          </button>
         </div>
 
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-3">
-            <BodyPicker
-              label="From"
-              placeholder="Select…"
-              value={trip.from}
-              onChange={(body) => update(withFrom(trip, body))}
+        <div className="relative grid grid-cols-2 rounded-xl border border-line bg-surface">
+          <BodyPicker
+            label="From"
+            placeholder="Select…"
+            value={trip.from}
+            onChange={(body) => update(withFrom(trip, body))}
+            side="start"
+          />
+          <BodyPicker
+            label="To"
+            placeholder="Select…"
+            value={trip.to}
+            onChange={(body) => update(withTo(trip, body))}
+            side="end"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-1/2 border-l border-line"
+          />
+          <button
+            type="button"
+            onClick={() => update(reversed(trip))}
+            aria-label="Reverse path"
+            title="Reverse"
+            className="group absolute top-1/2 left-1/2 grid size-8 -translate-1/2 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink-soft transition hover:border-thrust hover:text-ink active:scale-90"
+          >
+            <ArrowRight
+              aria-hidden
+              className="size-4 group-hover:hidden group-focus-visible:hidden"
             />
-            <BodyPicker
-              label="To"
-              placeholder="Select…"
-              value={trip.to}
-              onChange={(body) => update(withTo(trip, body))}
-              align="end"
+            <ArrowLeftRight
+              aria-hidden
+              className="hidden size-4 group-hover:block group-focus-visible:block"
             />
-          </div>
-          <div className="flex justify-center gap-1">
-            <button
-              type="button"
-              onClick={() => update(reversed(trip))}
-              aria-label="Reverse path"
-              className={toolButton}
-            >
-              <ArrowLeftRight aria-hidden className="size-4" />
-              Reverse
-            </button>
-            <button
-              type="button"
-              onClick={() => update(initialTrip)}
-              aria-label="Reset path"
-              className={toolButton}
-            >
-              <RotateCcw aria-hidden className="size-4" />
-              Reset
-            </button>
-          </div>
+          </button>
         </div>
 
         <TripOptions
