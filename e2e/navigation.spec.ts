@@ -75,7 +75,7 @@ test('switches the theme without the text flickering', async ({ page }) => {
 
   // Colours of a few panel texts before, then on each frame after, the switch.
   const frames: string[] = await page.evaluate(`(async () => {
-    const texts = ['h1', '[role=combobox] span', 'fieldset label', 'fieldset legend'].map(
+    const texts = ['h1', '[data-testid=body-name]', 'fieldset label', 'fieldset legend'].map(
       (selector) => document.querySelector(selector),
     );
     const read = () => texts.map((el) => getComputedStyle(el).color).join();

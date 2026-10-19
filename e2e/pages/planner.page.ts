@@ -1,5 +1,17 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+const MOON_PARENTS: Record<string, string> = {
+  Mun: 'Kerbin',
+  Minmus: 'Kerbin',
+  Gilly: 'Eve',
+  Ike: 'Duna',
+  Laythe: 'Jool',
+  Vall: 'Jool',
+  Tylo: 'Jool',
+  Bop: 'Jool',
+  Pol: 'Jool',
+};
+
 export class PlannerPage {
   readonly page: Page;
   readonly heading: Locator;
@@ -20,8 +32,8 @@ export class PlannerPage {
   constructor(page: Page) {
     this.page = page;
     this.heading = page.getByRole('heading', { level: 1 });
-    this.from = page.getByRole('combobox', { name: 'From' });
-    this.to = page.getByRole('combobox', { name: 'To' });
+    this.from = page.getByRole('button', { name: /^From\b/ });
+    this.to = page.getByRole('button', { name: /^To\b/ });
     this.landing = page.getByRole('checkbox', { name: 'Landing' });
     this.aerobraking = page.getByRole('checkbox', { name: 'Aerobraking' });
     this.return = page.getByRole('checkbox', { name: 'Return' });
@@ -45,13 +57,22 @@ export class PlannerPage {
     await expect(this.page).toHaveTitle('KSP Delta-V Planner');
   }
 
-  async select(picker: Locator, body: string): Promise<void> {
-    await picker.click();
-    await this.page
-      .getByRole('listbox')
-      .getByRole('option', { name: body, exact: true })
-      .click();
-    await expect(picker).toContainText(body);
+  /** Sets an end of the trip, through the planet first for a moon. */
+  async select(end: Locator, body: string): Promise<void> {
+    await end.click();
+    const parent = MOON_PARENTS[body];
+    if (parent) {
+      await this.body(parent).click();
+    }
+    await this.body(body).click();
+    await expect(end).toContainText(body);
+  }
+
+  /** A planet, or a moon of the planet shown, to tap. */
+  body(name: string): Locator {
+    return this.page.getByRole('button', {
+      name: new RegExp(`^${name}(,|$)`),
+    });
   }
 
   /** A map element, by its id in the SVG. */

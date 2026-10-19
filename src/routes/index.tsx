@@ -1,17 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import {
-  ArrowLeftRight,
-  ArrowRight,
-  Calculator,
-  MapIcon,
-  Maximize2,
-  Telescope,
-} from 'lucide-react';
+import { Calculator, MapIcon, Maximize2, Telescope } from 'lucide-react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 
-import { BodyPicker } from '../components/BodyPicker';
 import { NotesDialog } from '../components/NotesDialog';
 import { StepList } from '../components/StepList';
+import { SystemPicker } from '../components/SystemPicker';
 import { TripOptions } from '../components/TripOptions';
 import { useMediaQuery } from '../lib/media';
 import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
@@ -19,11 +12,8 @@ import {
   initialTrip,
   isKerbinTrip,
   planTrip,
-  reversed,
   type Step,
   type Trip,
-  withFrom,
-  withTo,
 } from '../lib/planner';
 
 // Small screens only download the map once it is opened in full screen.
@@ -106,42 +96,7 @@ function PlannerPage() {
           </button>
         </div>
 
-        <div className="relative grid grid-cols-2 rounded-xl border border-line bg-surface">
-          <BodyPicker
-            label="From"
-            placeholder="Select…"
-            value={trip.from}
-            onChange={(body) => update(withFrom(trip, body))}
-            side="start"
-          />
-          <BodyPicker
-            label="To"
-            placeholder="Select…"
-            value={trip.to}
-            onChange={(body) => update(withTo(trip, body))}
-            side="end"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-1/2 border-l border-line"
-          />
-          <button
-            type="button"
-            onClick={() => update(reversed(trip))}
-            aria-label="Reverse path"
-            title="Reverse"
-            className="group absolute top-1/2 left-1/2 grid size-8 -translate-1/2 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink-soft transition hover:border-thrust hover:text-ink active:scale-90"
-          >
-            <ArrowRight
-              aria-hidden
-              className="size-4 group-hover:hidden group-focus-visible:hidden"
-            />
-            <ArrowLeftRight
-              aria-hidden
-              className="hidden size-4 group-hover:block group-focus-visible:block"
-            />
-          </button>
-        </div>
+        <SystemPicker trip={trip} onChange={update} />
 
         <TripOptions
           trip={trip}

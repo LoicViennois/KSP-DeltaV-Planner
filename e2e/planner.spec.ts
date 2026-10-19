@@ -203,11 +203,19 @@ test.describe('Delta-V planner', () => {
         expect(await fits(field)).toBe(true);
       }
 
-      // The list of the right field stays on the screen.
-      await planner.to.click();
-      const list = await page.getByRole('listbox').boundingBox();
-      expect(list?.x ?? -1).toBeGreaterThanOrEqual(0);
-      expect((list?.x ?? 0) + (list?.width ?? 0)).toBeLessThanOrEqual(width);
+      // Every planet of the system fits on one row.
+      const planets = page.getByRole('list', { name: 'Planets' });
+      const row = await planets
+        .getByRole('button')
+        .evaluateAll((buttons) =>
+          buttons.map((b) => b.getBoundingClientRect()),
+        );
+      expect(row).toHaveLength(8);
+      expect(Math.max(...row.map((r) => r.right))).toBeLessThanOrEqual(width);
+      expect(new Set(row.map((r) => Math.round(r.bottom))).size).toBe(1);
+      expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
+        width,
+      );
     });
   }
 
@@ -245,39 +253,56 @@ test.describe('Delta-V planner', () => {
   test('picks a body with the keyboard', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
+    await expect(planner.to).toHaveAttribute('aria-pressed', 'true');
 
-    await planner.to.focus();
-    await page.keyboard.press('ArrowDown');
-    const listbox = page.getByRole('listbox');
-    await expect(listbox).toBeVisible();
-    await page.keyboard.type('ik');
-    await expect(
-      listbox.getByRole('option', { name: 'Ike', exact: true }),
-    ).toHaveAttribute(
-      'id',
-      (await planner.to.getAttribute('aria-activedescendant')) as string,
-    );
+    await planner.from.focus();
     await page.keyboard.press('Enter');
-
-    await expect(listbox).toBeHidden();
-    await expect(planner.to).toContainText('Ike');
-    await expect(planner.to).toBeFocused();
-
-    await page.keyboard.press('Space');
-    await expect(listbox).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(listbox).toBeHidden();
-    await expect(planner.to).toContainText('Ike');
+    await expect(planner.from).toHaveAttribute('aria-pressed', 'true');
+    await expect(
+      page.getByText('Tap a body to set the starting point'),
+    ).toBeVisible();
+    await planner.body('Duna').focus();
+    await page.keyboard.press('Enter');
+    await expect(planner.from).toContainText('Duna');
+    await expect(planner.to).toContainText('Kerbin');
+    await expect(planner.body('Duna')).toHaveAccessibleName(
+      'Duna, starting point',
+    );
   });
 
-  test('closes the body list when clicking elsewhere', async ({ page }) => {
+  test('shows the moons of the tapped planet, to go further', async ({
+    page,
+  }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
+    // Kerbin's moons are there from the start.
+    await expect(
+      page.getByRole('list', { name: 'Moons of Kerbin' }),
+    ).toBeVisible();
 
-    await planner.to.click();
-    await expect(page.getByRole('listbox')).toBeVisible();
-    await planner.heading.click();
-    await expect(page.getByRole('listbox')).toBeHidden();
+    await planner.body('Jool').click();
+    await expect(planner.to).toContainText('Jool');
+    const moons = page.getByRole('list', { name: 'Moons of Jool' });
+    await expect(moons.getByRole('button')).toHaveCount(5);
+    await planner.body('Tylo').click();
+    await expect(planner.to).toContainText('Tylo');
+    await expect(planner.from).toContainText('Kerbin');
+
+    await planner.body('Dres').click();
+    await expect(page.getByText('Dres has no moons.')).toBeVisible();
+  });
+
+  test('reverses the end to set with the path', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+
+    await planner.reverseButton.click();
+    await expect(planner.from).toContainText('Duna');
+    await expect(planner.from).toHaveAttribute('aria-pressed', 'true');
+    await planner.body('Eve').click();
+    await expect(planner.from).toContainText('Eve');
+    await expect(planner.to).toContainText('Kerbin');
   });
 });
 

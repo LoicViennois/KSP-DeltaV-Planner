@@ -54,11 +54,10 @@ for (const theme of ['dark', 'light'] as const) {
       await expectNoViolations(page);
     });
 
-    test('open body list', async ({ page }) => {
+    test('moon of another planet', async ({ page }) => {
       const planner = new PlannerPage(page);
       await planner.goto();
-      await planner.to.click();
-      await expect(page.getByRole('listbox')).toBeVisible();
+      await planner.select(planner.from, 'Laythe');
 
       await expectNoViolations(page);
     });
