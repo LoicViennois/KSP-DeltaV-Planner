@@ -19,7 +19,6 @@ import {
   isKerbinTrip,
   planTrip,
   reversed,
-  type Step,
   type StepType,
   type Trip,
   withFrom,
@@ -36,13 +35,10 @@ export const Route = createFileRoute('/')({
 
 function PlannerPage() {
   const [trip, setTrip] = useState<Trip>(initialTrip);
-  const [hovered, setHovered] = useState<Step | null>(null);
   const [selected, setSelected] = useState<StepType>('total');
   const plan = useMemo(() => planTrip(trip), [trip]);
   const shown =
-    hovered ??
-    [...plan.steps, plan.total].find((step) => step?.type === selected) ??
-    null;
+    [...plan.steps, plan.total].find((step) => step?.type === selected) ?? null;
   const showMap = useMediaQuery('(min-width: 48rem)');
   const homeTrip = isKerbinTrip(trip);
   const [mapOpen, setMapOpen] = useState(false);
@@ -57,7 +53,6 @@ function PlannerPage() {
 
   function update(next: Trip) {
     setTrip(next);
-    setHovered(null);
     setSelected('total');
   }
 
@@ -151,12 +146,7 @@ function PlannerPage() {
         />
 
         {plan.steps.length > 0 ? (
-          <StepList
-            plan={plan}
-            selected={selected}
-            onSelect={setSelected}
-            onHover={setHovered}
-          />
+          <StepList plan={plan} selected={selected} onSelect={setSelected} />
         ) : (
           <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
             <Telescope aria-hidden className="size-8" />

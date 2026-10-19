@@ -285,7 +285,7 @@ test.describe('Delta-V planner', () => {
 });
 
 test.describe('Δv map', () => {
-  test('highlights the planned path and the hovered step', async ({ page }) => {
+  test('highlights the planned path and the picked step', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await expect(planner.map).toBeVisible();
@@ -295,14 +295,16 @@ test.describe('Δv map', () => {
     await expect(planner.mapElement('eeloo')).toHaveClass(/map-fade/);
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/map-fade/);
 
-    await planner.steps.nth(0).hover();
+    // Hovering a step is not enough.
+    const takeOff = planner.steps.nth(0).getByRole('button');
+    await takeOff.hover();
+    await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
+
+    await takeOff.click();
     await expect(planner.mapElement('kerbin-ground')).not.toHaveClass(
       /fade-soft/,
     );
     await expect(planner.mapElement('duna-low')).toHaveClass(/fade-soft/);
-
-    await planner.heading.hover();
-    await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });
 
   test('shows the picked step, the total by default', async ({ page }) => {
@@ -372,12 +374,17 @@ test.describe('Δv map', () => {
     }
   });
 
-  test('highlights a step on keyboard focus', async ({ page }) => {
+  test('highlights a step picked with the keyboard', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
 
+    // Focusing the step is not enough.
     await planner.steps.nth(1).getByRole('button').focus();
+    await expect(planner.mapElement('kerbin-ground')).not.toHaveClass(
+      /fade-soft/,
+    );
+    await page.keyboard.press('Enter');
     await expect(planner.mapElement('kerbin-ground')).toHaveClass(/fade-soft/);
     await expect(planner.mapElement('duna-low')).not.toHaveClass(/fade-soft/);
   });

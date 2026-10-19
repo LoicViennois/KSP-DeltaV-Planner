@@ -110,26 +110,18 @@ interface StepListProps {
   /** The step shown on the map, the total unless another one is picked. */
   selected: StepType;
   onSelect: (type: StepType) => void;
-  onHover: (step: Step | null) => void;
 }
 
 const card =
   'flex w-full animate-fade-in cursor-pointer items-center gap-3 rounded-xl border border-line bg-surface p-3 text-left transition hover:border-ink-soft aria-pressed:border-thrust aria-pressed:bg-thrust-surface aria-pressed:ring-1 aria-pressed:ring-thrust';
 
-/**
- * The steps of a trip; picking one shows it on the map, and hovering or
- * focusing one shows it there for a while.
- */
-export function StepList({ plan, selected, onSelect, onHover }: StepListProps) {
+/** The steps of a trip; picking one shows it on the map. */
+export function StepList({ plan, selected, onSelect }: StepListProps) {
   const button = (step: Step) => ({
     type: 'button' as const,
     'aria-pressed': step.type === selected,
     // Picking the step shown again goes back to the total.
     onClick: () => onSelect(step.type === selected ? 'total' : step.type),
-    onMouseEnter: () => onHover(step),
-    onMouseLeave: () => onHover(null),
-    onFocus: () => onHover(step),
-    onBlur: () => onHover(null),
   });
 
   return (
