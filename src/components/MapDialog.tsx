@@ -101,6 +101,12 @@ interface MapDialogProps {
   onShowNotes: () => void;
   trip: Trip;
   plan: TripPlan;
+  /**
+   * The step picked, shared with the panel: the total by default, and again
+   * with every new trip.
+   */
+  selected: StepType;
+  onSelect: (type: StepType) => void;
 }
 
 /** The Δv map in full screen, where tapping a step zooms on it. */
@@ -111,14 +117,9 @@ export default function MapDialog({
   onShowNotes,
   trip,
   plan,
+  selected,
+  onSelect,
 }: MapDialogProps) {
-  // As in the panel, the total is picked by default, and again with every
-  // new trip: the pick only holds for the trip it was made on.
-  const [pick, setPick] = useState<{ trip: Trip; type: StepType }>({
-    trip,
-    type: 'total',
-  });
-  const selected = pick.trip === trip ? pick.type : 'total';
   // Bumped to zoom back out, even when the trip was already empty.
   const [resets, setResets] = useState(0);
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
@@ -215,10 +216,7 @@ export default function MapDialog({
                         title={`${shortLabel(s)}, ${amount(s)} m/s`}
                         onClick={(event) => {
                           // Picked again, the step gives way to the total.
-                          setPick({
-                            trip,
-                            type: s.type === selected ? 'total' : s.type,
-                          });
+                          onSelect(s.type === selected ? 'total' : s.type);
                           reveal(event.currentTarget);
                         }}
                         className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-full bg-surface/90 pr-3.5 pl-3 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}
