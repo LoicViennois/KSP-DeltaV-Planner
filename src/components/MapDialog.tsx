@@ -112,7 +112,13 @@ export default function MapDialog({
   trip,
   plan,
 }: MapDialogProps) {
-  const [selected, setSelected] = useState<StepType | null>(null);
+  // As in the panel, the total is picked by default, and again with every
+  // new trip: the pick only holds for the trip it was made on.
+  const [pick, setPick] = useState<{ trip: Trip; type: StepType }>({
+    trip,
+    type: 'total',
+  });
+  const selected = pick.trip === trip ? pick.type : 'total';
   // Bumped to zoom back out, even when the trip was already empty.
   const [resets, setResets] = useState(0);
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
@@ -120,7 +126,8 @@ export default function MapDialog({
   const focus = useMemo(() => mapHighlight(trip, step), [trip, step]);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Opened again, the map shows the step still picked in full.
+  // Opened again, the map shows the step still picked in full; the total,
+  // picked by default, leaves the row at its start.
   useEffect(() => {
     if (!open) {
       return;
@@ -129,7 +136,7 @@ export default function MapDialog({
       const picked = listRef.current?.querySelector<HTMLElement>(
         '[aria-pressed="true"]',
       );
-      if (picked) {
+      if (picked && picked.dataset.step !== 'total') {
         reveal(picked, false);
       }
     });
@@ -159,7 +166,6 @@ export default function MapDialog({
                 <button
                   type="button"
                   onClick={() => {
-                    setSelected(null);
                     setResets((n) => n + 1);
                     onReset();
                   }}
@@ -204,10 +210,15 @@ export default function MapDialog({
                       <button
                         type="button"
                         aria-pressed={s.type === selected}
+                        data-step={s.type}
                         aria-label={`${shortLabel(s)}, ${amount(s)} m/s`}
                         title={`${shortLabel(s)}, ${amount(s)} m/s`}
                         onClick={(event) => {
-                          setSelected(s.type === selected ? null : s.type);
+                          // Picked again, the step gives way to the total.
+                          setPick({
+                            trip,
+                            type: s.type === selected ? 'total' : s.type,
+                          });
                           reveal(event.currentTarget);
                         }}
                         className={`flex h-10 cursor-pointer items-center gap-1.5 rounded-full bg-surface/90 pr-3.5 pl-3 font-digits text-sm whitespace-nowrap shadow-lg ring-1 ring-line backdrop-blur transition hover:bg-surface aria-pressed:bg-thrust-surface aria-pressed:ring-2 aria-pressed:ring-thrust ${s.type === 'total' ? 'font-bold' : 'font-semibold'}`}

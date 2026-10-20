@@ -712,6 +712,51 @@ test.describe('Full screen map', () => {
     });
   }
 
+  for (const [name, width, height, open] of [
+    ['narrow', 390, 844, 'Map'],
+    ['wide', 1280, 720, 'Open the map in full screen'],
+  ] as const) {
+    test(`picks steps as the panel does on ${name} screens`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height });
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Duna');
+      const openMap = page.getByRole('button', { name: open, exact: true });
+      await openMap.click();
+      const dialog = page.getByRole('dialog', { name: 'Δv map' });
+      const steps = dialog.getByRole('list', {
+        name: 'Show a step on the map',
+      });
+      const total = steps.getByRole('button', { name: /^Total/ });
+      const takeOff = steps.getByRole('button', { name: /^Take off/ });
+
+      // The total is picked by default.
+      await expect(total).toHaveAttribute('aria-pressed', 'true');
+      await takeOff.click();
+      await expect(takeOff).toHaveAttribute('aria-pressed', 'true');
+      await expect(total).toHaveAttribute('aria-pressed', 'false');
+
+      // The pick holds when the map is opened again.
+      await page.keyboard.press('Escape');
+      await openMap.click();
+      await expect(takeOff).toHaveAttribute('aria-pressed', 'true');
+
+      // Picked again, the step gives way to the total.
+      await takeOff.click();
+      await expect(total).toHaveAttribute('aria-pressed', 'true');
+      await expect(takeOff).toHaveAttribute('aria-pressed', 'false');
+
+      // A new trip starts on its total.
+      await takeOff.click();
+      await page.keyboard.press('Escape');
+      await planner.select(planner.to, 'Eve');
+      await openMap.click();
+      await expect(total).toHaveAttribute('aria-pressed', 'true');
+    });
+  }
+
   test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
