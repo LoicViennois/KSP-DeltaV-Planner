@@ -795,6 +795,34 @@ test.describe('Full screen map', () => {
     await expect(planner.total).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('keeps the page still behind it', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 600 });
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Laythe');
+    await planner.landing.check();
+    await planner.return.check();
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    const steps = page.getByRole('list', { name: 'Show a step on the map' });
+    const row = await steps.boundingBox();
+    const scrolled = await page.evaluate<number>('window.scrollY');
+
+    // Scrolling over the steps does not scroll the page under the map.
+    await page.mouse.move(100, (row?.y ?? 0) + 20);
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(300);
+    expect(await page.evaluate('window.scrollY')).toBe(scrolled);
+
+    // Closed, the map gives the page its scrolling back.
+    await page.keyboard.press('Escape');
+    await page.mouse.wheel(0, 400);
+    await expect
+      .poll(() => page.evaluate<number>('window.scrollY'))
+      .toBeGreaterThan(scrolled);
+    // The header stays at the top of the screen.
+    expect((await page.getByRole('banner').boundingBox())?.y).toBe(0);
+  });
+
   test('closes from the top right corner on wide screens', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

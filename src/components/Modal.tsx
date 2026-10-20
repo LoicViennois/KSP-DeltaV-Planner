@@ -44,7 +44,7 @@ export function Modal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
       aria-labelledby={hideHeader ? undefined : titleId}
       aria-label={hideHeader ? title : undefined}
-      className={`m-auto rounded-2xl border border-line bg-surface p-0 text-left text-ink shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm open:animate-rise ${className ?? ''}`}
+      className={`m-auto overscroll-contain rounded-2xl border border-line bg-surface p-0 text-left text-ink shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm open:animate-rise ${className ?? ''}`}
     >
       {!hideHeader && (
         <div className="flex items-center justify-between gap-4 px-6 pt-5">
