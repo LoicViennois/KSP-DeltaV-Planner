@@ -15,47 +15,41 @@ export function Header() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <>
-      {/* Fixed rather than sticky: Chrome on Android, with its address bar
-          at the bottom, was seen partly hiding the sticky one on scroll. */}
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-(--shell-width) items-center justify-between gap-2 px-4 lg:px-6">
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 rounded-lg"
-            aria-label="KSP Delta-V Planner, home"
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-(--shell-width) items-center justify-between gap-2 px-4 lg:px-6">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 rounded-lg"
+          aria-label="KSP Delta-V Planner, home"
+        >
+          <Logo />
+          <span className="text-lg font-semibold tracking-tight whitespace-nowrap">
+            KSP <span className="hidden sm:inline">Delta-V</span>
+            <span className="sm:hidden">Δv</span> Planner
+          </span>
+        </Link>
+        <nav aria-label="Site" className="flex items-center gap-1">
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener"
+            aria-label="GitHub repository"
+            className={iconButton}
           >
-            <Logo />
-            <span className="text-lg font-semibold tracking-tight whitespace-nowrap">
-              KSP <span className="hidden sm:inline">Delta-V</span>
-              <span className="sm:hidden">Δv</span> Planner
-            </span>
-          </Link>
-          <nav aria-label="Site" className="flex items-center gap-1">
-            <a
-              href={repoUrl}
-              target="_blank"
-              rel="noopener"
-              aria-label="GitHub repository"
-              className={iconButton}
-            >
-              <GitHubIcon className="size-5" />
-            </a>
-            <button
-              type="button"
-              onClick={() => setAboutOpen(true)}
-              aria-label="About"
-              className={iconButton}
-            >
-              <Info className="size-5" aria-hidden />
-            </button>
-            <ThemeToggle />
-          </nav>
-        </div>
-        <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
-      </header>
-      {/* Keeps the page below the header, as high as it is. */}
-      <div aria-hidden className="h-[calc(3.5rem+1px)]" />
-    </>
+            <GitHubIcon className="size-5" />
+          </a>
+          <button
+            type="button"
+            onClick={() => setAboutOpen(true)}
+            aria-label="About"
+            className={iconButton}
+          >
+            <Info className="size-5" aria-hidden />
+          </button>
+          <ThemeToggle />
+        </nav>
+      </div>
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+    </header>
   );
 }
