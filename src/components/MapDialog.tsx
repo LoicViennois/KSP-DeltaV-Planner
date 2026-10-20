@@ -1,5 +1,5 @@
 import { Calculator, RotateCcw, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { mapHighlight } from '../lib/map-highlight';
 import type { Step, StepType, Trip, TripPlan } from '../lib/planner';
@@ -31,31 +31,58 @@ function shortLabel(step: Step): string {
 
 /** The faded edges of the list of steps, which a step is brought out of. */
 const EDGE = 16;
+/** How much of the next step shows past a step, to hint at the rest. */
+const PEEK = 40;
 
 /**
  * Scrolls the list of steps just enough to show a step in full, out of its
- * faded edges. Only the list scrolls: scrollIntoView would also scroll the
- * map and the dialog around it.
+ * faded edges, with a bit of the steps around it. Only the list scrolls:
+ * scrollIntoView would also scroll the map and the dialog around it.
  */
-function reveal(step: HTMLElement) {
-  const list = step.closest('ul');
-  if (!list) {
+function reveal(step: HTMLElement, smooth = true) {
+  const item = step.closest('li');
+  const list = item?.parentElement;
+  if (!item || !list) {
     return;
   }
-  const outer = list.getBoundingClientRect();
-  const inner = step.getBoundingClientRect();
-  const by = (start: number, end: number, from: number, to: number) =>
-    start < from + EDGE
-      ? start - from - EDGE
-      : end > to - EDGE
-        ? end - to + EDGE
-        : 0;
-  list.scrollBy({
-    left: by(inner.left, inner.right, outer.left, outer.right),
-    top: by(inner.top, inner.bottom, outer.top, outer.bottom),
-    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-      ? 'auto'
-      : 'smooth',
+  // Where the list should scroll to show [start, end] in its view.
+  const to = (
+    scroll: number,
+    view: number,
+    start: number,
+    end: number,
+    before: number,
+    after: number,
+  ) => {
+    // The neighbours only show when the step itself still fits.
+    const room = end - start + before + after + 2 * EDGE <= view;
+    const from = start - EDGE - (room ? before : 0);
+    const until = end + EDGE + (room ? after : 0);
+    return from < scroll ? from : until > scroll + view ? until - view : scroll;
+  };
+  const prev = item.previousElementSibling ? PEEK : 0;
+  const next = item.nextElementSibling ? PEEK : 0;
+  list.scrollTo({
+    left: to(
+      list.scrollLeft,
+      list.clientWidth,
+      item.offsetLeft,
+      item.offsetLeft + item.offsetWidth,
+      prev,
+      next,
+    ),
+    top: to(
+      list.scrollTop,
+      list.clientHeight,
+      item.offsetTop,
+      item.offsetTop + item.offsetHeight,
+      prev,
+      next,
+    ),
+    behavior:
+      smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'smooth'
+        : 'auto',
   });
 }
 
@@ -91,6 +118,23 @@ export default function MapDialog({
   const steps = plan.total ? [...plan.steps, plan.total] : plan.steps;
   const step = steps.find((s) => s.type === selected) ?? null;
   const focus = useMemo(() => mapHighlight(trip, step), [trip, step]);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Opened again, the map shows the step still picked in full.
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      const picked = listRef.current?.querySelector<HTMLElement>(
+        '[aria-pressed="true"]',
+      );
+      if (picked) {
+        reveal(picked, false);
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open]);
 
   return (
     <Modal
@@ -150,9 +194,10 @@ export default function MapDialog({
             <div className="pb-[max(1rem,env(safe-area-inset-bottom))]">
               {steps.length > 0 ? (
                 <ul
+                  ref={listRef}
                   aria-label="Show a step on the map"
                   // A row on phones, a column under the buttons on wider screens.
-                  className="pointer-events-auto flex gap-2 overflow-x-auto px-4 py-1 justify-center-safe [mask-image:linear-gradient(to_right,transparent,#000_1rem,#000_calc(100%-1rem),transparent)] [scrollbar-width:none] md:max-h-[calc(100dvh-20rem)] md:flex-col md:items-end md:justify-start md:overflow-y-auto md:px-1 md:[mask-image:none]"
+                  className="pointer-events-auto relative flex gap-2 overflow-x-auto px-4 py-1 justify-center-safe [mask-image:linear-gradient(to_right,transparent,#000_1rem,#000_calc(100%-1rem),transparent)] [scrollbar-width:none] md:max-h-[calc(100dvh-20rem)] md:flex-col md:items-end md:justify-start md:overflow-y-auto md:px-1 md:[mask-image:none]"
                 >
                   {steps.map((s) => (
                     <li key={s.type} className="shrink-0">

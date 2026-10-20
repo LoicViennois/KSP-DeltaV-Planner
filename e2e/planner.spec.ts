@@ -541,7 +541,9 @@ test.describe('Full screen map', () => {
     await expect(planner.to).toContainText('Select…');
   });
 
-  test('scrolls a step cut by the edge into view', async ({ page }) => {
+  test('scrolls a step cut by the edge into view, with a hint of the next', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const planner = new PlannerPage(page);
     await planner.goto();
@@ -565,17 +567,30 @@ test.describe('Full screen map', () => {
       (cut?.y ?? 0) + (cut?.height ?? 0) / 2,
     );
     await expect(ret).toHaveAttribute('aria-pressed', 'true');
-    await expect
-      .poll(async () => {
-        const box = await ret.boundingBox();
-        return (box?.x ?? 0) + (box?.width ?? 0) <= 390 - 16 + 1;
-      })
-      .toBe(true);
+    // Shown in full, with a bit of the next step as a hint.
+    const total = steps.getByRole('button', { name: /^Total/ });
+    const shown = async () => {
+      const [box, after] = await Promise.all([
+        ret.boundingBox(),
+        total.boundingBox(),
+      ]);
+      return (
+        (box?.x ?? 0) >= 16 - 1 &&
+        (box?.x ?? 0) + (box?.width ?? 0) <= 390 - 16 + 1 &&
+        (after?.x ?? 390) <= 390 - 16 - 24
+      );
+    };
+    await expect.poll(shown).toBe(true);
+
+    // Opened again, the map still shows it that way.
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await expect(dialog).toBeHidden();
+    await page.getByRole('button', { name: 'Map', exact: true }).click();
+    await expect(ret).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(shown).toBe(true);
 
     // The last step stays on the right, and nothing else moves.
     const close = dialog.getByRole('button', { name: 'Close' });
-    const before = await close.boundingBox();
-    const total = steps.getByRole('button', { name: /^Total/ });
     const end = await total.boundingBox();
     await page.mouse.click(
       ((end?.x ?? 0) + 390) / 2,
@@ -588,7 +603,9 @@ test.describe('Full screen map', () => {
         return Math.round((box?.x ?? 0) + (box?.width ?? 0));
       })
       .toBe(390 - 16);
-    expect(await close.boundingBox()).toEqual(before);
+    const corner = await close.boundingBox();
+    expect(Math.round((corner?.x ?? 0) + (corner?.width ?? 0))).toBe(390 - 16);
+    expect(Math.round(corner?.y ?? 0)).toBe(16);
   });
 
   test('pans the map clear of the steps and the buttons', async ({ page }) => {
