@@ -16,9 +16,9 @@
   --star-cool: #3a44c0;
   --star-warm: #9a5119;
   --stars-opacity: 0.3;
-  --thrust: #0369a1;
+  --thrust: #3b7a14;
   --thrust-ink: #ffffff;
-  --thrust-text: #075985;
+  --thrust-text: #376f13;
   --alert: #b42d1a;
   --tint: rgb(27 24 38 / 0.05);
   --thrust-surface: color-mix(in oklab, var(--thrust) 9%, var(--surface));
@@ -38,9 +38,9 @@
   --star-cool: #a8bcff;
   --star-warm: #ffd3a1;
   --stars-opacity: 0.45;
-  --thrust: #38bdf8;
-  --thrust-ink: #04202e;
-  --thrust-text: #7dd3fc;
+  --thrust: #8fd14f;
+  --thrust-ink: #102004;
+  --thrust-text: #a5dd72;
   --alert: #ff7a66;
   --tint: rgb(236 233 244 / 0.05);
 
