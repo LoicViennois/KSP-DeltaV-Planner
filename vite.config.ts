@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 function resolveCommitSha(): string {
@@ -19,6 +19,38 @@ function resolveCommitSha(): string {
 
 const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
 
+// The Matomo tracking code of the former app, kept alongside Vercel Analytics
+// for now. Only in builds, and not in Vercel previews, so that neither the dev
+// server, the e2e tests nor the previews count as visits.
+const matomo: Plugin = {
+  name: 'matomo',
+  apply: (_, { command }) =>
+    command === 'build' &&
+    (!process.env.VERCEL_ENV || process.env.VERCEL_ENV === 'production'),
+  transformIndexHtml: () => [
+    {
+      tag: 'script',
+      injectTo: 'head',
+      children: `
+      var _paq = (window._paq = window._paq || []);
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function () {
+        var u = '//matomo.loicviennois.com/';
+        _paq.push(['setTrackerUrl', u + 'matomo.php']);
+        _paq.push(['setSiteId', '1']);
+        var d = document,
+          g = d.createElement('script'),
+          s = d.getElementsByTagName('script')[0];
+        g.async = true;
+        g.src = u + 'matomo.js';
+        s.parentNode.insertBefore(g, s);
+      })();
+    `,
+    },
+  ],
+};
+
 export default defineConfig({
   define: {
     __COMMIT_SHA__: JSON.stringify(resolveCommitSha()),
@@ -28,6 +60,7 @@ export default defineConfig({
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react(),
     tailwindcss(),
+    matomo,
     VitePWA({
       // Registered from src/lib/update.ts, which asks before activating an update.
       registerType: 'prompt',
