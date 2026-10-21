@@ -1,7 +1,13 @@
-import { BookOpen, MapIcon, MessageCircle } from 'lucide-react';
+import { Coffee, MapIcon, MessageCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { commitSha, commitUrl, repoUrl, shortSha } from '../lib/build-info';
+import {
+  commitSha,
+  commitUrl,
+  repoUrl,
+  shortSha,
+  sponsorUrl,
+} from '../lib/build-info';
 import { Logo } from './Logo';
 import { Modal } from './Modal';
 
@@ -41,7 +47,7 @@ function Section({
   );
 }
 
-/** What the planner is, and who made it and its map. */
+/** What the planner is, how to reach and support its author, and who made its map. */
 export function AboutDialog({ open, onClose }: AboutDialogProps) {
   return (
     <Modal
@@ -85,8 +91,45 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
             Kerbal Space Program
           </External>
           . Pick where your rocket starts and where it goes: it adds up the Δv
-          of each step of the trip. Hover a step to find it on the map.
+          of each step of the trip. Pick a step to find it on the map.
         </p>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Section icon={MessageCircle} title="Send feedback">
+            <ul className="space-y-1">
+              <li>
+                Found a bug or have an idea?
+                <br />
+                <External href={`${repoUrl}/issues/new`}>
+                  Open an issue on GitHub
+                </External>
+              </li>
+              <li>
+                Want to say hi?
+                <br />
+                <External href="https://www.reddit.com/message/compose/?to=LoicViennois">
+                  Message me on Reddit
+                </External>
+              </li>
+            </ul>
+          </Section>
+          <Section icon={Coffee} title="Buy me a coffee">
+            <p>
+              The planner is free and always will be. If you find it useful, you
+              can buy me a coffee!
+              <br />
+              <a
+                href={sponsorUrl}
+                target="_blank"
+                rel="noopener"
+                data-testid="sponsor-link"
+                className="text-ink"
+              >
+                Support me on GitHub Sponsors
+              </a>
+            </p>
+          </Section>
+        </div>
 
         <Section icon={MapIcon} title="The Δv map">
           <div className="space-y-2">
@@ -120,43 +163,19 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
               </External>
               .
             </p>
+            <p>
+              More about the game on{' '}
+              <External href="https://forum.kerbalspaceprogram.com">
+                the KSP forum
+              </External>{' '}
+              and{' '}
+              <External href="https://www.reddit.com/r/KerbalSpaceProgram">
+                r/KerbalSpaceProgram
+              </External>
+              .
+            </p>
           </div>
         </Section>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Section icon={BookOpen} title="More information">
-            <ul className="space-y-1">
-              <li>
-                <External href="https://forum.kerbalspaceprogram.com">
-                  The KSP forum
-                </External>
-              </li>
-              <li>
-                <External href="https://www.reddit.com/r/KerbalSpaceProgram">
-                  r/KerbalSpaceProgram
-                </External>
-              </li>
-            </ul>
-          </Section>
-          <Section icon={MessageCircle} title="Send feedback">
-            <ul className="space-y-1">
-              <li>
-                Found a bug or have an idea?
-                <br />
-                <External href={`${repoUrl}/issues/new`}>
-                  Open an issue on GitHub
-                </External>
-              </li>
-              <li>
-                Want to say hi?
-                <br />
-                <External href="https://www.reddit.com/message/compose/?to=LoicViennois">
-                  Message me on Reddit
-                </External>
-              </li>
-            </ul>
-          </Section>
-        </div>
 
         <p className="border-t border-line pt-4 text-sm text-ink-soft">
           This program is free software, released under the{' '}

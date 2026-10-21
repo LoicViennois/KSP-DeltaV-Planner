@@ -42,6 +42,13 @@ test.describe('Navigation', () => {
       'https://github.com/LoicViennois/KSP-DeltaV-Planner/blob/master/LICENSE',
     );
     await expect(dialog).toContainText('CC BY-NC-SA 4.0');
+    await expect(dialog.getByTestId('sponsor-link')).toHaveAttribute(
+      'href',
+      'https://github.com/sponsors/LoicViennois',
+    );
+    await expect(
+      dialog.getByRole('link', { name: 'r/KerbalSpaceProgram' }),
+    ).toBeVisible();
     // The help lives in the about dialog too, the notes in their own.
     await expect(dialog).toContainText('This is a Δv planner');
     await expect(dialog).not.toContainText('All values are vacuum Δv');
