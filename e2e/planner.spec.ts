@@ -281,6 +281,23 @@ test.describe('Delta-V planner', () => {
     await expect(planner.to).toContainText('Ike');
   });
 
+  test('leaves the body unpicked when tabbing out of the list', async ({
+    page,
+  }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+
+    await planner.to.focus();
+    await page.keyboard.press('Enter');
+    const listbox = page.getByRole('listbox');
+    await expect(listbox).toBeVisible();
+    await expect(planner.to).not.toHaveAttribute('aria-activedescendant');
+    await page.keyboard.press('Tab');
+
+    await expect(listbox).toBeHidden();
+    await expect(planner.to).toContainText('Select…');
+  });
+
   test('closes the body list when clicking elsewhere', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

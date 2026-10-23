@@ -31,14 +31,19 @@ export function BodyPicker({
     ? bodies.findIndex((body) => body.name === value.name)
     : -1;
 
-  function show() {
-    setActive(Math.max(selectedIndex, 0));
+  /**
+   * Opens the list on the body picked. With none picked yet, the arrow keys
+   * start from the first body, while a click, Enter or Space leave nothing
+   * active, so that Tab does not pick a body nobody chose.
+   */
+  function show(fromArrows = false) {
+    setActive(selectedIndex >= 0 || !fromArrows ? selectedIndex : 0);
     setOpen(true);
   }
 
   function choose(index: number) {
     const body = bodies[index];
-    if (body) {
+    if (body && index !== selectedIndex) {
       onChange(body);
     }
     setOpen(false);
@@ -87,7 +92,10 @@ export function BodyPicker({
     };
 
     if (!open) {
-      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        show(true);
+      } else if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         show();
       } else if (event.key === 'Home' || event.key === 'End') {
@@ -126,7 +134,9 @@ export function BodyPicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
-        aria-activedescendant={open ? optionId(active) : undefined}
+        aria-activedescendant={
+          open && active >= 0 ? optionId(active) : undefined
+        }
         onClick={() => (open ? setOpen(false) : show())}
         onKeyDown={onKeyDown}
         // Room on the right for the reverse button, over the trip card.
