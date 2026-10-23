@@ -93,6 +93,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,webp,woff2}'],
+        // Only there to retire the former Angular service worker.
+        globIgnores: ['ngsw-worker.js'],
         navigateFallback: '/index.html',
       },
     }),
