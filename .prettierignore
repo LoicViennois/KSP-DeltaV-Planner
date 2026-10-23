@@ -1,0 +1,13 @@
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+dist
+dev-dist
+.claude/worktrees
+playwright-report
+test-results
+# Agent skills are vendored (see skills-lock.json); .claude/skills symlinks to them.
+.agents
+.claude/skills
+skills-lock.json
+src/routeTree.gen.ts

@@ -1,0 +1,315 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/exo-2';
+@import '@fontsource-variable/jetbrains-mono';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ---------- Colour tokens: deep space by default, mission control in light ---------- */
+
+:root {
+  --bg: #f3f2f7;
+  --surface: #ffffff;
+  --ink: #1b1826;
+  --ink-soft: #57536a;
+  --line: #d8d5e3;
+  --star-white: #1b1826;
+  --star-cool: #3a44c0;
+  --star-warm: #9a5119;
+  --stars-opacity: 0.3;
+  --thrust: #3b7a14;
+  --thrust-ink: #ffffff;
+  --thrust-text: #376f13;
+  --alert: #b42d1a;
+  --tint: rgb(27 24 38 / 0.05);
+  --thrust-surface: color-mix(in oklab, var(--thrust) 9%, var(--surface));
+
+  /* The labels of the Δv map, drawn for a dark sky, on a light one. */
+  --map-ink: #1b1826;
+  --map-ink-soft: #57536a;
+}
+
+:root[data-theme='dark'] {
+  --bg: #14111c;
+  --surface: #1c1927;
+  --ink: #ece9f4;
+  --ink-soft: #a6a1b8;
+  --line: #2f2a40;
+  --star-white: #e3e6f7;
+  --star-cool: #a8bcff;
+  --star-warm: #ffd3a1;
+  --stars-opacity: 0.45;
+  --thrust: #8fd14f;
+  --thrust-ink: #102004;
+  --thrust-text: #a5dd72;
+  --alert: #ff7a66;
+  --tint: rgb(236 233 244 / 0.05);
+
+  /* The map's own colours (svg/DvMap_KSPedia.svg). */
+  --map-ink: #f1f0f5;
+  --map-ink-soft: #b3b3b3;
+}
+
+/* ---------- Layout: the map is as big as the screen lets it be ---------- */
+
+:root {
+  /* Widest 4:3 map fitting the screen height without scrolling: what is left
+     under the header (3.5rem and its 1px border) and the page's top and bottom
+     padding (1.25rem each, see src/routes/__root.tsx). */
+  --map-width: calc((100dvh - 6rem - 1px) * 4 / 3);
+  /* The map, the gap, the planner panel and the side padding. */
+  --shell-width: max(80rem, calc(var(--map-width) + 2rem + 25rem + 3rem));
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-thrust: var(--thrust);
+  --color-thrust-ink: var(--thrust-ink);
+  --color-thrust-text: var(--thrust-text);
+  --color-thrust-surface: var(--thrust-surface);
+  --color-alert: var(--alert);
+  --color-tint: var(--tint);
+}
+
+@theme {
+  --font-sans: 'Exo 2 Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+  --animate-pop: pop 380ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  --animate-rise: rise 420ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  --animate-fade-in: fade-in 300ms ease-out both;
+
+  @keyframes pop {
+    40% {
+      transform: scale(1.18);
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.96);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  /* Only the root is painted, so the starfield (src/components/Starfield.tsx) shows through the body. */
+  html {
+    color-scheme: light;
+    background-color: var(--bg);
+  }
+
+  html[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  /* The page stays still behind a dialog: scrolling it would also show or
+     hide the browser bars, and shift the full screen map. */
+  html:has(dialog:modal) {
+    overflow: hidden;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+
+  /* While the theme switches (see src/lib/theme.ts), colours change at once. */
+  :root[data-theme-switching] *,
+  :root[data-theme-switching] *::before,
+  :root[data-theme-switching] *::after {
+    transition: none !important;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--thrust);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@utility font-digits {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 120ms,
+    background-color 150ms,
+    color 150ms,
+    box-shadow 150ms;
+
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@utility btn-primary {
+  background-color: var(--thrust);
+  color: var(--thrust-ink);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 6px 18px -8px var(--thrust);
+  }
+}
+
+@utility btn-ghost {
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line);
+
+  &:hover:not(:disabled) {
+    background-color: var(--tint);
+  }
+}
+
+@utility link {
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-color: var(--thrust);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: var(--thrust-text);
+  }
+}
+
+/* ---------- Δv map: the bodies off the planned path fade out ---------- */
+
+/* The map shows the starfield through its sky, and its labels follow the
+   theme. The Δv values printed in white on the coloured routes stay white.
+   The SVG sets its colours inline, hence !important. */
+.dv-map-art [id='rect4931'] {
+  fill: none !important;
+}
+
+.dv-map-art [style*='fill:#f1f0f5'] {
+  fill: var(--map-ink) !important;
+}
+
+/* The total Δv under each body, in grey on the map but for Mun and Minmus:
+   too faint on either sky, so as bright as the name above it, like theirs. */
+.dv-map-art tspan[style*='fill:gray'] {
+  fill: var(--map-ink) !important;
+}
+
+.dv-map-art [style*='stroke:#f1f0f5'] {
+  stroke: var(--map-ink) !important;
+}
+
+.dv-map-art [style*='fill:#b3b3b3'] {
+  fill: var(--map-ink-soft) !important;
+}
+
+.dv-map {
+  transition: opacity 200ms ease-out;
+}
+
+.map-fade {
+  opacity: 0.15;
+}
+
+.fade-soft {
+  opacity: 0.5;
+}
+
+/* ---------- Starfield, from loicviennois.com ---------- */
+
+.starfield-sky {
+  opacity: var(--stars-opacity);
+  transition: opacity 250ms;
+}
+
+.star-white {
+  --tint: var(--star-white);
+}
+
+.star-cool {
+  --tint: var(--star-cool);
+}
+
+.star-warm {
+  --tint: var(--star-warm);
+}
+
+.star-white,
+.star-cool,
+.star-warm {
+  fill: var(--tint);
+}
+
+/* A new star flares above the rest of the sky, then settles among it. */
+.star-added {
+  fill-opacity: var(--brightness);
+  opacity: var(--stars-opacity);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: star-flare 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes star-flare {
+  from {
+    fill-opacity: 1;
+    opacity: 1;
+    transform: scale(3.2);
+    filter: drop-shadow(0 0 4px var(--tint)) drop-shadow(0 0 1.5px var(--tint));
+  }
+
+  to {
+    fill-opacity: var(--brightness);
+    opacity: var(--stars-opacity);
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent);
+  }
+}
+
+/* Cross-fade between pages (TanStack Router view transitions). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

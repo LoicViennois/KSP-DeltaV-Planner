@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: ["master"]
+    branches: ['master']
 
 permissions:
   contents: read
@@ -13,25 +13,28 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up pnpm and Node.js
-        uses: pnpm/setup@v1
+        uses: pnpm/setup@v3
         with:
           cache: true
 
       - name: Lint application
         run: pnpm run lint
 
+      - name: Check formatting
+        run: pnpm run check
+
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up pnpm and Node.js
-        uses: pnpm/setup@v1
+        uses: pnpm/setup@v3
         with:
           cache: true
 
@@ -39,26 +42,26 @@ jobs:
         run: pnpm run build
 
   test-e2e:
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-linux-8cpu
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up pnpm and Node.js
-        uses: pnpm/setup@v1
+        uses: pnpm/setup@v3
         with:
           cache: true
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps --only-shell chromium
 
       - name: Run E2E tests
         run: pnpm run e2e
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
