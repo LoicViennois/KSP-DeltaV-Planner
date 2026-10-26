@@ -6,12 +6,13 @@ import {
   Maximize2,
   Telescope,
 } from 'lucide-react';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
 import { NotesDialog } from '../components/NotesDialog';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
+import { WhatsNew } from '../components/WhatsNew';
 import { useMediaQuery } from '../lib/media';
 import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
 import {
@@ -45,6 +46,7 @@ function PlannerPage() {
   // Mounted on first open, so the map is only downloaded when needed.
   const [mapOpened, setMapOpened] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   function openMap() {
     setMapOpened(true);
@@ -93,8 +95,18 @@ function PlannerPage() {
       </div>
 
       <section aria-labelledby="planner-title" className="space-y-5">
+        <WhatsNew
+          onOpenMap={openMap}
+          // The banner is gone: the focus goes on to the planner.
+          onDismiss={() => headingRef.current?.focus()}
+        />
         <div className="flex items-baseline justify-between gap-4">
-          <h1 id="planner-title" className="text-2xl font-bold tracking-tight">
+          <h1
+            ref={headingRef}
+            id="planner-title"
+            tabIndex={-1}
+            className="text-2xl font-bold tracking-tight outline-none"
+          >
             Plan your trip
           </h1>
           <button
