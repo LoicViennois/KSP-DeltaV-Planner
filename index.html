@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>KSP Delta-V Planner</title>
+    <meta
+      content="KSP Delta-V Planner is a tool to calculate your rocket Delta-V for interplanetary travels in Kerbal Space Program. Also known as KSP Delta-V Calculator."
+      name="description"
+    />
+
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+    <link href="/favicon.64.png" rel="icon" type="image/png" sizes="64x64" />
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
+    <meta content="#14111c" name="theme-color" />
+    <script>
+      // Apply the saved theme (dark by default) before first paint (see src/lib/theme.ts).
+      (function () {
+        var theme;
+        try {
+          theme = JSON.parse(localStorage.getItem('ksp_theme'));
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = 'dark';
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript
+      >Please enable JavaScript to continue using this application.</noscript
+    >
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

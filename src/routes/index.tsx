@@ -1,0 +1,194 @@
+import { createFileRoute } from '@tanstack/react-router';
+import {
+  ArrowUpDown,
+  Calculator,
+  MapIcon,
+  Maximize2,
+  Telescope,
+} from 'lucide-react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+
+import { BodyPicker } from '../components/BodyPicker';
+import { NotesDialog } from '../components/NotesDialog';
+import { StepList } from '../components/StepList';
+import { TripOptions } from '../components/TripOptions';
+import { WhatsNew } from '../components/WhatsNew';
+import { useMediaQuery } from '../lib/media';
+import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
+import {
+  initialTrip,
+  isKerbinTrip,
+  planTrip,
+  reversed,
+  type StepType,
+  type Trip,
+  withFrom,
+  withTo,
+} from '../lib/planner';
+
+// Small screens only download the map once it is opened in full screen.
+const DvMap = lazy(() => import('../components/DvMap'));
+const MapDialog = lazy(() => import('../components/MapDialog'));
+
+export const Route = createFileRoute('/')({
+  component: PlannerPage,
+});
+
+function PlannerPage() {
+  const [trip, setTrip] = useState<Trip>(initialTrip);
+  const [selected, setSelected] = useState<StepType>('total');
+  const plan = useMemo(() => planTrip(trip), [trip]);
+  const shown =
+    [...plan.steps, plan.total].find((step) => step?.type === selected) ?? null;
+  const showMap = useMediaQuery('(min-width: 48rem)');
+  const homeTrip = isKerbinTrip(trip);
+  const [mapOpen, setMapOpen] = useState(false);
+  // Mounted on first open, so the map is only downloaded when needed.
+  const [mapOpened, setMapOpened] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  function openMap() {
+    setMapOpened(true);
+    setMapOpen(true);
+  }
+
+  function update(next: Trip) {
+    setTrip(next);
+    setSelected('total');
+  }
+
+  return (
+    <div className="grid gap-6 md:grid-cols-[minmax(0,var(--map-width))_21rem] md:justify-center lg:grid-cols-[minmax(0,var(--map-width))_25rem] lg:gap-8">
+      <div className="hidden md:block">
+        {showMap && (
+          <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
+            <Suspense
+              fallback={
+                <div className="aspect-4/3 animate-pulse rounded-2xl bg-tint" />
+              }
+            >
+              <DvMap trip={trip} step={shown} />
+            </Suspense>
+            <div className="absolute top-4 right-4 flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={openMap}
+                aria-label="Open the map in full screen"
+                title="Full screen"
+                className={floatingIconButton}
+              >
+                <Maximize2 aria-hidden className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setNotesOpen(true)}
+                aria-label="Reading the numbers"
+                title="Reading the numbers"
+                className={floatingIconButton}
+              >
+                <Calculator aria-hidden className="size-5" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <section aria-labelledby="planner-title" className="space-y-5">
+        <WhatsNew
+          onOpenMap={openMap}
+          // The banner is gone: the focus goes on to the planner.
+          onDismiss={() => headingRef.current?.focus()}
+        />
+        <div className="flex items-baseline justify-between gap-4">
+          <h1
+            ref={headingRef}
+            id="planner-title"
+            tabIndex={-1}
+            className="text-2xl font-bold tracking-tight outline-none"
+          >
+            Plan your trip
+          </h1>
+          <button
+            type="button"
+            onClick={() => update(initialTrip)}
+            aria-label="Reset path"
+            className="cursor-pointer text-sm font-semibold text-ink-soft underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-thrust"
+          >
+            Reset
+          </button>
+        </div>
+
+        <div className="relative rounded-xl border border-line bg-surface p-1.5">
+          <BodyPicker
+            label="From"
+            placeholder="Select…"
+            value={trip.from}
+            onChange={(body) => update(withFrom(trip, body))}
+          />
+          <div aria-hidden className="mx-2.5 border-t border-line" />
+          <BodyPicker
+            label="To"
+            placeholder="Select…"
+            value={trip.to}
+            onChange={(body) => update(withTo(trip, body))}
+          />
+          {/* The route, from one planet down to the other. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-13 bottom-13 left-[2.0625rem] border-l-2 border-dotted border-ink-soft"
+          />
+          <button
+            type="button"
+            onClick={() => update(reversed(trip))}
+            aria-label="Reverse path"
+            title="Reverse"
+            className="absolute top-1/2 right-4 grid size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink-soft transition hover:border-thrust hover:text-ink active:scale-90"
+          >
+            <ArrowUpDown aria-hidden className="size-4" />
+          </button>
+        </div>
+
+        <TripOptions
+          trip={trip}
+          disabled={homeTrip ? ['landing', 'return'] : []}
+          onChange={(option, checked) => update({ ...trip, [option]: checked })}
+        />
+
+        {plan.steps.length > 0 ? (
+          <StepList plan={plan} selected={selected} onSelect={setSelected} />
+        ) : (
+          <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
+            <Telescope aria-hidden className="size-8" />
+            Pick a destination to see the Δv of each step of the trip.
+          </p>
+        )}
+      </section>
+
+      <div className={`${floatingBar} md:hidden`}>
+        <button type="button" onClick={openMap} className={mapButton}>
+          <MapIcon aria-hidden className="size-5" />
+          Map
+        </button>
+      </div>
+
+      {mapOpened && (
+        <Suspense fallback={null}>
+          <MapDialog
+            open={mapOpen}
+            onClose={() => setMapOpen(false)}
+            onReset={() => update(initialTrip)}
+            onShowNotes={() => setNotesOpen(true)}
+            trip={trip}
+            plan={plan}
+            selected={selected}
+            onSelect={setSelected}
+          />
+        </Suspense>
+      )}
+
+      {/* Opened from the map, or over it in full screen. */}
+      <NotesDialog open={notesOpen} onClose={() => setNotesOpen(false)} />
+    </div>
+  );
+}

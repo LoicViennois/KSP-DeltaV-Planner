@@ -1,56 +1,43 @@
-// @ts-check
-const eslint = require("@eslint/js");
-const { defineConfig } = require("eslint/config");
-const tseslint = require("typescript-eslint");
-const angular = require("angular-eslint");
+import js from '@eslint/js';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
-module.exports = defineConfig([
+export default defineConfig([
+  globalIgnores([
+    'dist',
+    'dev-dist',
+    '.claude/worktrees',
+    'playwright-report',
+    'test-results',
+    'coverage',
+    'src/routeTree.gen.ts',
+  ]),
   {
-    ignores: ["projects/**/*"],
-  },
-  {
-    files: ["**/*.ts"],
+    files: ['**/*.{ts,tsx}'],
     extends: [
-      eslint.configs.recommended,
-      tseslint.configs.recommended,
-      tseslint.configs.stylistic,
-      angular.configs.tsRecommended,
+      js.configs.recommended,
+      tseslint.configs.strict,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
     ],
-    processor: angular.processInlineTemplates,
-    rules: {
-      "@angular-eslint/directive-selector": [
-        "error",
-        {
-          type: "attribute",
-          prefix: "ksp",
-          style: "camelCase",
-        },
-      ],
-      "@angular-eslint/component-selector": [
-        "error",
-        {
-          type: "element",
-          prefix: "ksp",
-          style: "kebab-case",
-        },
-      ],
-      "linebreak-style": ["error", "unix"],
+    languageOptions: {
+      globals: globals.browser,
     },
   },
   {
-    files: ["**/*.html"],
-    extends: [
-      angular.configs.templateRecommended,
-      angular.configs.templateAccessibility,
-    ],
+    files: ['src/routes/**/*.tsx'],
     rules: {
-      "@angular-eslint/template/eqeqeq": [
-        "error",
-        {
-          allowNullOrUndefined: true,
-        },
-      ],
+      // TanStack Router route files export `Route` alongside their components
+      'react-refresh/only-export-components': 'off',
     },
-  }
+  },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ]);
-
