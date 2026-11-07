@@ -1,7 +1,8 @@
 import { CornerDownRight } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from 'react';
 
-import { type AstroBody, bodies } from '../lib/bodies';
+import { type AstroBody, bodiesOf } from '../lib/bodies';
+import { useOuterPlanets } from '../lib/outer-planets';
 
 interface BodyPickerProps {
   label: string;
@@ -17,6 +18,7 @@ export function BodyPicker({
   value,
   onChange,
 }: BodyPickerProps) {
+  const bodies = bodiesOf(useOuterPlanets());
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
