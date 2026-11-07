@@ -19,6 +19,6 @@ pnpm dev     # dev server on http://localhost:5173
 pnpm build   # type-check and build to dist/
 pnpm lint
 pnpm e2e     # Playwright end-to-end and accessibility tests
-pnpm map     # regenerate src/assets/dv-map.svg from svg/DvMap_KSPedia.svg
+pnpm map     # regenerate the maps of src/assets/ from svg/ (KSPedia and Outer Planets Mod)
 pnpm icons   # regenerate the favicon and PWA icons
 ```

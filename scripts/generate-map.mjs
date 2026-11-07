@@ -1,6 +1,8 @@
-// Optimises the KSPedia Δv map (svg/DvMap_KSPedia.svg) into the SVG the app
-// highlights (src/assets/dv-map.svg). Its element ids are kept, as the
-// highlighting looks them up (src/lib/map-highlight.ts).
+// Optimises the Δv maps of svg/ into the SVGs the app highlights:
+// - the KSPedia map (svg/DvMap_KSPedia.svg) into src/assets/dv-map.svg,
+// - the Outer Planets Mod map (svg/DvMap_OPM.svg) into src/assets/dv-map-opm.svg.
+// Their element ids and data-map attributes are kept, as the highlighting
+// looks them up (src/lib/map-highlight.ts).
 // Usage: pnpm map
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
@@ -9,8 +11,6 @@ import { fileURLToPath } from 'node:url';
 import { optimize } from 'svgo';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const sourcePath = resolve(ROOT, 'svg/DvMap_KSPedia.svg');
-const outputPath = resolve(ROOT, 'src/assets/dv-map.svg');
 
 function findElementById(node, id) {
   if (node.type === 'element' && node.attributes.id === id) {
@@ -81,7 +81,25 @@ function inlineThemedUses(node, root) {
   });
 }
 
-const prepareForApplication = {
+/** Prints both durations of the KSPedia map's keostationary orbit alike. */
+function fixDurations(root) {
+  const outerDuration = findElementById(root, 'tspan3933');
+  const innerDuration = findElementById(root, 'tspan3937');
+
+  if (outerDuration == null || innerDuration == null) {
+    throw new Error(
+      'Expected duration labels were not found in the source SVG.',
+    );
+  }
+
+  const duration = textContent(innerDuration).trim();
+  outerDuration.attributes.x = '1963';
+  innerDuration.attributes.x = '1152';
+  setTextContent(outerDuration, duration);
+  setTextContent(innerDuration, duration);
+}
+
+const prepareForApplication = (fix) => ({
   name: 'prepareForApplication',
   fn: () => ({
     element: {
@@ -95,43 +113,35 @@ const prepareForApplication = {
     root: {
       exit: (root) => {
         inlineThemedUses(root, root);
-
-        const outerDuration = findElementById(root, 'tspan3933');
-        const innerDuration = findElementById(root, 'tspan3937');
-
-        if (outerDuration == null || innerDuration == null) {
-          throw new Error(
-            'Expected duration labels were not found in the source SVG.',
-          );
-        }
-
-        const duration = textContent(innerDuration).trim();
-        outerDuration.attributes.x = '1963';
-        innerDuration.attributes.x = '1152';
-        setTextContent(outerDuration, duration);
-        setTextContent(innerDuration, duration);
+        fix?.(root);
       },
     },
   }),
-};
-
-const source = await readFile(sourcePath, 'utf8');
-const result = optimize(source, {
-  path: sourcePath,
-  multipass: true,
-  plugins: [
-    {
-      name: 'preset-default',
-      params: {
-        overrides: {
-          cleanupIds: false,
-        },
-      },
-    },
-    'removeDimensions',
-    prepareForApplication,
-  ],
 });
 
-await writeFile(outputPath, `${result.data}\n`, 'utf8');
-console.log(`wrote ${relative(ROOT, outputPath)}`);
+async function generate(source, output, fix) {
+  const sourcePath = resolve(ROOT, source);
+  const outputPath = resolve(ROOT, output);
+  const result = optimize(await readFile(sourcePath, 'utf8'), {
+    path: sourcePath,
+    multipass: true,
+    plugins: [
+      {
+        name: 'preset-default',
+        params: {
+          overrides: {
+            cleanupIds: false,
+          },
+        },
+      },
+      'removeDimensions',
+      prepareForApplication(fix),
+    ],
+  });
+
+  await writeFile(outputPath, `${result.data}\n`, 'utf8');
+  console.log(`wrote ${relative(ROOT, outputPath)}`);
+}
+
+await generate('svg/DvMap_KSPedia.svg', 'src/assets/dv-map.svg', fixDurations);
+await generate('svg/DvMap_OPM.svg', 'src/assets/dv-map-opm.svg');
