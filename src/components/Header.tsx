@@ -17,15 +17,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-(--shell-width) items-center justify-between gap-2 px-4 lg:px-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2.5 rounded-lg"
-          aria-label="KSP Delta-V Planner, home"
-        >
+        <Link to="/" className="flex items-center gap-2.5 rounded-lg">
           <Logo />
           <span className="text-lg font-semibold tracking-tight whitespace-nowrap">
             KSP <span className="hidden sm:inline">Delta-V</span>
             <span className="sm:hidden">Δv</span> Planner
+            <span className="sr-only">, home</span>
           </span>
         </Link>
         <nav aria-label="Site" className="flex items-center gap-1">
