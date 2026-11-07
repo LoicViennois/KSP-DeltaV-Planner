@@ -135,15 +135,33 @@ export function planTrip(trip: Trip): TripPlan {
       dvMax: dv + (from.dvPlaneChange ?? 0),
     });
   } else if (from.name === kerbin.name && !to.isPlanet) {
+    const lowToLow = (to.dvPL ?? 0) + (to.dvLI ?? 0);
     if (isKerbinSatellite(to)) {
-      const dv = (to.dvPL ?? 0) + (to.dvLI ?? 0);
       steps.push({
         type: 'transitFromLowToLow',
         from: kerbin,
         to,
-        dv,
-        dvMax: dv + (to.dvPlaneChange ?? 0),
+        dv: lowToLow,
+        dvMax: lowToLow + (to.dvPlaneChange ?? 0),
       });
+    } else if (to.dvPL != null) {
+      const planet = parentOf(to);
+      const toLow = kerbinToLowOrbit(planet);
+      steps.push(
+        {
+          type: 'transitToLowOrbit',
+          to: planet,
+          dv: toLow,
+          dvMax: toLow + (planet.dvPlaneChange ?? 0),
+        },
+        {
+          type: 'transitFromLowToLow',
+          from: planet,
+          to,
+          dv: lowToLow,
+          dvMax: lowToLow + (to.dvPlaneChange ?? 0),
+        },
+      );
     } else {
       const planet = parentOf(to);
       const toSOI = kerbinToSOI(planet);
@@ -165,13 +183,24 @@ export function planTrip(trip: Trip): TripPlan {
       );
     }
   } else if (!from.isPlanet && to.name === kerbin.name) {
+    const lowToLow = (from.dvPL ?? 0) + (from.dvLI ?? 0);
     if (isKerbinSatellite(from)) {
       steps.push({
         type: 'transitFromLowToLow',
         from,
         to: kerbin,
-        dv: (from.dvPL ?? 0) + (from.dvLI ?? 0),
+        dv: lowToLow,
       });
+    } else if (from.dvPL != null) {
+      const planet = parentOf(from);
+      steps.push(
+        { type: 'transitFromLowToLow', from, to: planet, dv: lowToLow },
+        {
+          type: 'transitToLowOrbit',
+          to: kerbin,
+          dv: kerbinToLowOrbit(planet),
+        },
+      );
     } else {
       const planet = parentOf(from);
       steps.push(
