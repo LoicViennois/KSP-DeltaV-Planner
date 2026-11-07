@@ -6,10 +6,6 @@ updates:
       interval: 'weekly'
     commit-message:
       prefix: '⬆️'
-    ignore:
-      # Keep @types/node aligned with the Node.js major in mise.toml / package.json
-      - dependency-name: '@types/node'
-        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         dependency-type: 'development'
