@@ -11,7 +11,7 @@ import {
   type WheelEvent,
 } from 'react';
 
-import type { MapHighlight } from '../lib/map-highlight';
+import { type MapHighlight, mapElements } from '../lib/map-highlight';
 import type { Step, Trip } from '../lib/planner';
 import { floatingIconButton } from '../lib/styles';
 import DvMap from './DvMap';
@@ -129,9 +129,7 @@ export function MapViewer({
       return;
     }
     setAnimate(true);
-    const elements = (ids ?? [])
-      .map((id) => content.querySelector(`[id="${id}"]`))
-      .filter((el) => el != null);
+    const elements = (ids ?? []).flatMap((id) => mapElements(content, id));
     if (elements.length === 0) {
       setView(clamp({ scale: 1, x: 0, y: 0 }));
       return;

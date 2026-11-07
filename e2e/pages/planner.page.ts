@@ -13,6 +13,7 @@ export class PlannerPage {
   readonly steps: Locator;
   readonly total: Locator;
   readonly map: Locator;
+  readonly outerPlanets: Locator;
   readonly githubLink: Locator;
   readonly aboutButton: Locator;
   readonly themeToggle: Locator;
@@ -32,6 +33,7 @@ export class PlannerPage {
       .getByRole('listitem');
     this.total = page.getByTestId('total');
     this.map = page.getByRole('img', { name: 'Δv map of the Kerbol system' });
+    this.outerPlanets = page.getByRole('switch', { name: 'Outer Planets Mod' });
     const banner = page.getByRole('banner');
     this.githubLink = banner.getByRole('link', { name: 'GitHub repository' });
     this.aboutButton = banner.getByRole('button', { name: 'About' });
@@ -57,5 +59,10 @@ export class PlannerPage {
   /** A map element, by its id in the SVG. */
   mapElement(id: string): Locator {
     return this.map.locator(`[id="${id}"]`);
+  }
+
+  /** The elements of the Outer Planets Mod map, by their data-map name. */
+  mapElements(name: string): Locator {
+    return this.map.locator(`[data-map="${name}"]`);
   }
 }

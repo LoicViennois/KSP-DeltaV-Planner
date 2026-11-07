@@ -147,6 +147,14 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
               by Kowgan, used under the same license.
             </p>
             <p>
+              The <span className="text-ink">Outer Planets Mod</span> map joins
+              the two pages of the{' '}
+              <External href="https://github.com/Kowgan/ksp_cheat_sheets/tree/master/delta_v_map_outer_planets">
+                Outer Planets Δv map
+              </External>{' '}
+              by Kowgan, under the same license.
+            </p>
+            <p>
               Map design by{' '}
               <External href="https://www.reddit.com/user/swashlebucky/">
                 /u/swashlebucky

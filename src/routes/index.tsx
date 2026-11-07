@@ -10,10 +10,13 @@ import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
 import { NotesDialog } from '../components/NotesDialog';
+import { OuterPlanetsToggle } from '../components/OuterPlanetsToggle';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { WhatsNew } from '../components/WhatsNew';
+import { type AstroBody, bodiesOf } from '../lib/bodies';
 import { useMediaQuery } from '../lib/media';
+import { setOuterPlanets, useOuterPlanets } from '../lib/outer-planets';
 import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
 import {
   initialTrip,
@@ -59,6 +62,17 @@ function PlannerPage() {
     // Kept across reloads, such as the one that applies an update.
     saveTrip(next);
     setSelected('total');
+  }
+
+  const outerPlanets = useOuterPlanets();
+
+  /** Keeps the bodies of the trip found in the other system, like Eeloo. */
+  function toggleOuterPlanets(enabled: boolean) {
+    setOuterPlanets(enabled);
+    const system = bodiesOf(enabled);
+    const find = (body: AstroBody | null) =>
+      system.find((other) => other.name === body?.name) ?? null;
+    update({ ...trip, from: find(trip.from), to: find(trip.to) });
   }
 
   return (
@@ -152,11 +166,22 @@ function PlannerPage() {
           </button>
         </div>
 
-        <TripOptions
-          trip={trip}
-          disabled={homeTrip ? ['landing', 'return'] : []}
-          onChange={(option, checked) => update({ ...trip, [option]: checked })}
-        />
+        {/* A setting rather than an option of the trip, on the same line as
+            their legend so that the panel stays as short. */}
+        <div className="relative">
+          <TripOptions
+            trip={trip}
+            disabled={homeTrip ? ['landing', 'return'] : []}
+            onChange={(option, checked) =>
+              update({ ...trip, [option]: checked })
+            }
+          />
+          <OuterPlanetsToggle
+            checked={outerPlanets}
+            onChange={toggleOuterPlanets}
+            className="absolute -top-0.5 right-0"
+          />
+        </div>
 
         {plan.steps.length > 0 ? (
           <StepList plan={plan} selected={selected} onSelect={setSelected} />

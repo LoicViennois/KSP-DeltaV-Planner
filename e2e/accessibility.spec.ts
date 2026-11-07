@@ -46,6 +46,18 @@ for (const theme of ['dark', 'light'] as const) {
       await expectNoViolations(page);
     });
 
+    test('Outer Planets Mod trip', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.outerPlanets.check();
+      await planner.select(planner.to, 'Tal');
+      await planner.landing.check();
+      await expect(planner.total).toBeVisible();
+      await expect(planner.mapElements('tal-transit').first()).toBeVisible();
+
+      await expectNoViolations(page);
+    });
+
     test('Kerbin trip, with disabled options', async ({ page }) => {
       const planner = new PlannerPage(page);
       await planner.goto();
