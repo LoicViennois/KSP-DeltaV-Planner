@@ -25,6 +25,7 @@ import {
   withFrom,
   withTo,
 } from '../lib/planner';
+import { loadTrip, saveTrip } from '../lib/saved-trip';
 
 // Small screens only download the map once it is opened in full screen.
 const DvMap = lazy(() => import('../components/DvMap'));
@@ -35,7 +36,7 @@ export const Route = createFileRoute('/')({
 });
 
 function PlannerPage() {
-  const [trip, setTrip] = useState<Trip>(initialTrip);
+  const [trip, setTrip] = useState<Trip>(loadTrip);
   const [selected, setSelected] = useState<StepType>('total');
   const plan = useMemo(() => planTrip(trip), [trip]);
   const shown =
@@ -55,6 +56,8 @@ function PlannerPage() {
 
   function update(next: Trip) {
     setTrip(next);
+    // Kept across reloads, such as the one that applies an update.
+    saveTrip(next);
     setSelected('total');
   }
 
