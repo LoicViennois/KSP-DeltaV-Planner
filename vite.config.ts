@@ -62,7 +62,8 @@ export default defineConfig({
     tailwindcss(),
     matomo,
     VitePWA({
-      // Registered from src/lib/update.ts, which asks before activating an update.
+      // Registered from src/lib/update.ts, which activates an update once the
+      // page is hidden rather than on the spot.
       registerType: 'prompt',
       injectRegister: false,
       includeAssets: ['favicon.svg', 'favicon.64.png', 'apple-touch-icon.png'],

@@ -1,12 +1,8 @@
 import { registerSW } from 'virtual:pwa-register';
 
-import { createStore } from './store';
-
 // Long-lived sessions (an installed app left open) only look for a new service
 // worker on navigation, so check periodically too.
 const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000;
-
-const updateReady = createStore(false);
 
 /**
  * Retires the service worker of the former Angular app when it still controls
@@ -36,31 +32,38 @@ function retireAngularWorker(): boolean {
   return true;
 }
 
-// The new service worker waits until the user accepts, so an open page keeps
-// being served the precached chunks of the version it was built against.
-const updateServiceWorker = retireAngularWorker()
-  ? () => Promise.resolve()
-  : registerSW({
-      onNeedRefresh: () => updateReady.set(true),
-      onRegisteredSW(_swUrl, registration) {
-        if (!registration) {
-          return;
-        }
-        setInterval(() => {
-          if (navigator.onLine) {
-            registration.update().catch(() => {});
-          }
-        }, UPDATE_CHECK_INTERVAL);
-      },
-    });
-
-export const useUpdateReady = updateReady.use;
-
-/** Activates the waiting service worker, which reloads the page. */
-export function applyUpdate(): void {
-  void updateServiceWorker();
+/**
+ * Activates the waiting service worker, which reloads the page, while nobody
+ * is looking: once the page is hidden (another tab, the app sent to the
+ * background, the phone locked). A closed app picks the update up on its next
+ * launch anyway, so there is never anything to click. The trip is saved, so
+ * the reload does not lose it.
+ */
+function applyWhenHidden(update: () => Promise<void>): void {
+  const apply = () => {
+    if (document.visibilityState === 'hidden') {
+      document.removeEventListener('visibilitychange', apply);
+      void update();
+    }
+  };
+  document.addEventListener('visibilitychange', apply);
+  apply();
 }
 
-export function dismissUpdate(): void {
-  updateReady.set(false);
+// The new service worker waits meanwhile, so an open page keeps being served
+// the precached chunks of the version it was built against.
+if (!retireAngularWorker()) {
+  const updateServiceWorker = registerSW({
+    onNeedRefresh: () => applyWhenHidden(() => updateServiceWorker()),
+    onRegisteredSW(_swUrl, registration) {
+      if (!registration) {
+        return;
+      }
+      setInterval(() => {
+        if (navigator.onLine) {
+          registration.update().catch(() => {});
+        }
+      }, UPDATE_CHECK_INTERVAL);
+    },
+  });
 }

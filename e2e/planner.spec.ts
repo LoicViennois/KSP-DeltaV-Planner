@@ -145,6 +145,29 @@ test.describe('Delta-V planner', () => {
     await expect(planner.landing).not.toBeChecked();
   });
 
+  test('keeps the trip and its options across a reload', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Laythe');
+    await planner.landing.check();
+    await planner.aerobraking.uncheck();
+    await planner.return.check();
+
+    await page.reload();
+    await expect(planner.from).toContainText('Kerbin');
+    await expect(planner.to).toContainText('Laythe');
+    await expect(planner.landing).toBeChecked();
+    await expect(planner.aerobraking).not.toBeChecked();
+    await expect(planner.return).toBeChecked();
+    await expect(planner.steps.first()).toContainText('Take off from Kerbin');
+
+    // A reset is kept too.
+    await planner.resetButton.click();
+    await page.reload();
+    await expect(planner.to).toContainText('Select…');
+    await expect(planner.aerobraking).toBeChecked();
+  });
+
   for (const width of [320, 390]) {
     test(`keeps the options on one row on a ${width}px screen`, async ({
       page,
