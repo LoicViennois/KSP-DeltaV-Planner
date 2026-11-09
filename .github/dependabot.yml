@@ -4,6 +4,11 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'sunday'
+      time: '10:00'
+      timezone: 'Europe/Paris'
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: '⬆️'
     ignore:
@@ -22,6 +27,11 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
+      day: 'sunday'
+      time: '10:00'
+      timezone: 'Europe/Paris'
+    cooldown:
+      default-days: 2
     commit-message:
       prefix: '⬆️'
     groups:
