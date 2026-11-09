@@ -31,7 +31,7 @@
     "@tanstack/react-router": "^1.170.46",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.1.0",
-    "lucide-react": "^1.69.0",
+    "lucide-react": "^1.70.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
