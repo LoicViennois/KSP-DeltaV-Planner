@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'sunday'
-      time: '09:00'
+      time: '10:00'
       timezone: 'Europe/Paris'
     cooldown:
       default-days: 3
@@ -28,7 +28,7 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'sunday'
-      time: '09:00'
+      time: '10:00'
       timezone: 'Europe/Paris'
     cooldown:
       default-days: 3
