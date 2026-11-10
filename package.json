@@ -4,11 +4,11 @@
   "description": "KSP Delta-V Planner",
   "license": "GPL-3.0-or-later",
   "type": "module",
-  "packageManager": "pnpm@12.9.1",
+  "packageManager": "pnpm@12.18.0",
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "24.21.0",
+      "version": "^26.13.0",
       "onFail": "download"
     }
   },
@@ -43,7 +43,7 @@
     "@playwright/test": "^1.65.0",
     "@tailwindcss/vite": "^4.3.5",
     "@tanstack/router-plugin": "^1.168.48",
-    "@types/node": "^24.19.2",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
