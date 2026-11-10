@@ -84,4 +84,24 @@ test.describe('Outer Planets Mod', () => {
       /map-fade/,
     );
   });
+
+  test('highlights a moon transfer without the route to its planet', async ({
+    page,
+  }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.outerPlanets.check();
+    await planner.select(planner.to, 'Thatmo');
+    await planner.steps.nth(2).getByRole('button').click();
+
+    await expect(planner.mapElements('thatmo-transit').first()).not.toHaveClass(
+      /fade-soft/,
+    );
+    await expect(planner.mapElements('neidon-low').first()).not.toHaveClass(
+      /fade-soft/,
+    );
+    await expect(planner.mapElements('neidon-transit').first()).toHaveClass(
+      /fade-soft/,
+    );
+  });
 });

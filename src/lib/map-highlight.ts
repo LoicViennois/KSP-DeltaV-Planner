@@ -114,13 +114,19 @@ function stepIds(trip: Trip, step: Step): string[] | null {
       return [`${stepFrom}-hub`, ...ids(stepTo, SUFFIX_STEP_LOW)];
     case 'transitFromLowToSOI':
       return [`${stepTo}-hub`, ...ids(stepFrom, SUFFIX_STEP_LOW)];
-    case 'transitFromLowToLow':
-      return [
-        ...ids(stepFrom, SUFFIX_STEP_LOW),
-        ...ids(stepTo, SUFFIX_STEP_LOW),
-        ...via(stepFrom),
-        ...via(stepTo),
-      ];
+    case 'transitFromLowToLow': {
+      // From the low orbit of the planet only, not from its own route.
+      const end = (body: AstroBody | undefined) =>
+        body?.isPlanet
+          ? [`${body.name.toLowerCase()}-low`]
+          : body
+            ? [
+                ...ids(body.name.toLowerCase(), SUFFIX_STEP_LOW),
+                ...via(body.name.toLowerCase()),
+              ]
+            : [];
+      return [...end(step.from), ...end(step.to)];
+    }
     case 'transitToKeostat':
       return ['kerbin-low', 'kerbin-keostat'];
     // The return trip and the total span the whole path.
