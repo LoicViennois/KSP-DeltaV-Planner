@@ -13,10 +13,10 @@ export function OuterPlanetsToggle({
   return (
     <label
       title="Adds Sarnus, Urlum, Neidon, Plock and their moons"
-      className={`group flex cursor-pointer items-center gap-2 text-sm font-semibold text-ink-soft transition select-none hover:text-ink has-checked:text-ink ${className ?? ''}`}
+      className={`flex cursor-pointer items-center gap-2.5 rounded-xl border border-line bg-surface py-2 pr-2.5 pl-2 font-semibold text-ink-soft transition select-none hover:border-ink-soft hover:text-ink has-checked:text-ink ${className ?? ''}`}
     >
-      <img src="/planets/sarnus.svg" alt="" className="size-5 shrink-0" />
-      Outer Planets Mod
+      <img src="/planets/sarnus.svg" alt="" className="size-6 shrink-0" />
+      <span className="flex-1">Outer Planets Mod</span>
       <input
         type="checkbox"
         role="switch"
