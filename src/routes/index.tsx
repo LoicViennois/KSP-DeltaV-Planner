@@ -166,7 +166,9 @@ function PlannerPage() {
           </button>
         </div>
 
-        <div>
+        {/* A setting of the game rather than an option of the trip, on the
+            line of their legend, so that the panel stays as short. */}
+        <div className="relative">
           <TripOptions
             trip={trip}
             disabled={homeTrip ? ['landing', 'return'] : []}
@@ -174,18 +176,17 @@ function PlannerPage() {
               update({ ...trip, [option]: checked })
             }
           />
-          {/* A setting of the game rather than of the trip, under its options. */}
           <OuterPlanetsToggle
             checked={outerPlanets}
             onChange={toggleOuterPlanets}
-            className="mt-3"
+            className="absolute top-0 right-0"
           />
         </div>
 
         {plan.steps.length > 0 ? (
           <StepList plan={plan} selected={selected} onSelect={setSelected} />
         ) : (
-          <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-6 text-center text-ink-soft">
+          <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
             <Telescope aria-hidden className="size-8" />
             Pick a destination to see the Δv of each step of the trip.
           </p>
