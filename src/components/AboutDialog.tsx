@@ -105,13 +105,13 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                 </External>
               </li>
               <li>
-                Want to say hi?
+                Want to say hi? Send me an email:
                 <br />
                 <a
                   href="mailto:contact@loicviennois.com?subject=%5BKSP%20Delta-V%20Planner%5D%20Hello"
                   className="text-ink"
                 >
-                  Send me an email
+                  contact@loicviennois.com
                 </a>
               </li>
             </ul>
