@@ -107,9 +107,12 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
               <li>
                 Want to say hi?
                 <br />
-                <External href="https://www.reddit.com/message/compose/?to=LoicViennois">
-                  Message me on Reddit
-                </External>
+                <a
+                  href="mailto:contact@loicviennois.com?subject=%5BKSP%20Delta-V%20Planner%5D%20Hello"
+                  className="text-ink"
+                >
+                  Send me an email
+                </a>
               </li>
             </ul>
           </Section>
