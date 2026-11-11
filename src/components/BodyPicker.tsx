@@ -186,7 +186,8 @@ export function BodyPicker({
             onClick={() => choose(index)}
             onPointerMove={() => setActive(index)}
             className={`flex cursor-pointer items-center gap-2.5 rounded-lg py-1.5 pr-2 ${
-              body.isPlanet ? 'pl-2' : 'pl-5'
+              // A moon of a moon (Tal) one step further, under its moon.
+              body.isPlanet ? 'pl-2' : body.orbits ? 'pl-11' : 'pl-5'
             } ${index === active ? 'bg-tint' : ''} aria-selected:font-semibold aria-selected:text-thrust-text`}
           >
             {!body.isPlanet && (
