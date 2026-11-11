@@ -77,9 +77,11 @@ function PlannerPage() {
 
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,var(--map-width))_21rem] md:justify-center lg:grid-cols-[minmax(0,var(--map-width))_25rem] lg:gap-8">
+      {/* The buttons over the map have a gutter of their own on its right,
+          so as not to cover its top right corner. */}
       <div className="hidden md:block">
         {showMap && (
-          <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
+          <div className="sticky top-[calc(3.5rem+1px+1.25rem)] pr-14">
             <Suspense
               fallback={
                 <div className="aspect-4/3 animate-pulse rounded-2xl bg-tint" />
@@ -87,7 +89,7 @@ function PlannerPage() {
             >
               <DvMap trip={trip} step={shown} />
             </Suspense>
-            <div className="absolute top-4 right-4 flex flex-col gap-3">
+            <div className="absolute top-0 right-0 flex flex-col gap-3">
               <button
                 type="button"
                 onClick={openMap}
