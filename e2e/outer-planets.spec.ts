@@ -39,6 +39,24 @@ test.describe('Outer Planets Mod', () => {
     await expect(planner.outerPlanets).toBeChecked();
   });
 
+  test('keeps a trip to its bodies across a reload', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.outerPlanets.check();
+    await planner.select(planner.to, 'Eeloo');
+
+    await page.reload();
+    await expect(planner.to).toContainText('Eeloo');
+    // Still the moon of Sarnus, not the planet of the stock game.
+    await expect(planner.steps.nth(1)).toContainText(
+      'Transit to Sarnus low orbit',
+    );
+
+    await planner.select(planner.to, 'Hale');
+    await page.reload();
+    await expect(planner.to).toContainText('Hale');
+  });
+
   test('moves Eeloo around Sarnus', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

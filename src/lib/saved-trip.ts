@@ -1,4 +1,5 @@
-import { bodies, type AstroBody } from './bodies';
+import { type AstroBody, bodiesOf } from './bodies';
+import { outerPlanetsEnabled } from './outer-planets';
 import { initialTrip, type Trip } from './planner';
 import { readJson, writeJson } from './storage';
 
@@ -13,8 +14,11 @@ interface SavedTrip {
   return: boolean;
 }
 
+/** Among the bodies shown: those of the Outer Planets Mod, if it is on. */
 function bodyNamed(name: unknown): AstroBody | null {
-  return bodies.find((body) => body.name === name) ?? null;
+  return (
+    bodiesOf(outerPlanetsEnabled()).find((body) => body.name === name) ?? null
+  );
 }
 
 function flag(value: unknown, fallback: boolean): boolean {

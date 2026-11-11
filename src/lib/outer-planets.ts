@@ -10,6 +10,9 @@ const outerPlanets = createStore<boolean>(
 
 export const useOuterPlanets = outerPlanets.use;
 
+/** The setting outside React. */
+export const outerPlanetsEnabled = outerPlanets.get;
+
 export function setOuterPlanets(enabled: boolean): void {
   writeJson(STORAGE_KEY, enabled);
   outerPlanets.set(enabled);
