@@ -105,9 +105,8 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
                 </External>
               </li>
               <li>
-                Want to say hi?
+                Want to say hi? Send me an email:
                 <br />
-                Send me an email:{' '}
                 <a
                   href="mailto:contact@loicviennois.com?subject=%5BKSP%20Delta-V%20Planner%5D%20Hello"
                   className="text-ink"
