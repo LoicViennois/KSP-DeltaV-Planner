@@ -171,17 +171,18 @@ function PlannerPage() {
         {/* A setting of the game rather than an option of the trip, on the
             line of their legend, so that the panel stays as short. */}
         <div className="relative">
+          {/* First in the tab order: it changes the bodies of the trip. */}
+          <OuterPlanetsToggle
+            checked={outerPlanets}
+            onChange={toggleOuterPlanets}
+            className="absolute top-0 right-0"
+          />
           <TripOptions
             trip={trip}
             disabled={homeTrip ? ['landing', 'return'] : []}
             onChange={(option, checked) =>
               update({ ...trip, [option]: checked })
             }
-          />
-          <OuterPlanetsToggle
-            checked={outerPlanets}
-            onChange={toggleOuterPlanets}
-            className="absolute top-0 right-0"
           />
         </div>
 

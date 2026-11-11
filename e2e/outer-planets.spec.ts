@@ -125,7 +125,7 @@ test.describe('Outer Planets Mod', () => {
     );
   });
 
-  test('describes its switch, after the trip options', async ({ page }) => {
+  test('describes its switch, before the trip options', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
 
@@ -136,13 +136,15 @@ test.describe('Outer Planets Mod', () => {
       'Adds Sarnus, Urlum, Neidon, Plock and their moons',
     );
 
-    await planner.landing.focus();
+    await planner.reverseButton.focus();
+    await page.keyboard.press('Tab');
+    await expect(planner.outerPlanets).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(planner.landing).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(planner.aerobraking).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(planner.return).toBeFocused();
-    await page.keyboard.press('Tab');
-    await expect(planner.outerPlanets).toBeFocused();
   });
 
   test('spans the eccentric orbit of Plock', async ({ page }) => {
