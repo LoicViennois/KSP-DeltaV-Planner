@@ -83,6 +83,8 @@ test.describe('Outer Planets Mod', () => {
     await expect(planner.mapElements('duna-transit').first()).toHaveClass(
       /map-fade/,
     );
+    // The kraken fades too, like on the KSPedia map.
+    await expect(planner.mapElement('g4600')).toHaveClass(/map-fade/);
   });
 
   test('highlights a moon transfer without the route to its planet', async ({
