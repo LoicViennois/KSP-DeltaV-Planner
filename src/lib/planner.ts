@@ -87,6 +87,12 @@ function kerbinToSOI(planet: Planet): number {
   return kerbin.dvLE + (planet.dvK ?? 0) + (planet.dvEI ?? 0);
 }
 
+/** The Δv a transfer to `planet` can take above its best case. */
+function worstCaseExtra(planet: Planet): number {
+  const eccentric = (planet.dvKMax ?? planet.dvK ?? 0) - (planet.dvK ?? 0);
+  return (planet.dvPlaneChange ?? 0) + eccentric;
+}
+
 function sum(values: number[]): number {
   return values.reduce((a, b) => a + b, 0);
 }
@@ -124,7 +130,7 @@ export function planTrip(trip: Trip): TripPlan {
       type: 'transitToLowOrbit',
       to,
       dv,
-      dvMax: dv + (to.dvPlaneChange ?? 0),
+      dvMax: dv + worstCaseExtra(to),
     });
   } else if (from.isPlanet && to.name === kerbin.name) {
     const dv = kerbinToLowOrbit(from);
@@ -132,7 +138,7 @@ export function planTrip(trip: Trip): TripPlan {
       type: 'transitToLowOrbit',
       to: kerbin,
       dv,
-      dvMax: dv + (from.dvPlaneChange ?? 0),
+      dvMax: dv + worstCaseExtra(from),
     });
   } else if (from.name === kerbin.name && !to.isPlanet) {
     const lowToLow = (to.dvPL ?? 0) + (to.dvLI ?? 0);
@@ -152,7 +158,7 @@ export function planTrip(trip: Trip): TripPlan {
           type: 'transitToLowOrbit',
           to: planet,
           dv: toLow,
-          dvMax: toLow + (planet.dvPlaneChange ?? 0),
+          dvMax: toLow + worstCaseExtra(planet),
         },
         {
           type: 'transitFromLowToLow',
@@ -171,7 +177,7 @@ export function planTrip(trip: Trip): TripPlan {
           type: 'transitToSOI',
           to: planet,
           dv: toSOI,
-          dvMax: toSOI + (planet.dvPlaneChange ?? 0),
+          dvMax: toSOI + worstCaseExtra(planet),
         },
         {
           type: 'transitFromSOIToLow',
@@ -229,8 +235,8 @@ export function planTrip(trip: Trip): TripPlan {
   if (trip.return) {
     const dv = sum(steps.map((step) => step.returnDv ?? step.dv));
     const planeChange = to.isPlanet
-      ? (to.dvPlaneChange ?? 0)
-      : (to.dvPlaneChange ?? 0) + (parentOf(to).dvPlaneChange ?? 0);
+      ? worstCaseExtra(to)
+      : (to.dvPlaneChange ?? 0) + worstCaseExtra(parentOf(to));
     steps.push({
       type: 'return',
       from: to,

@@ -20,6 +20,8 @@ export interface Planet extends BaseBody {
   readonly dvEI?: number;
   /** Intercept <-> Kerbin elliptical orbit to SOI edge */
   readonly dvK: number | null;
+  /** The worst case of `dvK`, for a planet on an eccentric orbit */
+  readonly dvKMax?: number;
   readonly satellites: readonly Satellite[];
 }
 
@@ -33,6 +35,11 @@ export interface Satellite extends BaseBody {
   readonly dvPL?: number;
   /** Intercept <-> parent body elliptical orbit to SOI edge */
   readonly dvPE?: number;
+  /**
+   * The satellite it orbits, for a moon of a moon (Tal around Wal); `parent`
+   * stays the planet, whose low orbit its Δv starts from.
+   */
+  readonly orbits?: string;
 }
 
 export type AstroBody = Planet | Satellite;
@@ -423,13 +430,14 @@ const urlum: Planet = {
       color: '#82d9d3',
     },
     {
-      // Tal orbits Wal: reached through Wal low orbit (900 + 810 + 380).
+      // Reached from Urlum low orbit through Wal low orbit (900 + 810 + 380).
       name: 'Tal',
       isPlanet: false,
       hasAtmosphere: false,
       canLand: true,
       imageUrl: image('Tal', 'svg'),
       parent: 'Urlum',
+      orbits: 'Wal',
       dvGL: 100,
       dvLI: 150,
       dvPL: 2090,
@@ -490,8 +498,9 @@ const plock: Planet = {
   dvGL: 480,
   dvLE: 210,
   dvEI: 900,
-  // 1900 to 2700, along its eccentric orbit: the best case.
+  // Along its eccentric orbit.
   dvK: 1900,
+  dvKMax: 2700,
   dvPlaneChange: 500,
   color: '#333333',
   satellites: [],
