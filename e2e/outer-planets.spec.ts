@@ -124,4 +124,50 @@ test.describe('Outer Planets Mod', () => {
       /fade-soft/,
     );
   });
+
+  test('describes its switch, after the trip options', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+
+    await expect(planner.outerPlanets).toHaveAccessibleName(
+      'Outer Planets Mod',
+    );
+    await expect(planner.outerPlanets).toHaveAccessibleDescription(
+      'Adds Sarnus, Urlum, Neidon, Plock and their moons',
+    );
+
+    await planner.landing.focus();
+    await page.keyboard.press('Tab');
+    await expect(planner.aerobraking).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(planner.return).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(planner.outerPlanets).toBeFocused();
+  });
+
+  test('spans the eccentric orbit of Plock', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.outerPlanets.check();
+    await planner.select(planner.to, 'Plock');
+    await planner.landing.check();
+
+    // 7840 - 8640 on the map, plus its 500 plane change at worst.
+    await expect(planner.total).toContainText('7840 – 9140 m/s');
+  });
+
+  test('lists Tal under Wal, the moon it orbits', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.outerPlanets.check();
+    await planner.to.click();
+
+    const listbox = page.getByRole('listbox');
+    const wal = listbox.getByRole('option', { name: 'Wal', exact: true });
+    const tal = listbox.getByRole('option', { name: 'Tal', exact: true });
+    // Its arrow under the picture of Wal.
+    const arrowX = async (option: typeof wal) =>
+      (await option.locator('svg').boundingBox())?.x ?? 0;
+    expect(await arrowX(tal)).toBeGreaterThan(await arrowX(wal));
+  });
 });
