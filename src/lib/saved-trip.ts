@@ -9,6 +9,7 @@ const STORAGE_KEY = 'ksp_trip';
 interface SavedTrip {
   from: string | null;
   to: string | null;
+  takeOff: boolean;
   landing: boolean;
   aerobraking: boolean;
   return: boolean;
@@ -34,6 +35,7 @@ export function loadTrip(): Trip {
   return {
     from: saved.from === undefined ? initialTrip.from : bodyNamed(saved.from),
     to: bodyNamed(saved.to),
+    takeOff: flag(saved.takeOff, initialTrip.takeOff),
     landing: flag(saved.landing, initialTrip.landing),
     aerobraking: flag(saved.aerobraking, initialTrip.aerobraking),
     return: flag(saved.return, initialTrip.return),
@@ -44,6 +46,7 @@ export function saveTrip(trip: Trip): void {
   writeJson(STORAGE_KEY, {
     from: trip.from?.name ?? null,
     to: trip.to?.name ?? null,
+    takeOff: trip.takeOff,
     landing: trip.landing,
     aerobraking: trip.aerobraking,
     return: trip.return,

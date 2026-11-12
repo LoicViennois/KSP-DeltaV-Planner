@@ -5,6 +5,7 @@ export class PlannerPage {
   readonly heading: Locator;
   readonly from: Locator;
   readonly to: Locator;
+  readonly takeOff: Locator;
   readonly landing: Locator;
   readonly aerobraking: Locator;
   readonly return: Locator;
@@ -23,6 +24,7 @@ export class PlannerPage {
     this.heading = page.getByRole('heading', { level: 1 });
     this.from = page.getByRole('combobox', { name: 'From' });
     this.to = page.getByRole('combobox', { name: 'To' });
+    this.takeOff = page.getByRole('checkbox', { name: 'Take-off' });
     this.landing = page.getByRole('checkbox', { name: 'Landing' });
     this.aerobraking = page.getByRole('checkbox', { name: 'Aerobraking' });
     this.return = page.getByRole('checkbox', { name: 'Return' });

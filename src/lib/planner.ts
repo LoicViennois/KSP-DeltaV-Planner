@@ -33,6 +33,8 @@ export interface Step {
 export interface Trip {
   readonly from: AstroBody | null;
   readonly to: AstroBody | null;
+  /** Starts from the surface, or else from low orbit around the departure. */
+  readonly takeOff: boolean;
   readonly landing: boolean;
   readonly aerobraking: boolean;
   readonly return: boolean;
@@ -46,6 +48,7 @@ export interface TripPlan {
 export const initialTrip: Trip = {
   from: kerbin,
   to: null,
+  takeOff: true,
   landing: false,
   aerobraking: true,
   return: false,
@@ -117,14 +120,17 @@ export function planTrip(trip: Trip): TripPlan {
   const aerobrakeFrom = trip.aerobraking && from.hasAtmosphere;
   const aerobrakeTo = trip.aerobraking && to.hasAtmosphere;
 
-  const steps: Step[] = [
-    {
-      type: 'takeOff',
-      from,
-      dv: from.dvGL,
-      returnDv: aerobrakeFrom ? 0 : from.dvGL,
-    },
-  ];
+  // Without the take-off, the trip starts and comes back to low orbit.
+  const steps: Step[] = trip.takeOff
+    ? [
+        {
+          type: 'takeOff',
+          from,
+          dv: from.dvGL,
+          returnDv: aerobrakeFrom ? 0 : from.dvGL,
+        },
+      ]
+    : [];
 
   if (isKerbinTrip(trip)) {
     steps.push(

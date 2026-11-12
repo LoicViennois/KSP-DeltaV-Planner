@@ -12,6 +12,7 @@ test.describe('Delta-V planner', () => {
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
     await expect(page.getByText('Pick a destination')).toBeVisible();
+    await expect(planner.takeOff).toBeChecked();
     await expect(planner.landing).toBeEnabled();
     await expect(planner.aerobraking).toBeChecked();
     await expect(planner.return).toBeEnabled();
@@ -178,27 +179,55 @@ test.describe('Delta-V planner', () => {
     await expect(planner.aerobraking).toBeChecked();
   });
 
-  for (const width of [320, 390]) {
-    test(`keeps the options on one row on a ${width}px screen`, async ({
+  for (const [width, rows] of [
+    [320, 2],
+    [390, 2],
+    [700, 1],
+    [800, 1],
+    [1280, 1],
+  ] as const) {
+    test(`lays the options out on ${rows} row(s) on a ${width}px screen`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 800 });
       const planner = new PlannerPage(page);
       await planner.goto();
 
+      const options = [
+        planner.takeOff,
+        planner.aerobraking,
+        planner.landing,
+        planner.return,
+      ];
       const boxes = await Promise.all(
-        [planner.aerobraking, planner.landing, planner.return].map((option) =>
-          option.locator('..').boundingBox(),
-        ),
+        options.map((option) => option.locator('..').boundingBox()),
       );
-      expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
+      expect(new Set(boxes.map((box) => box?.y)).size).toBe(rows);
+      // Equal columns on narrow screens, centred beside the map.
+      if (width < 768) {
+        expect(new Set(boxes.map((box) => box?.width)).size).toBe(1);
+      } else {
+        const group = await page.locator('fieldset > div').boundingBox();
+        const first = boxes[0];
+        const last = boxes[boxes.length - 1];
+        const left = (first?.x ?? 0) - (group?.x ?? 0);
+        const right =
+          (group?.x ?? 0) +
+          (group?.width ?? 0) -
+          ((last?.x ?? 0) + (last?.width ?? 0));
+        expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
+        expect(left).toBeGreaterThanOrEqual(0);
+      }
       // Wide enough for its label, which never overflows the button.
-      for (const option of [planner.aerobraking, planner.landing]) {
+      for (const option of options) {
         const label = option.locator('..');
         expect(
           await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
         ).toBe(true);
       }
+      expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
+        width,
+      );
     });
   }
 
@@ -255,20 +284,47 @@ test.describe('Delta-V planner', () => {
     });
   }
 
-  test('centres the options on wide screens', async ({ page }) => {
+  test('starts a trip from low orbit without the take-off', async ({
+    page,
+  }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
-    const group = await page.locator('fieldset > div').boundingBox();
-    const first = await planner.aerobraking.locator('..').boundingBox();
-    const last = await planner.return.locator('..').boundingBox();
+    await planner.select(planner.to, 'Mun');
+    await planner.takeOff.uncheck();
 
-    const left = (first?.x ?? 0) - (group?.x ?? 0);
-    const right =
-      (group?.x ?? 0) +
-      (group?.width ?? 0) -
-      ((last?.x ?? 0) + (last?.width ?? 0));
-    expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
-    expect(left).toBeGreaterThan(0);
+    await expect(planner.steps).toHaveCount(1);
+    await expect(planner.steps.nth(0)).toContainText(
+      'Transit from Kerbin low orbit to Mun low orbit',
+    );
+    await expect(planner.total).toContainText('1170 m/s');
+
+    // The return ends in low orbit too: no landing back on Kerbin.
+    await planner.landing.check();
+    await planner.return.check();
+    await expect(planner.steps).toHaveCount(3);
+    await expect(planner.steps.nth(2)).toContainText(
+      'Return trip from Mun to Kerbin',
+    );
+    // 580 to take off from Mun, then 1170 back to Kerbin low orbit.
+    await expect(planner.steps.nth(2)).toContainText('1750 m/s');
+
+    // Kept across a reload, and back on with a reset.
+    await page.reload();
+    await expect(planner.takeOff).not.toBeChecked();
+    await expect(planner.steps).toHaveCount(3);
+    await planner.resetButton.click();
+    await expect(planner.takeOff).toBeChecked();
+  });
+
+  test('starts a Kerbin to Kerbin trip from low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Kerbin');
+    await planner.takeOff.uncheck();
+
+    await expect(planner.steps).toHaveCount(2);
+    await expect(planner.steps.nth(0)).toContainText('Transit to Kerbin SOI');
+    await expect(planner.takeOff).toBeEnabled();
   });
 
   test('toggles an option from anywhere on its button', async ({ page }) => {
