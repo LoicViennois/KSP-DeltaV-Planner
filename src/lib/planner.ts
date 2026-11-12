@@ -26,8 +26,8 @@ export interface Step {
   readonly dv: number;
   /** Δv including the maximum plane change, in m/s */
   readonly dvMax?: number;
-  /** Δv this step costs on the way back, when it differs */
-  readonly returnDv?: number;
+  /** Whether aerobraking saves the capture burn of this step */
+  readonly aerobraked?: boolean;
 }
 
 export interface Trip {
@@ -89,15 +89,30 @@ export function reversed(trip: Trip): Trip {
   return { ...trip, from: trip.to, to: trip.from };
 }
 
-function kerbinToLowOrbit(planet: Planet): number {
-  const dvK = planet.dvK ?? 0;
-  const dvLE = planet.dvLE ?? 0;
-  const dvEI = planet.dvEI ?? 0;
-  return kerbin.dvLE + dvK + (planet.dvLI ?? dvLE + dvEI);
+/** The burns of a transfer, split by what the atmosphere can take over. */
+interface Burns {
+  /** Spent anyway */
+  readonly dv: number;
+  /** The capture at the end, saved by aerobraking into an atmosphere */
+  readonly capture: number;
 }
 
-function kerbinToSOI(planet: Planet): number {
-  return kerbin.dvLE + (planet.dvK ?? 0) + (planet.dvEI ?? 0);
+/** Kerbin low orbit to the low orbit of `planet`, or the other way round. */
+function kerbinToLowOrbit(planet: Planet, toKerbin: boolean): Burns {
+  const dvK = planet.dvK ?? 0;
+  const planetLow = planet.dvLI ?? (planet.dvLE ?? 0) + (planet.dvEI ?? 0);
+  return toKerbin
+    ? { dv: planetLow + dvK, capture: kerbin.dvLE }
+    : { dv: kerbin.dvLE + dvK, capture: planetLow };
+}
+
+/** Kerbin low orbit to an elliptical orbit around `planet`, or back. */
+function kerbinToSOI(planet: Planet, toKerbin: boolean): Burns {
+  const dvK = planet.dvK ?? 0;
+  const dvEI = planet.dvEI ?? 0;
+  return toKerbin
+    ? { dv: dvEI + dvK, capture: kerbin.dvLE }
+    : { dv: kerbin.dvLE + dvK, capture: dvEI };
 }
 
 /** The Δv a transfer to `planet` can take above its best case. */
@@ -110,6 +125,124 @@ function sum(values: number[]): number {
   return values.reduce((a, b) => a + b, 0);
 }
 
+/**
+ * A step reaching `target`, whose capture burn is saved when the ship can
+ * aerobrake into its atmosphere.
+ */
+function transfer(
+  step: Omit<Step, 'dv' | 'dvMax' | 'aerobraked'>,
+  burns: Burns,
+  target: AstroBody,
+  aerobraking: boolean,
+  extra = 0,
+): Step {
+  const aerobraked = aerobraking && target.hasAtmosphere && burns.capture > 0;
+  const dv = burns.dv + (aerobraked ? 0 : burns.capture);
+  return {
+    ...step,
+    dv,
+    ...(extra > 0 && { dvMax: dv + extra }),
+    ...(aerobraked && { aerobraked }),
+  };
+}
+
+/** The steps between the low orbits of `from` and `to`, one being Kerbin. */
+function transfers(
+  from: AstroBody,
+  to: AstroBody,
+  aerobraking: boolean,
+): Step[] {
+  const outbound = from.name === kerbin.name;
+  const body = outbound ? to : from;
+  const extra = (value: number) => (outbound ? value : 0);
+
+  if (body.isPlanet) {
+    return [
+      transfer(
+        { type: 'transitToLowOrbit', to },
+        kerbinToLowOrbit(body, !outbound),
+        to,
+        aerobraking,
+        // Either way, on an eccentric orbit or out of the plane of Kerbin.
+        worstCaseExtra(body),
+      ),
+    ];
+  }
+
+  const satellite: Burns = {
+    dv: body.dvPL ?? body.dvPE ?? 0,
+    capture: body.dvLI ?? 0,
+  };
+  // The capture and the escape swap round on the way back.
+  const lowToLow: Burns = outbound
+    ? satellite
+    : { dv: satellite.capture, capture: satellite.dv };
+
+  if (isKerbinSatellite(body)) {
+    return [
+      transfer(
+        { type: 'transitFromLowToLow', from, to },
+        lowToLow,
+        to,
+        aerobraking,
+        extra(body.dvPlaneChange ?? 0),
+      ),
+    ];
+  }
+
+  const planet = parentOf(body);
+  // Through the low orbit of the planet, or only through its SOI.
+  const viaLowOrbit = body.dvPL != null;
+  const legs = viaLowOrbit
+    ? {
+        planet: kerbinToLowOrbit(planet, !outbound),
+        toPlanet: 'transitToLowOrbit' as const,
+        toBody: 'transitFromLowToLow' as const,
+        fromBody: 'transitFromLowToLow' as const,
+      }
+    : {
+        planet: kerbinToSOI(planet, !outbound),
+        toPlanet: 'transitToSOI' as const,
+        toBody: 'transitFromSOIToLow' as const,
+        fromBody: 'transitFromLowToSOI' as const,
+      };
+
+  const planetLeg = (target: AstroBody) =>
+    transfer(
+      // Back home, Kerbin is reached in low orbit whatever the route.
+      { type: outbound ? legs.toPlanet : 'transitToLowOrbit', to: target },
+      legs.planet,
+      target,
+      aerobraking,
+      extra(worstCaseExtra(planet)),
+    );
+
+  if (outbound) {
+    return [
+      planetLeg(planet),
+      transfer(
+        { type: legs.toBody, from: planet, to },
+        lowToLow,
+        to,
+        aerobraking,
+        body.dvPlaneChange ?? 0,
+      ),
+    ];
+  }
+  return [
+    transfer(
+      { type: legs.fromBody, from, to: planet },
+      // Leaving for the SOI edge of the planet, there is nothing to capture.
+      viaLowOrbit
+        ? lowToLow
+        : { dv: sum([lowToLow.dv, lowToLow.capture]), capture: 0 },
+      planet,
+      aerobraking,
+    ),
+    planetLeg(kerbin),
+  ];
+}
+
 /** The Δv of each step of a trip, from the take-off to the optional return. */
 export function planTrip(trip: Trip): TripPlan {
   const { from, to } = trip;
@@ -117,19 +250,9 @@ export function planTrip(trip: Trip): TripPlan {
     return { steps: [], total: null };
   }
 
-  const aerobrakeFrom = trip.aerobraking && from.hasAtmosphere;
-  const aerobrakeTo = trip.aerobraking && to.hasAtmosphere;
-
   // Without the take-off, the trip starts and comes back to low orbit.
   const steps: Step[] = trip.takeOff
-    ? [
-        {
-          type: 'takeOff',
-          from,
-          dv: from.dvGL,
-          returnDv: aerobrakeFrom ? 0 : from.dvGL,
-        },
-      ]
+    ? [{ type: 'takeOff', from, dv: from.dvGL }]
     : [];
 
   if (isKerbinTrip(trip)) {
@@ -140,116 +263,23 @@ export function planTrip(trip: Trip): TripPlan {
     return { steps, total: null };
   }
 
-  if (from.name === kerbin.name && to.isPlanet) {
-    const dv = kerbinToLowOrbit(to);
-    steps.push({
-      type: 'transitToLowOrbit',
-      to,
-      dv,
-      dvMax: dv + worstCaseExtra(to),
-    });
-  } else if (from.isPlanet && to.name === kerbin.name) {
-    const dv = kerbinToLowOrbit(from);
-    steps.push({
-      type: 'transitToLowOrbit',
-      to: kerbin,
-      dv,
-      dvMax: dv + worstCaseExtra(from),
-    });
-  } else if (from.name === kerbin.name && !to.isPlanet) {
-    const lowToLow = (to.dvPL ?? 0) + (to.dvLI ?? 0);
-    if (isKerbinSatellite(to)) {
-      steps.push({
-        type: 'transitFromLowToLow',
-        from: kerbin,
-        to,
-        dv: lowToLow,
-        dvMax: lowToLow + (to.dvPlaneChange ?? 0),
-      });
-    } else if (to.dvPL != null) {
-      const planet = parentOf(to);
-      const toLow = kerbinToLowOrbit(planet);
-      steps.push(
-        {
-          type: 'transitToLowOrbit',
-          to: planet,
-          dv: toLow,
-          dvMax: toLow + worstCaseExtra(planet),
-        },
-        {
-          type: 'transitFromLowToLow',
-          from: planet,
-          to,
-          dv: lowToLow,
-          dvMax: lowToLow + (to.dvPlaneChange ?? 0),
-        },
-      );
-    } else {
-      const planet = parentOf(to);
-      const toSOI = kerbinToSOI(planet);
-      const toLow = (to.dvPE ?? 0) + (to.dvLI ?? 0);
-      steps.push(
-        {
-          type: 'transitToSOI',
-          to: planet,
-          dv: toSOI,
-          dvMax: toSOI + worstCaseExtra(planet),
-        },
-        {
-          type: 'transitFromSOIToLow',
-          from: planet,
-          to,
-          dv: toLow,
-          dvMax: toLow + (to.dvPlaneChange ?? 0),
-        },
-      );
-    }
-  } else if (!from.isPlanet && to.name === kerbin.name) {
-    const lowToLow = (from.dvPL ?? 0) + (from.dvLI ?? 0);
-    if (isKerbinSatellite(from)) {
-      steps.push({
-        type: 'transitFromLowToLow',
-        from,
-        to: kerbin,
-        dv: lowToLow,
-      });
-    } else if (from.dvPL != null) {
-      const planet = parentOf(from);
-      steps.push(
-        { type: 'transitFromLowToLow', from, to: planet, dv: lowToLow },
-        {
-          type: 'transitToLowOrbit',
-          to: kerbin,
-          dv: kerbinToLowOrbit(planet),
-        },
-      );
-    } else {
-      const planet = parentOf(from);
-      steps.push(
-        {
-          type: 'transitFromLowToSOI',
-          from,
-          to: planet,
-          dv: (from.dvPE ?? 0) + (from.dvLI ?? 0),
-        },
-        { type: 'transitToLowOrbit', to: kerbin, dv: kerbinToSOI(planet) },
-      );
-    }
-  } else {
+  if (from.name !== kerbin.name && to.name !== kerbin.name) {
     return { steps, total: null };
   }
+  steps.push(...transfers(from, to, trip.aerobraking));
 
   if (isLanding(trip)) {
-    steps.push({
-      type: 'landing',
-      to,
-      dv: aerobrakeTo ? 0 : to.dvGL,
-      returnDv: to.dvGL,
-    });
+    steps.push(landing(to, trip.aerobraking));
   }
 
   if (trip.return) {
-    const dv = sum(steps.map((step) => step.returnDv ?? step.dv));
+    const back = transfers(to, from, trip.aerobraking);
+    const dv = sum([
+      ...(isLanding(trip) ? [to.dvGL] : []),
+      ...back.map((step) => step.dv),
+      // Back to where it started: the ground, or else low orbit.
+      ...(trip.takeOff ? [landing(from, trip.aerobraking).dv] : []),
+    ]);
     const planeChange = to.isPlanet
       ? worstCaseExtra(to)
       : (to.dvPlaneChange ?? 0) + worstCaseExtra(parentOf(to));
@@ -269,5 +299,13 @@ export function planTrip(trip: Trip): TripPlan {
       dv: sum(steps.map((step) => step.dv)),
       dvMax: sum(steps.map((step) => step.dvMax ?? step.dv)),
     },
+  };
+}
+
+function landing(body: AstroBody, aerobraking: boolean): Step {
+  return {
+    type: 'landing',
+    to: body,
+    dv: aerobraking && body.hasAtmosphere ? 0 : body.dvGL,
   };
 }
