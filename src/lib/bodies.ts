@@ -20,16 +20,26 @@ export interface Planet extends BaseBody {
   readonly dvEI?: number;
   /** Intercept <-> Kerbin elliptical orbit to SOI edge */
   readonly dvK: number | null;
+  /** The worst case of `dvK`, for a planet on an eccentric orbit */
+  readonly dvKMax?: number;
   readonly satellites: readonly Satellite[];
 }
 
 export interface Satellite extends BaseBody {
   readonly isPlanet: false;
   readonly parent: string;
-  /** Intercept <-> parent body low orbit */
+  /**
+   * Intercept <-> parent body low orbit, for the satellites reached from the
+   * low orbit of their planet rather than from the edge of its SOI.
+   */
   readonly dvPL?: number;
   /** Intercept <-> parent body elliptical orbit to SOI edge */
   readonly dvPE?: number;
+  /**
+   * The satellite it orbits, for a moon of a moon (Tal around Wal); `parent`
+   * stays the planet, whose low orbit its Δv starts from.
+   */
+  readonly orbits?: string;
 }
 
 export type AstroBody = Planet | Satellite;
@@ -40,7 +50,8 @@ export interface HomePlanet extends Planet {
   readonly dvKeostat: number;
 }
 
-const image = (name: string) => `/planets/${name.toLowerCase()}.webp`;
+const image = (name: string, format = 'webp') =>
+  `/planets/${name.toLowerCase()}.${format}`;
 
 export const kerbin: HomePlanet = {
   name: 'Kerbin',
@@ -277,14 +288,251 @@ export const planets: readonly Planet[] = [
   },
 ];
 
+const eeloo = planets.find((planet) => planet.name === 'Eeloo');
+const kerbol = planets.find((planet) => planet.name === 'Kerbol');
+
+/**
+ * The bodies of the Outer Planets Mod (OPM), from its Δv map
+ * (svg/DvMap_OPM.svg). Their satellites are reached from the low orbit of
+ * their planet. OPM also moves Eeloo around Sarnus.
+ */
+const sarnus: Planet = {
+  name: 'Sarnus',
+  isPlanet: true,
+  hasAtmosphere: true,
+  canLand: false,
+  imageUrl: image('Sarnus', 'svg'),
+  dvGL: 20000,
+  dvLE: 1580,
+  dvEI: 1660,
+  dvK: 1390,
+  dvPlaneChange: 350,
+  color: '#ff0080',
+  satellites: [
+    {
+      name: 'Hale',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Hale', 'svg'),
+      parent: 'Sarnus',
+      dvGL: 40,
+      dvLI: 450,
+      dvPL: 540,
+      dvPlaneChange: 70,
+      color: '#77073e',
+    },
+    {
+      name: 'Ovok',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Ovok', 'svg'),
+      parent: 'Sarnus',
+      dvGL: 70,
+      dvLI: 400,
+      dvPL: 650,
+      dvPlaneChange: 100,
+      color: '#a20a55',
+    },
+    {
+      name: 'Eeloo',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: eeloo?.imageUrl ?? image('Eeloo'),
+      parent: 'Sarnus',
+      dvGL: 540,
+      dvLI: 490,
+      dvPL: 1120,
+      dvPlaneChange: 160,
+      color: '#e20e77',
+    },
+    {
+      name: 'Slate',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Slate', 'svg'),
+      parent: 'Sarnus',
+      dvGL: 2150,
+      dvLI: 890,
+      dvPL: 1460,
+      dvPlaneChange: 155,
+      color: '#f33c96',
+    },
+    {
+      name: 'Tekto',
+      isPlanet: false,
+      hasAtmosphere: true,
+      canLand: true,
+      imageUrl: image('Tekto', 'svg'),
+      parent: 'Sarnus',
+      dvGL: 2600,
+      dvLI: 350,
+      dvPL: 1540,
+      dvPlaneChange: 630,
+      color: '#f66bb0',
+    },
+  ],
+};
+
+const urlum: Planet = {
+  name: 'Urlum',
+  isPlanet: true,
+  hasAtmosphere: true,
+  canLand: false,
+  imageUrl: image('Urlum', 'svg'),
+  dvGL: 9000,
+  dvLE: 940,
+  dvEI: 1490,
+  dvK: 1600,
+  dvPlaneChange: 100,
+  color: '#6bd2ca',
+  satellites: [
+    {
+      name: 'Polta',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Polta', 'svg'),
+      parent: 'Urlum',
+      dvGL: 640,
+      dvLI: 440,
+      dvPL: 620,
+      dvPlaneChange: 100,
+      color: '#247973',
+    },
+    {
+      name: 'Priax',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Priax', 'svg'),
+      parent: 'Urlum',
+      dvGL: 260,
+      dvLI: 460,
+      dvPL: 620,
+      dvPlaneChange: 100,
+      color: '#38bcb2',
+    },
+    {
+      name: 'Wal',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Wal', 'svg'),
+      parent: 'Urlum',
+      dvGL: 1200,
+      dvLI: 810,
+      dvPL: 900,
+      dvPlaneChange: 75,
+      color: '#82d9d3',
+    },
+    {
+      // Reached from Urlum low orbit through Wal low orbit (900 + 810 + 380).
+      name: 'Tal',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Tal', 'svg'),
+      parent: 'Urlum',
+      orbits: 'Wal',
+      dvGL: 100,
+      dvLI: 150,
+      dvPL: 2090,
+      dvPlaneChange: 112,
+      color: '#9de1dd',
+    },
+  ],
+};
+
+const neidon: Planet = {
+  name: 'Neidon',
+  isPlanet: true,
+  hasAtmosphere: true,
+  canLand: false,
+  imageUrl: image('Neidon', 'svg'),
+  dvGL: 9000,
+  dvLE: 1040,
+  dvEI: 1340,
+  dvK: 1700,
+  dvPlaneChange: 110,
+  color: '#5f15e1',
+  satellites: [
+    {
+      name: 'Thatmo',
+      isPlanet: false,
+      hasAtmosphere: true,
+      canLand: true,
+      imageUrl: image('Thatmo', 'svg'),
+      parent: 'Neidon',
+      dvGL: 950,
+      dvLI: 450,
+      dvPL: 930,
+      dvPlaneChange: 0,
+      color: '#9d6cf4',
+    },
+    {
+      name: 'Nissee',
+      isPlanet: false,
+      hasAtmosphere: false,
+      canLand: true,
+      imageUrl: image('Nissee', 'svg'),
+      parent: 'Neidon',
+      dvGL: 850,
+      dvLI: 360,
+      dvPL: 1000,
+      dvPlaneChange: 0,
+      color: '#bf9ff8',
+    },
+  ],
+};
+
+const plock: Planet = {
+  name: 'Plock',
+  isPlanet: true,
+  hasAtmosphere: false,
+  canLand: true,
+  imageUrl: image('Plock', 'svg'),
+  dvGL: 480,
+  dvLE: 210,
+  dvEI: 900,
+  // Along its eccentric orbit.
+  dvK: 1900,
+  dvKMax: 2700,
+  dvPlaneChange: 500,
+  color: '#333333',
+  satellites: [],
+};
+
+/** The planets with the Outer Planets Mod, Eeloo moved around Sarnus. */
+export const outerPlanets: readonly Planet[] = [
+  ...planets.filter((planet) => planet !== eeloo && planet !== kerbol),
+  sarnus,
+  urlum,
+  neidon,
+  plock,
+  ...(kerbol ? [kerbol] : []),
+];
+
+const withSatellites = (list: readonly Planet[]): readonly AstroBody[] =>
+  list.flatMap((planet) => [planet, ...planet.satellites]);
+
 /** Every body, each planet followed by its satellites. */
-export const bodies: readonly AstroBody[] = planets.flatMap((planet) => [
-  planet,
-  ...planet.satellites,
-]);
+export const bodies: readonly AstroBody[] = withSatellites(planets);
+
+/** Every body with the Outer Planets Mod. */
+export const outerBodies: readonly AstroBody[] = withSatellites(outerPlanets);
+
+export function bodiesOf(outerPlanetsMod: boolean): readonly AstroBody[] {
+  return outerPlanetsMod ? outerBodies : bodies;
+}
 
 export function parentOf(satellite: Satellite): Planet {
-  const parent = planets.find((planet) => planet.name === satellite.parent);
+  const parent = [...planets, ...outerPlanets].find(
+    (planet) => planet.name === satellite.parent,
+  );
   if (!parent) {
     throw new Error(`Unknown parent body ${satellite.parent}`);
   }

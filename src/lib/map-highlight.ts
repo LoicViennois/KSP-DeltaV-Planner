@@ -1,6 +1,9 @@
+import { type AstroBody, isKerbinSatellite } from './bodies';
 import type { Step, Trip } from './planner';
 
-// Element ids of the Δv map (src/assets/dv-map.svg) are `<body>-<suffix>`.
+// Elements of the Δv maps are named `<body>-<suffix>`: by their id on the
+// KSPedia map (src/assets/dv-map.svg), by their data-map attribute on the
+// Outer Planets Mod one (src/assets/dv-map-opm.svg), where they are many.
 const SUFFIX_HUB = ['transit', 'hub', 'com'];
 const SUFFIX_LOW = [...SUFFIX_HUB, 'transit-low', 'low'];
 const SUFFIX_LANDING = [...SUFFIX_LOW, 'ground'];
@@ -11,6 +14,28 @@ const SUFFIX_STEP_LOW = [...SUFFIX_STEP_SOI, 'transit-low', 'low'];
 
 const ids = (body: string, suffixes: string[]) =>
   suffixes.map((suffix) => `${body}-${suffix}`);
+
+/** Routes of the OPM map some satellites share with others. */
+const VIA: Record<string, readonly string[]> = {
+  // Tal orbits Wal.
+  tal: ['wal-transit', 'wal-low'],
+  priax: ['priax-polta-transit'],
+  polta: ['priax-polta-transit'],
+};
+
+const via = (body: string) => VIA[body] ?? [];
+
+/** Satellites reached from the low orbit of a planet other than Kerbin. */
+const fromParentLowOrbit = (body: AstroBody) =>
+  !body.isPlanet && !isKerbinSatellite(body) && body.dvPL != null;
+
+const planetOf = (body: AstroBody) =>
+  (body.isPlanet ? body.name : body.parent).toLowerCase();
+
+/** The elements of the map named `name`. */
+export function mapElements(root: ParentNode, name: string): Element[] {
+  return [...root.querySelectorAll(`[id="${name}"], [data-map="${name}"]`)];
+}
 
 export interface MapHighlight {
   /** Elements of the planned path, null when the whole map shows. */
@@ -37,7 +62,11 @@ function pathIds(trip: Trip): string[] | null {
   ];
   for (const body of [to, from]) {
     if (!body.isPlanet) {
-      shown.push(...ids(body.parent.toLowerCase(), SUFFIX_HUB));
+      const parent = body.parent.toLowerCase();
+      shown.push(
+        ...ids(parent, fromParentLowOrbit(body) ? SUFFIX_LOW : SUFFIX_HUB),
+        ...via(body.name.toLowerCase()),
+      );
     }
   }
 
@@ -69,14 +98,12 @@ function stepIds(trip: Trip, step: Step): string[] | null {
       return [...ids(fromName, SUFFIX_STEP_GROUND), fromName];
     case 'landing':
       return [...ids(toName, SUFFIX_STEP_GROUND), toName];
-    case 'transitToLowOrbit': {
-      const origin = from.isPlanet ? fromName : from.parent.toLowerCase();
+    case 'transitToLowOrbit':
       return [
         'hub',
-        ...ids(origin, SUFFIX_STEP_LOW),
-        ...ids(toName, SUFFIX_STEP_LOW),
+        ...ids(planetOf(from), SUFFIX_STEP_LOW),
+        ...ids(planetOf(to), SUFFIX_STEP_LOW),
       ];
-    }
     case 'transitToSOI':
       return [
         'hub',
@@ -87,11 +114,19 @@ function stepIds(trip: Trip, step: Step): string[] | null {
       return [`${stepFrom}-hub`, ...ids(stepTo, SUFFIX_STEP_LOW)];
     case 'transitFromLowToSOI':
       return [`${stepTo}-hub`, ...ids(stepFrom, SUFFIX_STEP_LOW)];
-    case 'transitFromLowToLow':
-      return [
-        ...ids(fromName, SUFFIX_STEP_LOW),
-        ...ids(toName, SUFFIX_STEP_LOW),
-      ];
+    case 'transitFromLowToLow': {
+      // From the low orbit of the planet only, not from its own route.
+      const end = (body: AstroBody | undefined) =>
+        body?.isPlanet
+          ? [`${body.name.toLowerCase()}-low`]
+          : body
+            ? [
+                ...ids(body.name.toLowerCase(), SUFFIX_STEP_LOW),
+                ...via(body.name.toLowerCase()),
+              ]
+            : [];
+      return [...end(step.from), ...end(step.to)];
+    }
     case 'transitToKeostat':
       return ['kerbin-low', 'kerbin-keostat'];
     // The return trip and the total span the whole path.
@@ -111,7 +146,6 @@ export function mapHighlight(trip: Trip, step: Step | null): MapHighlight {
 
 /** Fades the map elements off the highlighted path. */
 export function applyHighlight(svg: SVGSVGElement, highlight: MapHighlight) {
-  const byId = (id: string) => svg.querySelector(`[id="${id}"]`);
   // Path ids also name elements nested in the map groups.
   svg
     .querySelectorAll('.map-fade, .fade-soft')
@@ -123,11 +157,12 @@ export function applyHighlight(svg: SVGSVGElement, highlight: MapHighlight) {
 
   svg.querySelectorAll('.dv-map').forEach((el) => el.classList.add('map-fade'));
   for (const id of highlight.path) {
-    const el = byId(id);
-    el?.classList.remove('map-fade');
-    el?.classList.toggle('fade-soft', highlight.step != null);
+    for (const el of mapElements(svg, id)) {
+      el.classList.remove('map-fade');
+      el.classList.toggle('fade-soft', highlight.step != null);
+    }
   }
   for (const id of highlight.step ?? []) {
-    byId(id)?.classList.remove('fade-soft');
+    mapElements(svg, id).forEach((el) => el.classList.remove('fade-soft'));
   }
 }

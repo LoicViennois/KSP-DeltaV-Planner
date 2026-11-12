@@ -18,7 +18,7 @@ interface TripOptionsProps {
 export function TripOptions({ trip, disabled, onChange }: TripOptionsProps) {
   return (
     <fieldset>
-      <legend className="mb-1.5 text-sm font-semibold text-ink-soft">
+      <legend className="mb-2.5 text-sm leading-6 font-semibold text-ink-soft">
         Options
       </legend>
       {/* One row: equal columns on mobile, centred on wider screens. */}

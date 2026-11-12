@@ -10,10 +10,13 @@ import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 
 import { BodyPicker } from '../components/BodyPicker';
 import { NotesDialog } from '../components/NotesDialog';
+import { OuterPlanetsToggle } from '../components/OuterPlanetsToggle';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { WhatsNew } from '../components/WhatsNew';
+import { type AstroBody, bodiesOf } from '../lib/bodies';
 import { useMediaQuery } from '../lib/media';
+import { setOuterPlanets, useOuterPlanets } from '../lib/outer-planets';
 import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
 import {
   initialTrip,
@@ -61,11 +64,24 @@ function PlannerPage() {
     setSelected('total');
   }
 
+  const outerPlanets = useOuterPlanets();
+
+  /** Keeps the bodies of the trip found in the other system, like Eeloo. */
+  function toggleOuterPlanets(enabled: boolean) {
+    setOuterPlanets(enabled);
+    const system = bodiesOf(enabled);
+    const find = (body: AstroBody | null) =>
+      system.find((other) => other.name === body?.name) ?? null;
+    update({ ...trip, from: find(trip.from), to: find(trip.to) });
+  }
+
   return (
     <div className="grid gap-6 md:grid-cols-[minmax(0,var(--map-width))_21rem] md:justify-center lg:grid-cols-[minmax(0,var(--map-width))_25rem] lg:gap-8">
+      {/* The buttons over the map have a gutter of their own on its right,
+          so as not to cover its top right corner. */}
       <div className="hidden md:block">
         {showMap && (
-          <div className="sticky top-[calc(3.5rem+1px+1.25rem)]">
+          <div className="sticky top-[calc(3.5rem+1px+1.25rem)] pr-14">
             <Suspense
               fallback={
                 <div className="aspect-4/3 animate-pulse rounded-2xl bg-tint" />
@@ -73,7 +89,7 @@ function PlannerPage() {
             >
               <DvMap trip={trip} step={shown} />
             </Suspense>
-            <div className="absolute top-4 right-4 flex flex-col gap-3">
+            <div className="absolute top-0 right-0 flex flex-col gap-3">
               <button
                 type="button"
                 onClick={openMap}
@@ -152,11 +168,23 @@ function PlannerPage() {
           </button>
         </div>
 
-        <TripOptions
-          trip={trip}
-          disabled={homeTrip ? ['landing', 'return'] : []}
-          onChange={(option, checked) => update({ ...trip, [option]: checked })}
-        />
+        {/* A setting of the game rather than an option of the trip, on the
+            line of their legend, so that the panel stays as short. */}
+        <div className="relative">
+          {/* First in the tab order: it changes the bodies of the trip. */}
+          <OuterPlanetsToggle
+            checked={outerPlanets}
+            onChange={toggleOuterPlanets}
+            className="absolute top-0 right-0"
+          />
+          <TripOptions
+            trip={trip}
+            disabled={homeTrip ? ['landing', 'return'] : []}
+            onChange={(option, checked) =>
+              update({ ...trip, [option]: checked })
+            }
+          />
+        </div>
 
         {plan.steps.length > 0 ? (
           <StepList plan={plan} selected={selected} onSelect={setSelected} />
