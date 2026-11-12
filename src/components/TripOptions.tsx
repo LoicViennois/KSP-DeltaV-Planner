@@ -3,8 +3,8 @@ import type { Trip } from '../lib/planner';
 type Option = 'landing' | 'aerobraking' | 'return';
 
 const OPTIONS: { option: Option; label: string }[] = [
-  { option: 'landing', label: 'Landing' },
   { option: 'aerobraking', label: 'Aerobraking' },
+  { option: 'landing', label: 'Landing' },
   { option: 'return', label: 'Return' },
 ];
 

@@ -187,13 +187,13 @@ test.describe('Delta-V planner', () => {
       await planner.goto();
 
       const boxes = await Promise.all(
-        [planner.landing, planner.aerobraking, planner.return].map((option) =>
+        [planner.aerobraking, planner.landing, planner.return].map((option) =>
           option.locator('..').boundingBox(),
         ),
       );
       expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
       // Wide enough for its label, which never overflows the button.
-      for (const option of [planner.landing, planner.aerobraking]) {
+      for (const option of [planner.aerobraking, planner.landing]) {
         const label = option.locator('..');
         expect(
           await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
@@ -259,7 +259,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     const group = await page.locator('fieldset > div').boundingBox();
-    const first = await planner.landing.locator('..').boundingBox();
+    const first = await planner.aerobraking.locator('..').boundingBox();
     const last = await planner.return.locator('..').boundingBox();
 
     const left = (first?.x ?? 0) - (group?.x ?? 0);

@@ -140,9 +140,9 @@ test.describe('Outer Planets Mod', () => {
     await page.keyboard.press('Tab');
     await expect(planner.outerPlanets).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(planner.landing).toBeFocused();
-    await page.keyboard.press('Tab');
     await expect(planner.aerobraking).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(planner.landing).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(planner.return).toBeFocused();
   });
