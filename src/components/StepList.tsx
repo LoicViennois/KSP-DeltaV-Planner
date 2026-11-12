@@ -87,17 +87,32 @@ function DvValue({ step, total }: { step: Step; total?: boolean }) {
   );
 }
 
+const note = 'mt-0.5 flex items-center gap-1.5 text-sm';
+
+function AerobrakingNote() {
+  return (
+    <span className={`${note} text-ink-soft`}>
+      {/* Left out on the narrowest screens, beside a long Δv range. */}
+      <CloudDownload
+        aria-hidden
+        className="size-4 shrink-0 max-[359px]:hidden"
+      />
+      Aerobraking saves the capture burn
+    </span>
+  );
+}
+
 function LandingNote({ body }: { body: AstroBody }) {
   if (!body.hasAtmosphere) {
     return null;
   }
   return body.canLand ? (
-    <span className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-soft">
+    <span className={`${note} text-ink-soft`}>
       <CloudDownload aria-hidden className="size-4" />
       Aerobraking is possible
     </span>
   ) : (
-    <span className="mt-0.5 flex items-center gap-1.5 text-sm text-alert">
+    <span className={`${note} text-alert`}>
       <Ban aria-hidden className="size-4" />
       Landing here might not be a good idea…
     </span>
@@ -139,6 +154,7 @@ export function StepList({ plan, selected, onSelect }: StepListProps) {
                 {step.type === 'landing' && step.to && (
                   <LandingNote body={step.to} />
                 )}
+                {step.aerobraked && <AerobrakingNote />}
               </span>
               <DvValue step={step} />
             </button>

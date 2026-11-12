@@ -58,12 +58,16 @@ test.describe('Delta-V planner', () => {
 
     await expect(planner.steps).toHaveCount(3);
     await expect(planner.steps.nth(1)).toContainText('Transit to Duna SOI');
-    await expect(planner.steps.nth(1)).toContainText('1330 – 1340 m/s');
+    // Aerobraking at Duna saves the 250 m/s of the capture.
+    await expect(planner.steps.nth(1)).toContainText('1080 – 1090 m/s');
+    await expect(planner.steps.nth(1)).toContainText(
+      'Aerobraking saves the capture burn',
+    );
     await expect(planner.steps.nth(2)).toContainText(
       'Transit from Duna SOI to Ike low orbit',
     );
     await expect(planner.steps.nth(2)).toContainText('210 m/s');
-    await expect(planner.total).toContainText('4940 – 4950 m/s');
+    await expect(planner.total).toContainText('4690 – 4700 m/s');
   });
 
   test('supports landing and return options for an interplanetary trip', async ({
@@ -83,8 +87,9 @@ test.describe('Delta-V planner', () => {
     await expect(planner.steps.nth(3)).toContainText(
       'Return trip from Duna to Kerbin',
     );
-    await expect(planner.steps.nth(3)).toContainText('3140 – 3150 m/s');
-    await expect(planner.total).toContainText('8230 – 8250 m/s');
+    // Take-off, transfer to Kerbin and aerobraking down to its ground.
+    await expect(planner.steps.nth(3)).toContainText('2190 – 2200 m/s');
+    await expect(planner.total).toContainText('6670 – 6690 m/s');
   });
 
   test('counts the landing burn without aerobraking', async ({ page }) => {
@@ -96,6 +101,41 @@ test.describe('Delta-V planner', () => {
     await planner.aerobraking.uncheck();
 
     await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
+  });
+
+  test('aerobrakes into low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+
+    const transfer = planner.steps.nth(1);
+    await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
+    await expect(transfer).toContainText('Aerobraking saves the capture burn');
+
+    await planner.aerobraking.uncheck();
+    await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
+    await expect(transfer).not.toContainText('Aerobraking');
+  });
+
+  test('aerobrakes back home in Kerbin low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.from, 'Mun');
+
+    // Only the escape from the Mun, the atmosphere of Kerbin does the rest.
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('310 m/s');
+
+    await planner.aerobraking.uncheck();
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('1170 m/s');
+  });
+
+  test('never aerobrakes without an atmosphere', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Mun');
+
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('1170 m/s');
+    await expect(planner.steps.nth(1)).not.toContainText('Aerobraking');
   });
 
   test('warns against landing on a gas giant', async ({ page }) => {
