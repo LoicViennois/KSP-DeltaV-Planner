@@ -19,7 +19,6 @@
   --thrust: #3b7a14;
   --thrust-ink: #ffffff;
   --thrust-text: #376f13;
-  --alert: #b42d1a;
   --tint: rgb(27 24 38 / 0.05);
   --thrust-surface: color-mix(in oklab, var(--thrust) 9%, var(--surface));
 
@@ -41,7 +40,6 @@
   --thrust: #8fd14f;
   --thrust-ink: #102004;
   --thrust-text: #a5dd72;
-  --alert: #ff7a66;
   --tint: rgb(236 233 244 / 0.05);
 
   /* The map's own colours (svg/DvMap_KSPedia.svg). */
@@ -71,7 +69,6 @@
   --color-thrust-ink: var(--thrust-ink);
   --color-thrust-text: var(--thrust-text);
   --color-thrust-surface: var(--thrust-surface);
-  --color-alert: var(--alert);
   --color-tint: var(--tint);
 }
 

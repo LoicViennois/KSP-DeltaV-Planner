@@ -1,4 +1,4 @@
-import { Ban, CloudDownload, Flag } from 'lucide-react';
+import { CloudDownload, Flag } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import type { AstroBody } from '../lib/bodies';
@@ -91,15 +91,10 @@ function LandingNote({ body }: { body: AstroBody }) {
   if (!body.hasAtmosphere) {
     return null;
   }
-  return body.canLand ? (
+  return (
     <span className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-soft">
       <CloudDownload aria-hidden className="size-4" />
       Aerobraking is possible
-    </span>
-  ) : (
-    <span className="mt-0.5 flex items-center gap-1.5 text-sm text-alert">
-      <Ban aria-hidden className="size-4" />
-      Landing here might not be a good idea…
     </span>
   );
 }

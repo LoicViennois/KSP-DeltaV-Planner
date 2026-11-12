@@ -1,5 +1,5 @@
 import { type AstroBody, isKerbinSatellite } from './bodies';
-import type { Step, Trip } from './planner';
+import { isLanding, type Step, type Trip } from './planner';
 
 // Elements of the Δv maps are named `<body>-<suffix>`: by their id on the
 // KSPedia map (src/assets/dv-map.svg), by their data-map attribute on the
@@ -58,7 +58,7 @@ function pathIds(trip: Trip): string[] | null {
     fromName,
     toName,
     ...ids(fromName, SUFFIX_LANDING),
-    ...ids(toName, trip.landing ? SUFFIX_LANDING : SUFFIX_LOW),
+    ...ids(toName, isLanding(trip) ? SUFFIX_LANDING : SUFFIX_LOW),
   ];
   for (const body of [to, from]) {
     if (!body.isPlanet) {
