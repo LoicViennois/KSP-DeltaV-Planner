@@ -4,6 +4,7 @@ import {
   Calculator,
   MapIcon,
   Maximize2,
+  RotateCcw,
   Telescope,
 } from 'lucide-react';
 import { lazy, Suspense, useMemo, useRef, useState } from 'react';
@@ -120,7 +121,7 @@ function PlannerPage() {
           // The banner is gone: the focus goes on to the planner.
           onDismiss={() => headingRef.current?.focus()}
         />
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           <h1
             ref={headingRef}
             id="planner-title"
@@ -133,8 +134,9 @@ function PlannerPage() {
             type="button"
             onClick={() => update(initialTrip)}
             aria-label="Reset path"
-            className="cursor-pointer text-sm font-semibold text-ink-soft underline decoration-line underline-offset-4 transition hover:text-ink hover:decoration-thrust"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition hover:border-thrust hover:text-ink active:scale-95"
           >
+            <RotateCcw aria-hidden className="size-4" />
             Reset
           </button>
         </div>
