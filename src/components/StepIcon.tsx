@@ -1,10 +1,11 @@
 import { Flag, type LucideIcon, Orbit, Rocket, Undo2 } from 'lucide-react';
 
 import type { StepType } from '../lib/planner';
+import { Lander } from './LanderIcon';
 
 const ICONS: Record<StepType, LucideIcon> = {
   takeOff: Rocket,
-  landing: Rocket,
+  landing: Lander,
   transitToLowOrbit: Orbit,
   transitFromLowToLow: Orbit,
   transitToSOI: Orbit,
@@ -18,13 +19,5 @@ const ICONS: Record<StepType, LucideIcon> = {
 /** The icon of a step, in the accent colour. */
 export function StepIcon({ type }: { type: StepType }) {
   const Icon = ICONS[type];
-  return (
-    <Icon
-      aria-hidden
-      className={`size-5 shrink-0 text-thrust-text ${
-        // Coming down tail first, as rockets do.
-        type === 'landing' ? '-rotate-90' : ''
-      }`}
-    />
-  );
+  return <Icon aria-hidden className="size-5 shrink-0 text-thrust-text" />;
 }
