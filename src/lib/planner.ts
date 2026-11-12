@@ -55,6 +55,16 @@ export function isKerbinTrip(trip: Trip): boolean {
   return trip.from?.name === kerbin.name && trip.to?.name === kerbin.name;
 }
 
+/** Landing is possible: not on a gas giant or Kerbol, nor on a home trip. */
+export function canLand(trip: Trip): boolean {
+  return trip.to?.canLand !== false && !isKerbinTrip(trip);
+}
+
+/** The landing is part of the trip: asked for, and possible. */
+export function isLanding(trip: Trip): boolean {
+  return trip.landing && canLand(trip);
+}
+
 /** Leaving Kerbin for anywhere but Kerbin, or coming back to it. */
 export function withFrom(trip: Trip, body: AstroBody): Trip {
   return {
@@ -223,7 +233,7 @@ export function planTrip(trip: Trip): TripPlan {
     return { steps, total: null };
   }
 
-  if (trip.landing) {
+  if (isLanding(trip)) {
     steps.push({
       type: 'landing',
       to,

@@ -38,7 +38,7 @@ for (const theme of ['dark', 'light'] as const) {
     test('planned trip', async ({ page }) => {
       const planner = new PlannerPage(page);
       await planner.goto();
-      await planner.select(planner.to, 'Jool');
+      await planner.select(planner.to, 'Laythe');
       await planner.landing.check();
       await planner.return.check();
       await expect(planner.total).toBeVisible();
@@ -54,6 +54,15 @@ for (const theme of ['dark', 'light'] as const) {
       await planner.landing.check();
       await expect(planner.total).toBeVisible();
       await expect(planner.mapElements('tal-transit').first()).toBeVisible();
+
+      await expectNoViolations(page);
+    });
+
+    test('gas giant trip, with landing disabled', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Jool');
+      await expect(planner.landing).toBeDisabled();
 
       await expectNoViolations(page);
     });

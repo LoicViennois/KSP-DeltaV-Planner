@@ -19,6 +19,7 @@ import { useMediaQuery } from '../lib/media';
 import { setOuterPlanets, useOuterPlanets } from '../lib/outer-planets';
 import { floatingBar, floatingIconButton, mapButton } from '../lib/styles';
 import {
+  canLand,
   initialTrip,
   isKerbinTrip,
   planTrip,
@@ -179,7 +180,10 @@ function PlannerPage() {
           />
           <TripOptions
             trip={trip}
-            disabled={homeTrip ? ['landing', 'return'] : []}
+            disabled={[
+              ...(canLand(trip) ? [] : (['landing'] as const)),
+              ...(homeTrip ? (['return'] as const) : []),
+            ]}
             onChange={(option, checked) =>
               update({ ...trip, [option]: checked })
             }

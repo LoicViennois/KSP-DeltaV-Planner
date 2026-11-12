@@ -98,16 +98,26 @@ test.describe('Delta-V planner', () => {
     await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
   });
 
-  test('warns against landing on a gas giant', async ({ page }) => {
-    const planner = new PlannerPage(page);
-    await planner.goto();
-    await planner.select(planner.to, 'Jool');
-    await planner.landing.check();
+  for (const body of ['Jool', 'Kerbol']) {
+    test(`does not land on ${body}`, async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await planner.select(planner.to, 'Duna');
+      await planner.landing.check();
+      await planner.select(planner.to, body);
 
-    await expect(planner.steps.nth(2)).toContainText(
-      'Landing here might not be a good idea',
-    );
-  });
+      await expect(planner.landing).toBeDisabled();
+      await expect(planner.landing).not.toBeChecked();
+      await expect(planner.steps).toHaveCount(2);
+      await expect(planner.steps.filter({ hasText: 'Landing' })).toHaveCount(0);
+
+      // The choice comes back with a body to land on.
+      await planner.select(planner.to, 'Duna');
+      await expect(planner.landing).toBeEnabled();
+      await expect(planner.landing).toBeChecked();
+      await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
+    });
+  }
 
   test('flies home from any body', async ({ page }) => {
     const planner = new PlannerPage(page);
