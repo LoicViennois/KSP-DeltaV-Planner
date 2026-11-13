@@ -71,36 +71,32 @@ function message({ type, from, to }: Step): ReactNode {
   }
 }
 
+const aerobrakingText = ({ type }: Step) =>
+  `Aerobraking saves the ${type === 'landing' ? 'landing' : 'capture'} burn`;
+
+/**
+ * The Δv of a step, with a mark when the atmosphere takes its burn over:
+ * an icon only, so as not to make the step taller, explained on hover (and
+ * to screen readers by the step itself, the pill keeping only its value).
+ */
 function DvValue({ step, total }: { step: Step; total?: boolean }) {
   const range = step.dvMax != null && step.dvMax !== step.dv;
   return (
     <span
       data-testid="dv"
-      className={`shrink-0 rounded-lg px-2.5 py-1 font-digits text-sm font-semibold whitespace-nowrap ${
+      className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 font-digits text-sm font-semibold whitespace-nowrap ${
         // Tinted rather than filled, so as not to look like the green map
         // button on phones, and still seen on the picked row's own tint.
         total ? 'bg-thrust/12 text-thrust-text' : 'bg-tint text-ink'
       }`}
     >
+      {step.aerobraked && (
+        <span title={aerobrakingText(step)} className="-ml-0.5">
+          <CloudDownload aria-hidden className="size-4 text-thrust-text" />
+        </span>
+      )}
       {range ? `${step.dv} – ${step.dvMax}` : step.dv} m/s
     </span>
-  );
-}
-
-/**
- * Marks a step whose burn the atmosphere takes over, beside its Δv: an
- * icon only, so as not to make the step taller, explained on hover and to
- * screen readers.
- */
-function AerobrakingMark({ type }: Step) {
-  const text = `Aerobraking saves the ${type === 'landing' ? 'landing' : 'capture'} burn`;
-  return (
-    <>
-      <span title={text} className="-mr-1 shrink-0">
-        <CloudDownload aria-hidden className="size-4 text-thrust-text" />
-      </span>
-      <span className="sr-only">{text}</span>
-    </>
   );
 }
 
@@ -137,7 +133,9 @@ export function StepList({ plan, selected, onSelect }: StepListProps) {
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">
                 <span>{message(step)}</span>
               </span>
-              {step.aerobraked && <AerobrakingMark {...step} />}
+              {step.aerobraked && (
+                <span className="sr-only">{aerobrakingText(step)}</span>
+              )}
               <DvValue step={step} />
             </button>
           </li>
