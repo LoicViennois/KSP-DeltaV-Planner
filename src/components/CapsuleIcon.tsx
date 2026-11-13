@@ -1,10 +1,10 @@
 import { createLucideIcon, type IconNode } from 'lucide-react';
 
-// Tilted to the left like the lander, and drawn a bit smaller to stay
+// Tilted to the left at 45° like the lander, and drawn a bit smaller to stay
 // within the grid; the stroke is thickened back to that of the other icons.
-const SCALE = 0.88;
+const SCALE = 0.8;
 const tilt = {
-  transform: `translate(12 12) rotate(-15) scale(${SCALE}) translate(-12 -12)`,
+  transform: `translate(12 12) rotate(-45) scale(${SCALE}) translate(-12 -12)`,
   strokeWidth: 2 / SCALE,
 };
 

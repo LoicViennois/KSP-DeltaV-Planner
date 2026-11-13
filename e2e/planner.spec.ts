@@ -81,7 +81,8 @@ test.describe('Delta-V planner', () => {
     await planner.landing.check();
     await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
     await expect(planner.steps.nth(2)).toContainText('0 m/s');
-    await expect(planner.steps.nth(2)).toContainText('Aerobraking is possible');
+    // The aerobraking option says it all: no note on the landing.
+    await expect(planner.steps.nth(2)).not.toContainText('Aerobraking');
 
     await planner.return.check();
     await expect(planner.steps).toHaveCount(4);

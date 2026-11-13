@@ -102,18 +102,6 @@ function AerobrakingNote() {
   );
 }
 
-function LandingNote({ body }: { body: AstroBody }) {
-  if (!body.hasAtmosphere) {
-    return null;
-  }
-  return (
-    <span className={`${note} text-ink-soft`}>
-      <CloudDownload aria-hidden className="size-4" />
-      Aerobraking is possible
-    </span>
-  );
-}
-
 interface StepListProps {
   plan: TripPlan;
   /** The step shown on the map, the total unless another one is picked. */
@@ -146,9 +134,6 @@ export function StepList({ plan, selected, onSelect }: StepListProps) {
               <StepIcon type={step.type} />
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">
                 <span>{message(step)}</span>
-                {step.type === 'landing' && step.to && (
-                  <LandingNote body={step.to} />
-                )}
                 {step.aerobraked && <AerobrakingNote />}
               </span>
               <DvValue step={step} />

@@ -1,10 +1,11 @@
 import { createLucideIcon, type IconNode } from 'lucide-react';
 
-// Tilted to the left as it comes down, and drawn a bit smaller to stay
-// within the grid; the stroke is thickened back to that of the other icons.
-const SCALE = 0.88;
+// Tilted to the left at 45°, like the rocket taking off to the right, and
+// drawn a bit smaller to stay within the grid; the stroke is thickened back
+// to that of the other icons.
+const SCALE = 0.76;
 const tilt = {
-  transform: `translate(12 12) rotate(-15) scale(${SCALE}) translate(-12 -12)`,
+  transform: `translate(12 12) rotate(-45) scale(${SCALE}) translate(-12 -12)`,
   strokeWidth: 2 / SCALE,
 };
 
@@ -16,11 +17,12 @@ const parts: IconNode = [
     { x: '6', y: '10', width: '12', height: '5', rx: '1', key: 'descent' },
   ],
   ['path', { d: 'm10 15-1 3h6l-1-3', key: 'engine' }],
-  // The descent engine firing, to slow down.
+  // The descent engine firing, to slow down: a small flame, clear of the
+  // bell like that of the rocket.
   [
     'path',
     {
-      d: 'M12 23.5c-1.3-1.2-1.8-2.6-1.4-4h2.8c.4 1.4-.1 2.8-1.4 4z',
+      d: 'M12 24c-.9-.8-1.2-1.6-1-2.5h2c.2.9-.1 1.7-1 2.5z',
       key: 'flame',
     },
   ],
