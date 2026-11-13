@@ -98,6 +98,16 @@ test.describe('Delta-V planner', () => {
     // Take-off, transfer to Kerbin and aerobraking down to its ground.
     await expect(planner.steps.nth(3)).toContainText('2190 – 2200 m/s');
     await expect(planner.total).toContainText('6670 – 6690 m/s');
+    // Marked as aerobraked too, at the level chosen.
+    await expect(planner.steps.nth(3)).toContainText(
+      'Aerobraking saves the capture and landing burns',
+    );
+    await planner.aerobrakingLanding.check();
+    await expect(planner.steps.nth(3)).toContainText(
+      'Aerobraking saves the landing burn',
+    );
+    await planner.aerobrakingOff.check();
+    await expect(planner.steps.nth(3)).not.toContainText('Aerobraking');
   });
 
   test('counts the landing burn without aerobraking', async ({ page }) => {

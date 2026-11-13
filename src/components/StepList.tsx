@@ -71,8 +71,10 @@ function message({ type, from, to }: Step): ReactNode {
   }
 }
 
-const aerobrakingText = ({ type }: Step) =>
-  `Aerobraking saves the ${type === 'landing' ? 'landing' : 'capture'} burn`;
+const aerobrakingText = ({ aerobraked = [] }: Step) =>
+  aerobraked.length > 1
+    ? 'Aerobraking saves the capture and landing burns'
+    : `Aerobraking saves the ${aerobraked[0]} burn`;
 
 /**
  * Whether the tooltip of a pill shows, meeting WCAG 1.4.13: on hover of the
@@ -143,7 +145,7 @@ function useTooltip(enabled: boolean) {
  */
 function DvValue({ step, total }: { step: Step; total?: boolean }) {
   const range = step.dvMax != null && step.dvMax !== step.dv;
-  const tooltip = useTooltip(step.aerobraked === true);
+  const tooltip = useTooltip(step.aerobraked != null);
   return (
     <span
       {...tooltip.target}

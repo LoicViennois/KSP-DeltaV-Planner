@@ -18,6 +18,8 @@ export type StepType =
   | 'return'
   | 'total';
 
+export type AerobrakedBurn = 'capture' | 'landing';
+
 export interface Step {
   readonly type: StepType;
   readonly from?: AstroBody;
@@ -26,8 +28,9 @@ export interface Step {
   readonly dv: number;
   /** Δv including the maximum plane change, in m/s */
   readonly dvMax?: number;
-  /** Whether aerobraking saves the burn of this step: a capture or a landing */
-  readonly aerobraked?: boolean;
+  /** The burns of this step aerobraking saves: a capture, a landing, or both
+   * on the way back */
+  readonly aerobraked?: readonly AerobrakedBurn[];
 }
 
 /**
@@ -154,7 +157,7 @@ function transfer(
     ...step,
     dv,
     ...(extra > 0 && { dvMax: dv + extra }),
-    ...(aerobraked && { aerobraked }),
+    ...(aerobraked && { aerobraked: ['capture'] }),
   };
 }
 
@@ -287,13 +290,19 @@ export function planTrip(trip: Trip): TripPlan {
   }
 
   if (trip.return) {
-    const back = transfers(to, from, capture);
+    const back = [
+      ...transfers(to, from, capture),
+      // Back to where it started: the ground, or else low orbit.
+      ...(trip.takeOff ? [landing(from, aerobrakeLanding)] : []),
+    ];
     const dv = sum([
       ...(isLanding(trip) ? [to.dvGL] : []),
       ...back.map((step) => step.dv),
-      // Back to where it started: the ground, or else low orbit.
-      ...(trip.takeOff ? [landing(from, aerobrakeLanding).dv] : []),
     ]);
+    // What the atmospheres save on the way back, Kerbin's above all.
+    const aerobraked = [
+      ...new Set(back.flatMap((step) => step.aerobraked ?? [])),
+    ];
     const planeChange = to.isPlanet
       ? worstCaseExtra(to)
       : (to.dvPlaneChange ?? 0) + worstCaseExtra(parentOf(to));
@@ -303,6 +312,7 @@ export function planTrip(trip: Trip): TripPlan {
       to: from,
       dv,
       dvMax: dv + planeChange,
+      ...(aerobraked.length > 0 && { aerobraked }),
     });
   }
 
@@ -322,6 +332,6 @@ function landing(body: AstroBody, aerobraking: boolean): Step {
     type: 'landing',
     to: body,
     dv: aerobraked ? 0 : body.dvGL,
-    ...(aerobraked && { aerobraked }),
+    ...(aerobraked && { aerobraked: ['landing'] }),
   };
 }
