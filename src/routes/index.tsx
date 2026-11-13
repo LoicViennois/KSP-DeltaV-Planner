@@ -186,17 +186,16 @@ function PlannerPage() {
               ...(canLand(trip) ? [] : (['landing'] as const)),
               ...(homeTrip ? (['return'] as const) : []),
             ]}
-            onChange={(option, checked) =>
-              update({ ...trip, [option]: checked })
-            }
+            onChange={(changes) => update({ ...trip, ...changes })}
           />
         </div>
 
         {plan.steps.length > 0 ? (
           <StepList plan={plan} selected={selected} onSelect={setSelected} />
         ) : (
-          <p className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
-            <Telescope aria-hidden className="size-8" />
+          // Beside its icon, to leave the options room on short screens.
+          <p className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-line px-4 py-5 text-ink-soft">
+            <Telescope aria-hidden className="size-8 shrink-0" />
             Pick a destination to see the Δv of each step of the trip.
           </p>
         )}

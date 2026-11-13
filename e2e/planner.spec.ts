@@ -14,7 +14,7 @@ test.describe('Delta-V planner', () => {
     await expect(page.getByText('Pick a destination')).toBeVisible();
     await expect(planner.takeOff).toBeChecked();
     await expect(planner.landing).toBeEnabled();
-    await expect(planner.aerobraking).toBeChecked();
+    await expect(planner.aerobrakingCapture).toBeChecked();
     await expect(planner.return).toBeEnabled();
   });
 
@@ -99,7 +99,7 @@ test.describe('Delta-V planner', () => {
     await planner.select(planner.to, 'Duna');
 
     await planner.landing.check();
-    await planner.aerobraking.uncheck();
+    await planner.aerobrakingOff.check();
 
     await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
   });
@@ -113,9 +113,16 @@ test.describe('Delta-V planner', () => {
     await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
     await expect(transfer).toContainText('Aerobraking saves the capture burn');
 
-    await planner.aerobraking.uncheck();
+    // Aerobraking the landings only: the capture is a burn again.
+    await planner.landing.check();
+    await planner.aerobrakingLanding.check();
     await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
     await expect(transfer).not.toContainText('Aerobraking');
+    await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('0 m/s');
+
+    await planner.aerobrakingOff.check();
+    await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
+    await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
   });
 
   test('aerobrakes back home in Kerbin low orbit', async ({ page }) => {
@@ -126,7 +133,7 @@ test.describe('Delta-V planner', () => {
     // Only the escape from the Mun, the atmosphere of Kerbin does the rest.
     await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('310 m/s');
 
-    await planner.aerobraking.uncheck();
+    await planner.aerobrakingLanding.check();
     await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('1170 m/s');
   });
 
@@ -201,14 +208,14 @@ test.describe('Delta-V planner', () => {
     await planner.goto();
     await planner.select(planner.to, 'Laythe');
     await planner.landing.check();
-    await planner.aerobraking.uncheck();
+    await planner.aerobrakingLanding.check();
     await planner.return.check();
 
     await page.reload();
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Laythe');
     await expect(planner.landing).toBeChecked();
-    await expect(planner.aerobraking).not.toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
     await expect(planner.return).toBeChecked();
     await expect(planner.steps.first()).toContainText('Take off from Kerbin');
 
@@ -216,54 +223,63 @@ test.describe('Delta-V planner', () => {
     await planner.resetButton.click();
     await page.reload();
     await expect(planner.to).toContainText('Select…');
-    await expect(planner.aerobraking).toBeChecked();
+    await expect(planner.aerobrakingCapture).toBeChecked();
   });
 
-  for (const [width, rows] of [
-    [320, 2],
-    [390, 2],
-    [700, 1],
-    [800, 1],
-    [1280, 1],
+  for (const [saved, level] of [
+    [true, 'Capture too'],
+    [false, 'Off'],
   ] as const) {
-    test(`lays the options out on ${rows} row(s) on a ${width}px screen`, async ({
+    test(`reads the aerobraking of an older visit, ${saved}`, async ({
+      page,
+    }) => {
+      await page.addInitScript((aerobraking) => {
+        localStorage.setItem(
+          'ksp_trip',
+          JSON.stringify({ from: 'Kerbin', to: 'Duna', aerobraking }),
+        );
+      }, saved);
+      const planner = new PlannerPage(page);
+      await planner.goto();
+
+      await expect(
+        page
+          .getByRole('group', { name: 'Aerobraking' })
+          .getByRole('radio', { name: level }),
+      ).toBeChecked();
+    });
+  }
+
+  for (const width of [320, 390, 700, 800, 1280]) {
+    test(`lays the options out in equal columns on a ${width}px screen`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 800 });
       const planner = new PlannerPage(page);
       await planner.goto();
 
-      const options = [
-        planner.takeOff,
-        planner.aerobraking,
-        planner.landing,
-        planner.return,
-      ];
-      const boxes = await Promise.all(
-        options.map((option) => option.locator('..').boundingBox()),
-      );
-      expect(new Set(boxes.map((box) => box?.y)).size).toBe(rows);
-      // Equal columns on narrow screens, centred beside the map.
-      if (width < 768) {
-        expect(new Set(boxes.map((box) => box?.width)).size).toBe(1);
-      } else {
-        const group = await page.locator('fieldset > div').boundingBox();
-        const first = boxes[0];
-        const last = boxes[boxes.length - 1];
-        const left = (first?.x ?? 0) - (group?.x ?? 0);
-        const right =
-          (group?.x ?? 0) +
-          (group?.width ?? 0) -
-          ((last?.x ?? 0) + (last?.width ?? 0));
-        expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
-        expect(left).toBeGreaterThanOrEqual(0);
-      }
-      // Wide enough for its label, which never overflows the button.
-      for (const option of options) {
-        const label = option.locator('..');
-        expect(
-          await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
-        ).toBe(true);
+      for (const row of [
+        [planner.takeOff, planner.landing, planner.return],
+        [
+          planner.aerobrakingOff,
+          planner.aerobrakingLanding,
+          planner.aerobrakingCapture,
+        ],
+      ]) {
+        const boxes = await Promise.all(
+          row.map((option) => option.locator('..').boundingBox()),
+        );
+        // One row, of equal columns.
+        expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
+        const widths = boxes.map((box) => box?.width ?? 0);
+        expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
+        // Wide enough for its label, which never overflows the button.
+        for (const option of row) {
+          const label = option.locator('..');
+          expect(
+            await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
+          ).toBe(true);
+        }
       }
       expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
         width,

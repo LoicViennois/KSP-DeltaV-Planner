@@ -1,6 +1,11 @@
 import { type AstroBody, bodiesOf } from './bodies';
 import { outerPlanetsEnabled } from './outer-planets';
-import { initialTrip, type Trip } from './planner';
+import {
+  AEROBRAKING,
+  type Aerobraking,
+  initialTrip,
+  type Trip,
+} from './planner';
 import { readJson, writeJson } from './storage';
 
 const STORAGE_KEY = 'ksp_trip';
@@ -11,7 +16,8 @@ interface SavedTrip {
   to: string | null;
   takeOff: boolean;
   landing: boolean;
-  aerobraking: boolean;
+  /** A boolean before the captures could be aerobraked too. */
+  aerobraking: Aerobraking | boolean;
   return: boolean;
 }
 
@@ -26,6 +32,15 @@ function flag(value: unknown, fallback: boolean): boolean {
   return typeof value === 'boolean' ? value : fallback;
 }
 
+function aerobraking(value: unknown): Aerobraking {
+  if (value === false) {
+    return 'off';
+  }
+  return (
+    AEROBRAKING.find((level) => level === value) ?? initialTrip.aerobraking
+  );
+}
+
 /** The trip of the last visit, or the initial one, so a reload keeps it. */
 export function loadTrip(): Trip {
   const saved = readJson<Partial<SavedTrip>>(STORAGE_KEY);
@@ -37,7 +52,7 @@ export function loadTrip(): Trip {
     to: bodyNamed(saved.to),
     takeOff: flag(saved.takeOff, initialTrip.takeOff),
     landing: flag(saved.landing, initialTrip.landing),
-    aerobraking: flag(saved.aerobraking, initialTrip.aerobraking),
+    aerobraking: aerobraking(saved.aerobraking),
     return: flag(saved.return, initialTrip.return),
   };
 }

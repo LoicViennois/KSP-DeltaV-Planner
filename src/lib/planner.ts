@@ -30,13 +30,25 @@ export interface Step {
   readonly aerobraked?: boolean;
 }
 
+/**
+ * What the atmospheres are used for: nothing, the landings only, or the
+ * captures into orbit too.
+ */
+export type Aerobraking = 'off' | 'landing' | 'capture';
+
+export const AEROBRAKING: readonly Aerobraking[] = [
+  'off',
+  'landing',
+  'capture',
+];
+
 export interface Trip {
   readonly from: AstroBody | null;
   readonly to: AstroBody | null;
   /** Starts from the surface, or else from low orbit around the departure. */
   readonly takeOff: boolean;
   readonly landing: boolean;
-  readonly aerobraking: boolean;
+  readonly aerobraking: Aerobraking;
   readonly return: boolean;
 }
 
@@ -50,7 +62,7 @@ export const initialTrip: Trip = {
   to: null,
   takeOff: true,
   landing: false,
-  aerobraking: true,
+  aerobraking: 'capture',
   return: false,
 };
 
@@ -266,19 +278,21 @@ export function planTrip(trip: Trip): TripPlan {
   if (from.name !== kerbin.name && to.name !== kerbin.name) {
     return { steps, total: null };
   }
-  steps.push(...transfers(from, to, trip.aerobraking));
+  const capture = trip.aerobraking === 'capture';
+  const aerobrakeLanding = trip.aerobraking !== 'off';
+  steps.push(...transfers(from, to, capture));
 
   if (isLanding(trip)) {
-    steps.push(landing(to, trip.aerobraking));
+    steps.push(landing(to, aerobrakeLanding));
   }
 
   if (trip.return) {
-    const back = transfers(to, from, trip.aerobraking);
+    const back = transfers(to, from, capture);
     const dv = sum([
       ...(isLanding(trip) ? [to.dvGL] : []),
       ...back.map((step) => step.dv),
       // Back to where it started: the ground, or else low orbit.
-      ...(trip.takeOff ? [landing(from, trip.aerobraking).dv] : []),
+      ...(trip.takeOff ? [landing(from, aerobrakeLanding).dv] : []),
     ]);
     const planeChange = to.isPlanet
       ? worstCaseExtra(to)
