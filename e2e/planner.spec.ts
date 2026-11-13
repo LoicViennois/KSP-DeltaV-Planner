@@ -139,11 +139,31 @@ test.describe('Delta-V planner', () => {
     const hint = page.getByTestId('aerobraking-hint');
     const mark = planner.steps.nth(2).getByTestId('dv').locator('svg');
 
-    // On hover, and while the pointer moves onto it (WCAG 1.4.13).
+    // On hover, and while the pointer slides onto it (WCAG 1.4.13).
     await expect(hint).toHaveCount(0);
     await mark.hover();
     await expect(hint).toHaveText('Aerobraking saves the landing burn');
-    await hint.hover();
+    const from = await mark.boundingBox();
+    const to = await hint.boundingBox();
+    await page.mouse.move(
+      (from?.x ?? 0) + (from?.width ?? 0) / 2,
+      (to?.y ?? 0) + (to?.height ?? 0) / 2,
+      // A pixel at a time, so as to cross every gap on the way.
+      { steps: 40 },
+    );
+    await expect(hint).toBeVisible();
+    // On a slant too, to the far end of a tooltip wider than the pill.
+    await page.mouse.move(
+      (from?.x ?? 0) + (from?.width ?? 0) / 2,
+      (from?.y ?? 0) + (from?.height ?? 0) / 2,
+    );
+    await page.mouse.move(
+      (to?.x ?? 0) + 4,
+      (to?.y ?? 0) + (to?.height ?? 0) / 2,
+      {
+        steps: 60,
+      },
+    );
     await expect(hint).toBeVisible();
     // Escape dismisses it, without moving the pointer.
     await page.keyboard.press('Escape');
