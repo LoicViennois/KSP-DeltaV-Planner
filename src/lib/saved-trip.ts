@@ -33,8 +33,9 @@ function flag(value: unknown, fallback: boolean): boolean {
 }
 
 function aerobraking(value: unknown): Aerobraking {
-  if (value === false) {
-    return 'off';
+  // Once a boolean, for the landings only.
+  if (typeof value === 'boolean') {
+    return value ? 'landing' : 'off';
   }
   return (
     AEROBRAKING.find((level) => level === value) ?? initialTrip.aerobraking

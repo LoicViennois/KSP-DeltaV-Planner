@@ -61,8 +61,8 @@ export const initialTrip: Trip = {
   from: kerbin,
   to: null,
   takeOff: true,
-  landing: false,
-  aerobraking: 'capture',
+  landing: true,
+  aerobraking: 'landing',
   return: false,
 };
 

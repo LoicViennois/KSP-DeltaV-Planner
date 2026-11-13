@@ -12,9 +12,10 @@ test.describe('Delta-V planner', () => {
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
     await expect(page.getByText('Pick a destination')).toBeVisible();
+    // From the ground to the ground, aerobraking the landings only.
     await expect(planner.takeOff).toBeChecked();
-    await expect(planner.landing).toBeEnabled();
-    await expect(planner.aerobrakingCapture).toBeChecked();
+    await expect(planner.landing).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
     await expect(planner.return).toBeEnabled();
   });
 
@@ -22,6 +23,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Mun');
+    await planner.landing.uncheck();
 
     await expect(planner.steps).toHaveCount(2);
     await expect(planner.steps.nth(0)).toContainText('Take off from Kerbin');
@@ -56,6 +58,8 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Ike');
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
 
     await expect(planner.steps).toHaveCount(3);
     await expect(planner.steps.nth(1)).toContainText('Transit to Duna SOI');
@@ -77,8 +81,8 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
+    await planner.aerobrakingCapture.check();
 
-    await planner.landing.check();
     await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
     await expect(planner.steps.nth(2)).toContainText('0 m/s');
     // An icon, explained on hover, rather than a note under the step.
@@ -111,6 +115,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
+    await planner.aerobrakingCapture.check();
 
     const transfer = planner.steps.nth(1);
     await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
@@ -120,7 +125,6 @@ test.describe('Delta-V planner', () => {
     ).toBeVisible();
 
     // Aerobraking the landings only: the capture is a burn again.
-    await planner.landing.check();
     await planner.aerobrakingLanding.check();
     await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
     await expect(transfer).not.toContainText('Aerobraking');
@@ -135,6 +139,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.from, 'Mun');
+    await planner.aerobrakingCapture.check();
 
     // Only the escape from the Mun, the atmosphere of Kerbin does the rest.
     await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('310 m/s');
@@ -200,28 +205,30 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
-    await planner.landing.check();
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
 
     await planner.resetButton.click();
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
-    await expect(planner.landing).not.toBeChecked();
+    await expect(planner.landing).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
   });
 
   test('keeps the trip and its options across a reload', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Laythe');
-    await planner.landing.check();
-    await planner.aerobrakingLanding.check();
+    await planner.landing.uncheck();
+    await planner.aerobrakingOff.check();
     await planner.return.check();
 
     await page.reload();
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Laythe');
-    await expect(planner.landing).toBeChecked();
-    await expect(planner.aerobrakingLanding).toBeChecked();
+    await expect(planner.landing).not.toBeChecked();
+    await expect(planner.aerobrakingOff).toBeChecked();
     await expect(planner.return).toBeChecked();
     await expect(planner.steps.first()).toContainText('Take off from Kerbin');
 
@@ -229,11 +236,12 @@ test.describe('Delta-V planner', () => {
     await planner.resetButton.click();
     await page.reload();
     await expect(planner.to).toContainText('Select…');
-    await expect(planner.aerobrakingCapture).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
   });
 
   for (const [saved, level] of [
-    [true, '+ Capture'],
+    // Back then, it was for the landings only.
+    [true, 'Landing'],
     [false, 'Off'],
   ] as const) {
     test(`reads the aerobraking of an older visit, ${saved}`, async ({
@@ -353,6 +361,8 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Mun');
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
     await planner.takeOff.uncheck();
 
     await expect(planner.steps).toHaveCount(1);

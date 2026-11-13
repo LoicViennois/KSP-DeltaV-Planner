@@ -147,10 +147,10 @@ test.describe('Outer Planets Mod', () => {
     await expect(planner.return).toBeFocused();
     // The levels of aerobraking: one stop, then the arrow keys.
     await page.keyboard.press('Tab');
-    await expect(planner.aerobrakingCapture).toBeFocused();
-    await page.keyboard.press('ArrowLeft');
     await expect(planner.aerobrakingLanding).toBeFocused();
-    await expect(planner.aerobrakingLanding).toBeChecked();
+    await page.keyboard.press('ArrowRight');
+    await expect(planner.aerobrakingCapture).toBeFocused();
+    await expect(planner.aerobrakingCapture).toBeChecked();
   });
 
   test('spans the eccentric orbit of Plock', async ({ page }) => {
