@@ -85,10 +85,10 @@ test.describe('Delta-V planner', () => {
 
     await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
     await expect(planner.steps.nth(2)).toContainText('0 m/s');
-    // An icon, explained on hover, rather than a note under the step.
-    await expect(
-      planner.steps.nth(2).getByTitle('Aerobraking saves the landing burn'),
-    ).toBeVisible();
+    // An icon in the pill, rather than a note under the step.
+    await expect(planner.steps.nth(2)).toContainText(
+      'Aerobraking saves the landing burn',
+    );
 
     await planner.return.check();
     await expect(planner.steps).toHaveCount(4);
@@ -120,9 +120,6 @@ test.describe('Delta-V planner', () => {
     const transfer = planner.steps.nth(1);
     await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
     await expect(transfer).toContainText('Aerobraking saves the capture burn');
-    await expect(
-      transfer.getByTitle('Aerobraking saves the capture burn'),
-    ).toBeVisible();
 
     // Aerobraking the landings only: the capture is a burn again.
     await planner.aerobrakingLanding.check();
@@ -133,6 +130,31 @@ test.describe('Delta-V planner', () => {
     await planner.aerobrakingOff.check();
     await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
     await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
+  });
+
+  test('explains the aerobraking mark in a tooltip', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    const hint = page.getByTestId('aerobraking-hint');
+    const mark = planner.steps.nth(2).getByTestId('dv').locator('svg');
+
+    // On hover, and while the pointer moves onto it (WCAG 1.4.13).
+    await expect(hint).toHaveCount(0);
+    await mark.hover();
+    await expect(hint).toHaveText('Aerobraking saves the landing burn');
+    await hint.hover();
+    await expect(hint).toBeVisible();
+    // Escape dismisses it, without moving the pointer.
+    await page.keyboard.press('Escape');
+    await expect(hint).toHaveCount(0);
+
+    // On keyboard focus of the step too.
+    await planner.steps.nth(1).getByRole('button').focus();
+    await page.keyboard.press('Tab');
+    await expect(hint).toHaveText('Aerobraking saves the landing burn');
+    await page.keyboard.press('Escape');
+    await expect(hint).toHaveCount(0);
   });
 
   test('aerobrakes back home in Kerbin low orbit', async ({ page }) => {

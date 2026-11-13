@@ -1,5 +1,5 @@
 import { CloudDownload, Flag } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 
 import type { AstroBody } from '../lib/bodies';
 import type { Step, StepType, TripPlan } from '../lib/planner';
@@ -75,26 +75,101 @@ const aerobrakingText = ({ type }: Step) =>
   `Aerobraking saves the ${type === 'landing' ? 'landing' : 'capture'} burn`;
 
 /**
+ * The mark of an aerobraked step, explained by a tooltip of our own, more
+ * legible than a title, meeting WCAG 1.4.13: shown on hover of the icon or
+ * keyboard focus of the step, it stays while the pointer moves onto it and
+ * until Escape dismisses it. Screen readers read the step's own text: the
+ * tooltip is for the eyes only.
+ */
+function AerobrakingHint({ text }: { text: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const shown = (hovered || focused) && !dismissed;
+
+  // The step around it takes the keyboard focus.
+  useEffect(() => {
+    const step = ref.current?.closest('button');
+    if (!step) {
+      return;
+    }
+    // Each new hover or focus shows it again, after an Escape.
+    const onFocus = () => {
+      setFocused(step.matches(':focus-visible'));
+      setDismissed(false);
+    };
+    const onBlur = () => {
+      setFocused(false);
+      setDismissed(false);
+    };
+    step.addEventListener('focus', onFocus);
+    step.addEventListener('blur', onBlur);
+    return () => {
+      step.removeEventListener('focus', onFocus);
+      step.removeEventListener('blur', onBlur);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shown) {
+      return;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        // Only the tooltip goes, not the full screen map around it.
+        event.preventDefault();
+        setDismissed(true);
+      }
+    };
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
+  }, [shown]);
+
+  return (
+    <span
+      ref={ref}
+      onPointerEnter={() => {
+        setHovered(true);
+        setDismissed(false);
+      }}
+      onPointerLeave={() => {
+        setHovered(false);
+        setDismissed(false);
+      }}
+    >
+      <CloudDownload aria-hidden className="size-4 text-thrust-text" />
+      {shown && (
+        // Above the pill, its right edge on the pill's; the pointer crosses
+        // the gap on a transparent bridge, so as not to lose it.
+        <span
+          aria-hidden
+          data-testid="aerobraking-hint"
+          className="absolute right-0 bottom-full z-10 mb-2 w-max max-w-64 animate-fade-in rounded-lg bg-ink px-3 py-1.5 font-sans text-sm font-semibold whitespace-normal text-bg shadow-lg after:absolute after:inset-x-0 after:top-full after:h-2"
+        >
+          {text}
+        </span>
+      )}
+    </span>
+  );
+}
+
+/**
  * The Δv of a step, with a mark when the atmosphere takes its burn over:
- * an icon only, so as not to make the step taller, explained on hover (and
- * to screen readers by the step itself, the pill keeping only its value).
+ * an icon only, so as not to make the step taller.
  */
 function DvValue({ step, total }: { step: Step; total?: boolean }) {
   const range = step.dvMax != null && step.dvMax !== step.dv;
   return (
     <span
       data-testid="dv"
-      className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 font-digits text-sm font-semibold whitespace-nowrap ${
+      className={`relative flex shrink-0 items-center gap-2.5 rounded-lg px-2.5 py-1 font-digits text-sm font-semibold whitespace-nowrap ${
         // Tinted rather than filled, so as not to look like the green map
         // button on phones, and still seen on the picked row's own tint.
         total ? 'bg-thrust/12 text-thrust-text' : 'bg-tint text-ink'
       }`}
     >
-      {step.aerobraked && (
-        <span title={aerobrakingText(step)} className="-ml-0.5">
-          <CloudDownload aria-hidden className="size-4 text-thrust-text" />
-        </span>
-      )}
+      {step.aerobraked && <AerobrakingHint text={aerobrakingText(step)} />}
       {range ? `${step.dv} – ${step.dvMax}` : step.dv} m/s
     </span>
   );
