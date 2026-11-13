@@ -1,13 +1,10 @@
 import { createLucideIcon, type IconNode } from 'lucide-react';
 
-// Tilted to the left at 45°, like the rocket taking off to the right, and
-// fitted to the grid as tightly as the rocket; the stroke is thickened back
-// to that of the other icons.
-const SCALE = 0.95;
-// The middle of the lander once tilted, brought back to that of the grid.
-const MIDDLE = 14.48;
-const tilt = {
-  transform: `translate(12 12) scale(${SCALE}) translate(${-MIDDLE} ${-MIDDLE}) rotate(-45 12 12)`,
+// Upright, and a bit smaller than the grid with its flame below: brought
+// back to its middle, the stroke thickened back to that of the other icons.
+const SCALE = 0.92;
+const fit = {
+  transform: `translate(12 12) scale(${SCALE}) translate(-12 -13)`,
   strokeWidth: 2 / SCALE,
 };
 
@@ -41,5 +38,5 @@ const parts: IconNode = [
  */
 export const Lander = createLucideIcon(
   'lander',
-  parts.map(([tag, attrs]) => [tag, { ...attrs, ...tilt }]),
+  parts.map(([tag, attrs]) => [tag, { ...attrs, ...fit }]),
 );
