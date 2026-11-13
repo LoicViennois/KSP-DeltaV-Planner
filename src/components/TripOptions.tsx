@@ -7,6 +7,8 @@ import {
   Undo2,
 } from 'lucide-react';
 
+import { useId } from 'react';
+
 import type { Aerobraking, Trip } from '../lib/planner';
 import { Capsule } from './CapsuleIcon';
 import { Lander } from './LanderIcon';
@@ -25,7 +27,7 @@ const OPTIONS: { option: Option; label: string; icon: LucideIcon }[] = [
 const AEROBRAKING: { level: Aerobraking; label: string; icon: LucideIcon }[] = [
   { level: 'off', label: 'Off', icon: Ban },
   { level: 'landing', label: 'Landing', icon: Capsule },
-  { level: 'capture', label: 'Capture too', icon: Orbit },
+  { level: 'capture', label: '+ Capture', icon: Orbit },
 ];
 
 interface TripOptionsProps {
@@ -45,6 +47,7 @@ const input = 'absolute inset-0 m-0 cursor-[inherit] appearance-none opacity-0';
 const icon = 'size-4 shrink-0 text-thrust-text transition';
 
 export function TripOptions({ trip, disabled, onChange }: TripOptionsProps) {
+  const labelId = useId();
   return (
     <fieldset>
       <legend className="mb-2.5 text-sm leading-6 font-semibold text-ink-soft">
@@ -77,18 +80,26 @@ export function TripOptions({ trip, disabled, onChange }: TripOptionsProps) {
         })}
       </div>
 
-      <fieldset className="mt-3">
-        <legend className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
+      {/* Beside its label when there is room, under it otherwise. */}
+      <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span
+          id={labelId}
+          className="flex items-center gap-1.5 text-sm font-semibold text-ink-soft"
+        >
           <CloudDownload aria-hidden className="size-4" />
           Aerobraking
-        </legend>
+        </span>
         {/* Levels rather than two options: capturing in an atmosphere
             without landing through it would make little sense. */}
-        <div className="grid grid-cols-3 gap-1 rounded-xl border border-line bg-surface p-1">
+        <div
+          role="radiogroup"
+          aria-labelledby={labelId}
+          className="flex grow gap-1 rounded-xl border border-line bg-surface p-1"
+        >
           {AEROBRAKING.map(({ level, label, icon: Icon }) => (
             <label
               key={level}
-              className={`${button} group rounded-lg px-1 py-1.5 text-sm text-ink-soft hover:text-ink has-checked:bg-thrust has-checked:text-thrust-ink`}
+              className={`${button} group grow rounded-lg px-2 py-1.5 text-sm text-ink-soft hover:text-ink has-checked:bg-thrust has-checked:text-thrust-ink max-[359px]:px-1`}
             >
               <input
                 type="radio"
@@ -107,7 +118,7 @@ export function TripOptions({ trip, disabled, onChange }: TripOptionsProps) {
             </label>
           ))}
         </div>
-      </fieldset>
+      </div>
     </fieldset>
   );
 }

@@ -29,13 +29,13 @@ export class PlannerPage {
     this.to = page.getByRole('combobox', { name: 'To' });
     this.takeOff = page.getByRole('checkbox', { name: 'Take-off' });
     this.landing = page.getByRole('checkbox', { name: 'Landing' });
-    const aerobraking = page.getByRole('group', { name: 'Aerobraking' });
+    const aerobraking = page.getByRole('radiogroup', { name: 'Aerobraking' });
     this.aerobrakingOff = aerobraking.getByRole('radio', { name: 'Off' });
     this.aerobrakingLanding = aerobraking.getByRole('radio', {
       name: 'Landing',
     });
     this.aerobrakingCapture = aerobraking.getByRole('radio', {
-      name: 'Capture too',
+      name: '+ Capture',
     });
     this.return = page.getByRole('checkbox', { name: 'Return' });
     this.reverseButton = page.getByRole('button', { name: 'Reverse path' });

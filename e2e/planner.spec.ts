@@ -227,7 +227,7 @@ test.describe('Delta-V planner', () => {
   });
 
   for (const [saved, level] of [
-    [true, 'Capture too'],
+    [true, '+ Capture'],
     [false, 'Off'],
   ] as const) {
     test(`reads the aerobraking of an older visit, ${saved}`, async ({
@@ -244,7 +244,7 @@ test.describe('Delta-V planner', () => {
 
       await expect(
         page
-          .getByRole('group', { name: 'Aerobraking' })
+          .getByRole('radiogroup', { name: 'Aerobraking' })
           .getByRole('radio', { name: level }),
       ).toBeChecked();
     });
@@ -258,28 +258,29 @@ test.describe('Delta-V planner', () => {
       const planner = new PlannerPage(page);
       await planner.goto();
 
-      for (const row of [
-        [planner.takeOff, planner.landing, planner.return],
-        [
-          planner.aerobrakingOff,
-          planner.aerobrakingLanding,
-          planner.aerobrakingCapture,
-        ],
-      ]) {
-        const boxes = await Promise.all(
-          row.map((option) => option.locator('..').boundingBox()),
-        );
-        // One row, of equal columns.
-        expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
-        const widths = boxes.map((box) => box?.width ?? 0);
-        expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
-        // Wide enough for its label, which never overflows the button.
-        for (const option of row) {
-          const label = option.locator('..');
-          expect(
-            await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
-          ).toBe(true);
-        }
+      const options = [planner.takeOff, planner.landing, planner.return];
+      const levels = [
+        planner.aerobrakingOff,
+        planner.aerobrakingLanding,
+        planner.aerobrakingCapture,
+      ];
+      const boxes = async (row: typeof options) =>
+        Promise.all(row.map((option) => option.locator('..').boundingBox()));
+
+      // The options on one row, of equal columns.
+      const optionBoxes = await boxes(options);
+      expect(new Set(optionBoxes.map((box) => box?.y)).size).toBe(1);
+      const widths = optionBoxes.map((box) => box?.width ?? 0);
+      expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
+      // The levels of aerobraking on one row too, as wide as their labels.
+      const levelBoxes = await boxes(levels);
+      expect(new Set(levelBoxes.map((box) => box?.y)).size).toBe(1);
+      // Wide enough for its label, which never overflows the button.
+      for (const option of [...options, ...levels]) {
+        const label = option.locator('..');
+        expect(
+          await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
+        ).toBe(true);
       }
       expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
         width,
