@@ -1,10 +1,12 @@
 import { createLucideIcon, type IconNode } from 'lucide-react';
 
-// Tilted to the left at 45° like the lander, and drawn a bit smaller to stay
-// within the grid; the stroke is thickened back to that of the other icons.
-const SCALE = 0.8;
+// Tilted to the left at 45° like the lander, and fitted to the grid as tightly
+// as the rocket; the stroke is thickened back to that of the other icons.
+const SCALE = 0.875;
+// The middle of the capsule once tilted, brought back to that of the grid.
+const MIDDLE = 13.24;
 const tilt = {
-  transform: `translate(12 12) rotate(-45) scale(${SCALE}) translate(-12 -12)`,
+  transform: `translate(12 12) scale(${SCALE}) translate(${-MIDDLE} ${-MIDDLE}) rotate(-45 12 12)`,
   strokeWidth: 2 / SCALE,
 };
 
