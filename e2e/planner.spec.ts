@@ -81,8 +81,10 @@ test.describe('Delta-V planner', () => {
     await planner.landing.check();
     await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
     await expect(planner.steps.nth(2)).toContainText('0 m/s');
-    // The aerobraking option says it all: no note on the landing.
-    await expect(planner.steps.nth(2)).not.toContainText('Aerobraking');
+    // An icon, explained on hover, rather than a note under the step.
+    await expect(
+      planner.steps.nth(2).getByTitle('Aerobraking saves the landing burn'),
+    ).toBeVisible();
 
     await planner.return.check();
     await expect(planner.steps).toHaveCount(4);
@@ -113,6 +115,9 @@ test.describe('Delta-V planner', () => {
     const transfer = planner.steps.nth(1);
     await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
     await expect(transfer).toContainText('Aerobraking saves the capture burn');
+    await expect(
+      transfer.getByTitle('Aerobraking saves the capture burn'),
+    ).toBeVisible();
 
     // Aerobraking the landings only: the capture is a burn again.
     await planner.landing.check();

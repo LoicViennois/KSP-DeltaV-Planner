@@ -87,18 +87,20 @@ function DvValue({ step, total }: { step: Step; total?: boolean }) {
   );
 }
 
-const note = 'mt-0.5 flex items-center gap-1.5 text-sm';
-
-function AerobrakingNote() {
+/**
+ * Marks a step whose burn the atmosphere takes over, after its text: an
+ * icon only, so as not to make the step taller, explained on hover and to
+ * screen readers.
+ */
+function AerobrakingMark({ type }: Step) {
+  const text = `Aerobraking saves the ${type === 'landing' ? 'landing' : 'capture'} burn`;
   return (
-    <span className={`${note} text-ink-soft`}>
-      {/* Left out on the narrowest screens, beside a long Δv range. */}
-      <CloudDownload
-        aria-hidden
-        className="size-4 shrink-0 max-[359px]:hidden"
-      />
-      Aerobraking saves the capture burn
-    </span>
+    <>
+      <span title={text} className="ml-1.5 inline-flex align-[-0.125em]">
+        <CloudDownload aria-hidden className="size-4 text-thrust-text" />
+      </span>
+      <span className="sr-only">{text}</span>
+    </>
   );
 }
 
@@ -133,8 +135,10 @@ export function StepList({ plan, selected, onSelect }: StepListProps) {
             >
               <StepIcon type={step.type} />
               <span className="flex min-w-0 flex-1 flex-col text-ink-soft">
-                <span>{message(step)}</span>
-                {step.aerobraked && <AerobrakingNote />}
+                <span>
+                  {message(step)}
+                  {step.aerobraked && <AerobrakingMark {...step} />}
+                </span>
               </span>
               <DvValue step={step} />
             </button>

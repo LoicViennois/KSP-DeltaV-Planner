@@ -26,7 +26,7 @@ export interface Step {
   readonly dv: number;
   /** Δv including the maximum plane change, in m/s */
   readonly dvMax?: number;
-  /** Whether aerobraking saves the capture burn of this step */
+  /** Whether aerobraking saves the burn of this step: a capture or a landing */
   readonly aerobraked?: boolean;
 }
 
@@ -317,9 +317,11 @@ export function planTrip(trip: Trip): TripPlan {
 }
 
 function landing(body: AstroBody, aerobraking: boolean): Step {
+  const aerobraked = aerobraking && body.hasAtmosphere;
   return {
     type: 'landing',
     to: body,
-    dv: aerobraking && body.hasAtmosphere ? 0 : body.dvGL,
+    dv: aerobraked ? 0 : body.dvGL,
+    ...(aerobraked && { aerobraked }),
   };
 }
