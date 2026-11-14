@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { repoUrl } from '../lib/build-info';
 import { AboutDialog } from './AboutDialog';
 import { GitHubIcon } from './GitHubIcon';
+import { HomeLink } from './HomeLink';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -26,6 +27,7 @@ export function Header() {
           </span>
         </Link>
         <nav aria-label="Site" className="flex items-center gap-1">
+          <HomeLink className={iconButton} />
           <a
             href={repoUrl}
             target="_blank"
