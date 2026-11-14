@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { repoUrl } from '../lib/build-info';
 import { AboutDialog } from './AboutDialog';
 import { GitHubIcon } from './GitHubIcon';
+import { HomeLink } from './HomeLink';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -44,6 +45,7 @@ export function Header() {
             <Info className="size-5" aria-hidden />
           </button>
           <ThemeToggle />
+          <HomeLink className={iconButton} />
         </nav>
       </div>
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
