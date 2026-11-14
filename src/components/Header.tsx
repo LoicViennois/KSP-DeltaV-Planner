@@ -27,7 +27,6 @@ export function Header() {
           </span>
         </Link>
         <nav aria-label="Site" className="flex items-center gap-1">
-          <HomeLink className={iconButton} />
           <a
             href={repoUrl}
             target="_blank"
@@ -46,6 +45,7 @@ export function Header() {
             <Info className="size-5" aria-hidden />
           </button>
           <ThemeToggle />
+          <HomeLink className={iconButton} />
         </nav>
       </div>
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
