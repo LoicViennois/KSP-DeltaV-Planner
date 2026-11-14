@@ -5,8 +5,12 @@ export class PlannerPage {
   readonly heading: Locator;
   readonly from: Locator;
   readonly to: Locator;
+  readonly takeOff: Locator;
   readonly landing: Locator;
-  readonly aerobraking: Locator;
+  /** The levels of aerobraking: none, the landings, the captures too. */
+  readonly aerobrakingOff: Locator;
+  readonly aerobrakingLanding: Locator;
+  readonly aerobrakingCapture: Locator;
   readonly return: Locator;
   readonly reverseButton: Locator;
   readonly resetButton: Locator;
@@ -23,8 +27,16 @@ export class PlannerPage {
     this.heading = page.getByRole('heading', { level: 1 });
     this.from = page.getByRole('combobox', { name: 'From' });
     this.to = page.getByRole('combobox', { name: 'To' });
+    this.takeOff = page.getByRole('checkbox', { name: 'Take-off' });
     this.landing = page.getByRole('checkbox', { name: 'Landing' });
-    this.aerobraking = page.getByRole('checkbox', { name: 'Aerobraking' });
+    const aerobraking = page.getByRole('radiogroup', { name: 'Aerobraking' });
+    this.aerobrakingOff = aerobraking.getByRole('radio', { name: 'Off' });
+    this.aerobrakingLanding = aerobraking.getByRole('radio', {
+      name: 'Landing',
+    });
+    this.aerobrakingCapture = aerobraking.getByRole('radio', {
+      name: '+ Capture',
+    });
     this.return = page.getByRole('checkbox', { name: 'Return' });
     this.reverseButton = page.getByRole('button', { name: 'Reverse path' });
     this.resetButton = page.getByRole('button', { name: 'Reset path' });

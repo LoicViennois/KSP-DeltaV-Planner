@@ -21,7 +21,7 @@ test.describe('Outer Planets Mod', () => {
     await planner.goto();
     await planner.outerPlanets.check();
     await planner.select(planner.to, 'Hale');
-    await planner.aerobraking.uncheck();
+    await planner.aerobrakingOff.check();
     await planner.landing.check();
 
     await expect(planner.steps).toHaveCount(4);
@@ -140,11 +140,17 @@ test.describe('Outer Planets Mod', () => {
     await page.keyboard.press('Tab');
     await expect(planner.outerPlanets).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(planner.aerobraking).toBeFocused();
+    await expect(planner.takeOff).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(planner.landing).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(planner.return).toBeFocused();
+    // The levels of aerobraking: one stop, then the arrow keys.
+    await page.keyboard.press('Tab');
+    await expect(planner.aerobrakingLanding).toBeFocused();
+    await page.keyboard.press('ArrowRight');
+    await expect(planner.aerobrakingCapture).toBeFocused();
+    await expect(planner.aerobrakingCapture).toBeChecked();
   });
 
   test('spans the eccentric orbit of Plock', async ({ page }) => {

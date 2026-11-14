@@ -12,8 +12,10 @@ test.describe('Delta-V planner', () => {
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
     await expect(page.getByText('Pick a destination')).toBeVisible();
-    await expect(planner.landing).toBeEnabled();
-    await expect(planner.aerobraking).toBeChecked();
+    // From the ground to the ground, aerobraking the landings only.
+    await expect(planner.takeOff).toBeChecked();
+    await expect(planner.landing).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
     await expect(planner.return).toBeEnabled();
   });
 
@@ -21,6 +23,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Mun');
+    await planner.landing.uncheck();
 
     await expect(planner.steps).toHaveCount(2);
     await expect(planner.steps.nth(0)).toContainText('Take off from Kerbin');
@@ -55,15 +58,21 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Ike');
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
 
     await expect(planner.steps).toHaveCount(3);
     await expect(planner.steps.nth(1)).toContainText('Transit to Duna SOI');
-    await expect(planner.steps.nth(1)).toContainText('1330 – 1340 m/s');
+    // Aerobraking at Duna saves the 250 m/s of the capture.
+    await expect(planner.steps.nth(1)).toContainText('1080 – 1090 m/s');
+    await expect(planner.steps.nth(1)).toContainText(
+      'Aerobraking saves the capture burn',
+    );
     await expect(planner.steps.nth(2)).toContainText(
       'Transit from Duna SOI to Ike low orbit',
     );
     await expect(planner.steps.nth(2)).toContainText('210 m/s');
-    await expect(planner.total).toContainText('4940 – 4950 m/s');
+    await expect(planner.total).toContainText('4690 – 4700 m/s');
   });
 
   test('supports landing and return options for an interplanetary trip', async ({
@@ -72,19 +81,33 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
+    await planner.aerobrakingCapture.check();
 
-    await planner.landing.check();
     await expect(planner.steps.nth(2)).toContainText('Landing on Duna');
     await expect(planner.steps.nth(2)).toContainText('0 m/s');
-    await expect(planner.steps.nth(2)).toContainText('Aerobraking is possible');
+    // An icon in the pill, rather than a note under the step.
+    await expect(planner.steps.nth(2)).toContainText(
+      'Aerobraking saves the landing burn',
+    );
 
     await planner.return.check();
     await expect(planner.steps).toHaveCount(4);
     await expect(planner.steps.nth(3)).toContainText(
       'Return trip from Duna to Kerbin',
     );
-    await expect(planner.steps.nth(3)).toContainText('3140 – 3150 m/s');
-    await expect(planner.total).toContainText('8230 – 8250 m/s');
+    // Take-off, transfer to Kerbin and aerobraking down to its ground.
+    await expect(planner.steps.nth(3)).toContainText('2190 – 2200 m/s');
+    await expect(planner.total).toContainText('6670 – 6690 m/s');
+    // Marked as aerobraked too, at the level chosen.
+    await expect(planner.steps.nth(3)).toContainText(
+      'Aerobraking saves the capture and landing burns',
+    );
+    await planner.aerobrakingLanding.check();
+    await expect(planner.steps.nth(3)).toContainText(
+      'Aerobraking saves the landing burn',
+    );
+    await planner.aerobrakingOff.check();
+    await expect(planner.steps.nth(3)).not.toContainText('Aerobraking');
   });
 
   test('counts the landing burn without aerobraking', async ({ page }) => {
@@ -93,9 +116,97 @@ test.describe('Delta-V planner', () => {
     await planner.select(planner.to, 'Duna');
 
     await planner.landing.check();
-    await planner.aerobraking.uncheck();
+    await planner.aerobrakingOff.check();
 
     await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
+  });
+
+  test('aerobrakes into low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    await planner.aerobrakingCapture.check();
+
+    const transfer = planner.steps.nth(1);
+    await expect(transfer.getByTestId('dv')).toHaveText('1080 – 1090 m/s');
+    await expect(transfer).toContainText('Aerobraking saves the capture burn');
+
+    // Aerobraking the landings only: the capture is a burn again.
+    await planner.aerobrakingLanding.check();
+    await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
+    await expect(transfer).not.toContainText('Aerobraking');
+    await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('0 m/s');
+
+    await planner.aerobrakingOff.check();
+    await expect(transfer.getByTestId('dv')).toHaveText('1690 – 1700 m/s');
+    await expect(planner.steps.nth(2).getByTestId('dv')).toHaveText('1450 m/s');
+  });
+
+  test('explains the aerobraking mark in a tooltip', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Duna');
+    const hint = page.getByTestId('aerobraking-hint');
+    const mark = planner.steps.nth(2).getByTestId('dv').locator('svg');
+
+    // On hover, and while the pointer slides onto it (WCAG 1.4.13).
+    await expect(hint).toHaveCount(0);
+    await mark.hover();
+    await expect(hint).toHaveText('Aerobraking saves the landing burn');
+    const from = await mark.boundingBox();
+    const to = await hint.boundingBox();
+    await page.mouse.move(
+      (from?.x ?? 0) + (from?.width ?? 0) / 2,
+      (to?.y ?? 0) + (to?.height ?? 0) / 2,
+      // A pixel at a time, so as to cross every gap on the way.
+      { steps: 40 },
+    );
+    await expect(hint).toBeVisible();
+    // On a slant too, to the far end of a tooltip wider than the pill.
+    await page.mouse.move(
+      (from?.x ?? 0) + (from?.width ?? 0) / 2,
+      (from?.y ?? 0) + (from?.height ?? 0) / 2,
+    );
+    await page.mouse.move(
+      (to?.x ?? 0) + 4,
+      (to?.y ?? 0) + (to?.height ?? 0) / 2,
+      {
+        steps: 60,
+      },
+    );
+    await expect(hint).toBeVisible();
+    // Escape dismisses it, without moving the pointer.
+    await page.keyboard.press('Escape');
+    await expect(hint).toHaveCount(0);
+
+    // On keyboard focus of the step too.
+    await planner.steps.nth(1).getByRole('button').focus();
+    await page.keyboard.press('Tab');
+    await expect(hint).toHaveText('Aerobraking saves the landing burn');
+    await page.keyboard.press('Escape');
+    await expect(hint).toHaveCount(0);
+  });
+
+  test('aerobrakes back home in Kerbin low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.from, 'Mun');
+    await planner.aerobrakingCapture.check();
+
+    // Only the escape from the Mun, the atmosphere of Kerbin does the rest.
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('310 m/s');
+
+    await planner.aerobrakingLanding.check();
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('1170 m/s');
+  });
+
+  test('never aerobrakes without an atmosphere', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Mun');
+
+    await expect(planner.steps.nth(1).getByTestId('dv')).toHaveText('1170 m/s');
+    await expect(planner.steps.nth(1)).not.toContainText('Aerobraking');
   });
 
   for (const body of ['Jool', 'Kerbol']) {
@@ -146,28 +257,30 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Duna');
-    await planner.landing.check();
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
 
     await planner.resetButton.click();
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
-    await expect(planner.landing).not.toBeChecked();
+    await expect(planner.landing).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
   });
 
   test('keeps the trip and its options across a reload', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
     await planner.select(planner.to, 'Laythe');
-    await planner.landing.check();
-    await planner.aerobraking.uncheck();
+    await planner.landing.uncheck();
+    await planner.aerobrakingOff.check();
     await planner.return.check();
 
     await page.reload();
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Laythe');
-    await expect(planner.landing).toBeChecked();
-    await expect(planner.aerobraking).not.toBeChecked();
+    await expect(planner.landing).not.toBeChecked();
+    await expect(planner.aerobrakingOff).toBeChecked();
     await expect(planner.return).toBeChecked();
     await expect(planner.steps.first()).toContainText('Take off from Kerbin');
 
@@ -175,30 +288,69 @@ test.describe('Delta-V planner', () => {
     await planner.resetButton.click();
     await page.reload();
     await expect(planner.to).toContainText('Select…');
-    await expect(planner.aerobraking).toBeChecked();
+    await expect(planner.aerobrakingLanding).toBeChecked();
   });
 
-  for (const width of [320, 390]) {
-    test(`keeps the options on one row on a ${width}px screen`, async ({
+  for (const [saved, level] of [
+    // Back then, it was for the landings only.
+    [true, 'Landing'],
+    [false, 'Off'],
+  ] as const) {
+    test(`reads the aerobraking of an older visit, ${saved}`, async ({
+      page,
+    }) => {
+      await page.addInitScript((aerobraking) => {
+        localStorage.setItem(
+          'ksp_trip',
+          JSON.stringify({ from: 'Kerbin', to: 'Duna', aerobraking }),
+        );
+      }, saved);
+      const planner = new PlannerPage(page);
+      await planner.goto();
+
+      await expect(
+        page
+          .getByRole('radiogroup', { name: 'Aerobraking' })
+          .getByRole('radio', { name: level }),
+      ).toBeChecked();
+    });
+  }
+
+  for (const width of [320, 390, 700, 800, 1280]) {
+    test(`lays the options out in equal columns on a ${width}px screen`, async ({
       page,
     }) => {
       await page.setViewportSize({ width, height: 800 });
       const planner = new PlannerPage(page);
       await planner.goto();
 
-      const boxes = await Promise.all(
-        [planner.aerobraking, planner.landing, planner.return].map((option) =>
-          option.locator('..').boundingBox(),
-        ),
-      );
-      expect(new Set(boxes.map((box) => box?.y)).size).toBe(1);
+      const options = [planner.takeOff, planner.landing, planner.return];
+      const levels = [
+        planner.aerobrakingOff,
+        planner.aerobrakingLanding,
+        planner.aerobrakingCapture,
+      ];
+      const boxes = async (row: typeof options) =>
+        Promise.all(row.map((option) => option.locator('..').boundingBox()));
+
+      // The options on one row, of equal columns.
+      const optionBoxes = await boxes(options);
+      expect(new Set(optionBoxes.map((box) => box?.y)).size).toBe(1);
+      const widths = optionBoxes.map((box) => box?.width ?? 0);
+      expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(1);
+      // The levels of aerobraking on one row too, as wide as their labels.
+      const levelBoxes = await boxes(levels);
+      expect(new Set(levelBoxes.map((box) => box?.y)).size).toBe(1);
       // Wide enough for its label, which never overflows the button.
-      for (const option of [planner.aerobraking, planner.landing]) {
+      for (const option of [...options, ...levels]) {
         const label = option.locator('..');
         expect(
           await label.evaluate((el) => el.scrollWidth <= el.clientWidth),
         ).toBe(true);
       }
+      expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(
+        width,
+      );
     });
   }
 
@@ -255,20 +407,50 @@ test.describe('Delta-V planner', () => {
     });
   }
 
-  test('centres the options on wide screens', async ({ page }) => {
+  test('starts a trip from low orbit without the take-off', async ({
+    page,
+  }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
-    const group = await page.locator('fieldset > div').boundingBox();
-    const first = await planner.aerobraking.locator('..').boundingBox();
-    const last = await planner.return.locator('..').boundingBox();
+    await planner.select(planner.to, 'Mun');
+    await planner.landing.uncheck();
+    await planner.aerobrakingCapture.check();
+    await planner.takeOff.uncheck();
 
-    const left = (first?.x ?? 0) - (group?.x ?? 0);
-    const right =
-      (group?.x ?? 0) +
-      (group?.width ?? 0) -
-      ((last?.x ?? 0) + (last?.width ?? 0));
-    expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
-    expect(left).toBeGreaterThan(0);
+    await expect(planner.steps).toHaveCount(1);
+    await expect(planner.steps.nth(0)).toContainText(
+      'Transit from Kerbin low orbit to Mun low orbit',
+    );
+    await expect(planner.total).toContainText('1170 m/s');
+
+    // The return ends in low orbit too: no landing back on Kerbin.
+    await planner.landing.check();
+    await planner.return.check();
+    await expect(planner.steps).toHaveCount(3);
+    await expect(planner.steps.nth(2)).toContainText(
+      'Return trip from Mun to Kerbin',
+    );
+    // 580 to take off from Mun, 310 to leave its orbit: the atmosphere of
+    // Kerbin does the capture.
+    await expect(planner.steps.nth(2)).toContainText('890 m/s');
+
+    // Kept across a reload, and back on with a reset.
+    await page.reload();
+    await expect(planner.takeOff).not.toBeChecked();
+    await expect(planner.steps).toHaveCount(3);
+    await planner.resetButton.click();
+    await expect(planner.takeOff).toBeChecked();
+  });
+
+  test('starts a Kerbin to Kerbin trip from low orbit', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+    await planner.select(planner.to, 'Kerbin');
+    await planner.takeOff.uncheck();
+
+    await expect(planner.steps).toHaveCount(2);
+    await expect(planner.steps.nth(0)).toContainText('Transit to Kerbin SOI');
+    await expect(planner.takeOff).toBeEnabled();
   });
 
   test('toggles an option from anywhere on its button', async ({ page }) => {

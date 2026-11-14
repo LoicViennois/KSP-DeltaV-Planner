@@ -57,7 +57,7 @@ function pathIds(trip: Trip): string[] | null {
     'hub',
     fromName,
     toName,
-    ...ids(fromName, SUFFIX_LANDING),
+    ...ids(fromName, trip.takeOff ? SUFFIX_LANDING : SUFFIX_LOW),
     ...ids(toName, isLanding(trip) ? SUFFIX_LANDING : SUFFIX_LOW),
   ];
   for (const body of [to, from]) {
