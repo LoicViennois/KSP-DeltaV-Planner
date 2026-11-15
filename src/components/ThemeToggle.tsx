@@ -13,7 +13,7 @@ export function ThemeToggle() {
       aria-label={
         theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
       }
-      className="grid size-9 cursor-pointer place-items-center rounded-lg text-ink-soft transition hover:bg-tint hover:text-ink active:scale-90"
+      className="grid size-8 sm:size-9 cursor-pointer place-items-center rounded-lg text-ink-soft transition hover:bg-tint hover:text-ink active:scale-90"
     >
       <Icon key={theme} className="size-5 animate-pop" aria-hidden />
     </button>

@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { repoUrl } from '../lib/build-info';
 import { AboutDialog } from './AboutDialog';
 import { GitHubIcon } from './GitHubIcon';
+import { HomeLink } from './HomeLink';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
 const iconButton =
-  'grid size-9 cursor-pointer place-items-center rounded-lg text-ink-soft transition hover:bg-tint hover:text-ink active:scale-90';
+  'grid size-8 sm:size-9 cursor-pointer place-items-center rounded-lg text-ink-soft transition hover:bg-tint hover:text-ink active:scale-90';
 
 export function Header() {
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -19,13 +20,13 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-(--shell-width) items-center justify-between gap-2 px-4 lg:px-6">
         <Link to="/" className="flex items-center gap-2.5 rounded-lg">
           <Logo />
-          <span className="text-lg font-semibold tracking-tight whitespace-nowrap">
+          <span className="text-base font-semibold tracking-tight whitespace-nowrap sm:text-lg">
             KSP <span className="hidden sm:inline">Delta-V</span>
             <span className="sm:hidden">Δv</span> Planner
             <span className="sr-only">, home</span>
           </span>
         </Link>
-        <nav aria-label="Site" className="flex items-center gap-1">
+        <nav aria-label="Site" className="flex items-center sm:gap-1">
           <a
             href={repoUrl}
             target="_blank"
@@ -44,6 +45,7 @@ export function Header() {
             <Info className="size-5" aria-hidden />
           </button>
           <ThemeToggle />
+          <HomeLink className={iconButton} />
         </nav>
       </div>
       <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />

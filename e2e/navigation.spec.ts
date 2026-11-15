@@ -20,6 +20,16 @@ test.describe('Navigation', () => {
     );
   });
 
+  test('links to the home page', async ({ page }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+
+    await expect(planner.homeLink).toHaveAttribute(
+      'href',
+      'https://www.loicviennois.com/',
+    );
+  });
+
   test('shows the about dialog', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();

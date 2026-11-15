@@ -19,6 +19,7 @@ export class PlannerPage {
   readonly map: Locator;
   readonly outerPlanets: Locator;
   readonly githubLink: Locator;
+  readonly homeLink: Locator;
   readonly aboutButton: Locator;
   readonly themeToggle: Locator;
 
@@ -48,6 +49,9 @@ export class PlannerPage {
     this.outerPlanets = page.getByRole('switch', { name: 'Outer Planets Mod' });
     const banner = page.getByRole('banner');
     this.githubLink = banner.getByRole('link', { name: 'GitHub repository' });
+    this.homeLink = banner.getByRole('link', {
+      name: 'More projects by Loïc Viennois',
+    });
     this.aboutButton = banner.getByRole('button', { name: 'About' });
     this.themeToggle = banner.getByRole('button', {
       name: /Switch to (light|dark) theme/,
