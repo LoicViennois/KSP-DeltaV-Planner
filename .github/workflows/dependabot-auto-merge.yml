@@ -2,7 +2,7 @@ name: Dependabot auto-merge
 
 on:
   pull_request:
-    branches: ['master']
+    branches: ['main']
 
 permissions:
   contents: write

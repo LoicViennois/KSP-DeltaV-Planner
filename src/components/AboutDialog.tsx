@@ -190,7 +190,7 @@ export function AboutDialog({ open, onClose }: AboutDialogProps) {
 
         <p className="border-t border-line pt-4 text-sm text-ink-soft">
           This program is free software, released under the{' '}
-          <External href={`${repoUrl}/blob/master/LICENSE`}>
+          <External href={`${repoUrl}/blob/main/LICENSE`}>
             GNU General Public License v3
           </External>
           . You may redistribute and modify it under its terms, either version 3
