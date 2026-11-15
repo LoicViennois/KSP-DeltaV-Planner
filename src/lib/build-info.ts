@@ -1,4 +1,4 @@
-const REPO_URL = 'https://github.com/LoicViennois/KSP-DeltaV-Planner';
+const REPO_URL = 'https://github.com/LoicViennois/ksp-deltav-planner';
 
 export const commitSha = __COMMIT_SHA__;
 export const shortSha = commitSha.slice(0, 7);

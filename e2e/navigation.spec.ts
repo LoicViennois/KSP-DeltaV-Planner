@@ -16,7 +16,7 @@ test.describe('Navigation', () => {
 
     await expect(planner.githubLink).toHaveAttribute(
       'href',
-      'https://github.com/LoicViennois/KSP-DeltaV-Planner',
+      'https://github.com/LoicViennois/ksp-deltav-planner',
     );
   });
 
@@ -40,7 +40,7 @@ test.describe('Navigation', () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.getByTestId('commit-link')).toHaveAttribute(
       'href',
-      /^https:\/\/github\.com\/LoicViennois\/KSP-DeltaV-Planner/,
+      /^https:\/\/github\.com\/LoicViennois\/ksp-deltav-planner/,
     );
     await expect(dialog.getByTestId('commit-link')).toHaveText(
       /^([0-9a-f]{7}|dev)$/,
@@ -49,7 +49,7 @@ test.describe('Navigation', () => {
       dialog.getByRole('link', { name: 'GNU General Public License v3' }),
     ).toHaveAttribute(
       'href',
-      'https://github.com/LoicViennois/KSP-DeltaV-Planner/blob/master/LICENSE',
+      'https://github.com/LoicViennois/ksp-deltav-planner/blob/main/LICENSE',
     );
     await expect(dialog).toContainText('CC BY-NC-SA 4.0');
     await expect(dialog.getByTestId('sponsor-link')).toHaveAttribute(
