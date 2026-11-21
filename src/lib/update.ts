@@ -1,15 +1,14 @@
 import { registerSW } from 'virtual:pwa-register';
 
 // Long-lived sessions (an installed app left open) only look for a new service
-// worker on navigation, so check periodically too.
+// worker on navigation, so check again when the user comes back after a while.
 const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000;
 
 /**
  * Retires the service worker of the former Angular app when it still controls
  * the page, which happens when the visit before left too soon for
  * public/ngsw-worker.js to take over. Registering ours meanwhile would leave
- * it waiting behind the old one, with an update prompt on every visit, so it
- * is registered on the next visit instead.
+ * it waiting behind the old one, so it is registered on the next visit instead.
  */
 function retireAngularWorker(): boolean {
   if (
@@ -32,38 +31,28 @@ function retireAngularWorker(): boolean {
   return true;
 }
 
-/**
- * Activates the waiting service worker, which reloads the page, while nobody
- * is looking: once the page is hidden (another tab, the app sent to the
- * background, the phone locked). A closed app picks the update up on its next
- * launch anyway, so there is never anything to click. The trip is saved, so
- * the reload does not lose it.
- */
-function applyWhenHidden(update: () => Promise<void>): void {
-  const apply = () => {
-    if (document.visibilityState === 'hidden') {
-      document.removeEventListener('visibilitychange', apply);
-      void update();
-    }
-  };
-  document.addEventListener('visibilitychange', apply);
-  apply();
-}
-
-// The new service worker waits meanwhile, so an open page keeps being served
-// the precached chunks of the version it was built against.
+// The new service worker waits until all tabs are closed and takes over on the
+// next launch. We intentionally avoid reloading tabs in the background: it
+// triggers phantom analytics visits on deploy days and overwrites the original
+// document.referrer on restored browser sessions.
 if (!retireAngularWorker()) {
-  const updateServiceWorker = registerSW({
-    onNeedRefresh: () => applyWhenHidden(() => updateServiceWorker()),
+  registerSW({
     onRegisteredSW(_swUrl, registration) {
       if (!registration) {
         return;
       }
-      setInterval(() => {
-        if (navigator.onLine) {
-          registration.update().catch(() => {});
+      let lastCheck = Date.now();
+      document.addEventListener('visibilitychange', () => {
+        if (
+          document.visibilityState !== 'visible' ||
+          !navigator.onLine ||
+          Date.now() - lastCheck < UPDATE_CHECK_INTERVAL
+        ) {
+          return;
         }
-      }, UPDATE_CHECK_INTERVAL);
+        lastCheck = Date.now();
+        registration.update().catch(() => {});
+      });
     },
   });
 }
