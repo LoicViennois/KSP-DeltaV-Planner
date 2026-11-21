@@ -122,20 +122,15 @@ function PlannerPage() {
           // The banner is gone: the focus goes on to the planner.
           onDismiss={() => headingRef.current?.focus()}
         />
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1
-              ref={headingRef}
-              id="planner-title"
-              tabIndex={-1}
-              className="text-2xl font-bold tracking-tight outline-none"
-            >
-              Delta-V Calculator
-            </h1>
-            <p className="text-xs text-ink-soft">
-              Kerbal Space Program Delta-V map &amp; trip planner
-            </p>
-          </div>
+        <div className="flex items-center justify-between gap-4">
+          <h1
+            ref={headingRef}
+            id="planner-title"
+            tabIndex={-1}
+            className="text-2xl font-bold tracking-tight outline-none"
+          >
+            Delta-V Calculator
+          </h1>
           <button
             type="button"
             onClick={() => update(initialTrip)}
