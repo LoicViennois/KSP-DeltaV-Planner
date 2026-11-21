@@ -136,5 +136,15 @@ for (const theme of ['dark', 'light'] as const) {
 
       await expectNoViolations(page);
     });
+
+    test('expanded map and bodies reference', async ({ page }) => {
+      const planner = new PlannerPage(page);
+      await planner.goto();
+      await page.getByText('About this KSP Delta-V map & bodies').click();
+      await expect(page.locator('details')).toContainText('Laythe');
+      await expect(page.locator('details')).toContainText('Sarnus');
+
+      await expectNoViolations(page);
+    });
   });
 }

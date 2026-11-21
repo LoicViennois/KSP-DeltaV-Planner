@@ -4,8 +4,32 @@
     <meta charset="utf-8" />
     <title>KSP Delta-V Planner</title>
     <meta
-      content="KSP Delta-V Planner is a tool to calculate your rocket Delta-V for interplanetary travels in Kerbal Space Program. Also known as KSP Delta-V Calculator."
+      content="Interactive KSP Delta-V map and calculator for Kerbal Space Program. Plan rocket Delta-V for interplanetary missions across Kerbol and Outer Planets Mod."
       name="description"
+    />
+    <link href="https://ksp.loicviennois.com/" rel="canonical" />
+
+    <meta content="website" property="og:type" />
+    <meta content="https://ksp.loicviennois.com/" property="og:url" />
+    <meta content="KSP Delta-V Planner" property="og:site_name" />
+    <meta content="KSP Delta-V Planner" property="og:title" />
+    <meta
+      content="Interactive KSP Delta-V map and calculator for Kerbal Space Program. Plan rocket Delta-V for interplanetary missions across Kerbol and Outer Planets Mod."
+      property="og:description"
+    />
+    <meta
+      content="https://ksp.loicviennois.com/favicon.512.png"
+      property="og:image"
+    />
+    <meta content="summary" name="twitter:card" />
+    <meta content="KSP Delta-V Planner" name="twitter:title" />
+    <meta
+      content="Interactive KSP Delta-V map and calculator for Kerbal Space Program. Plan rocket Delta-V for interplanetary missions across Kerbol and Outer Planets Mod."
+      name="twitter:description"
+    />
+    <meta
+      content="https://ksp.loicviennois.com/favicon.512.png"
+      name="twitter:image"
     />
 
     <meta content="width=device-width, initial-scale=1" name="viewport" />
@@ -13,6 +37,24 @@
     <link href="/favicon.64.png" rel="icon" type="image/png" sizes="64x64" />
     <link href="/apple-touch-icon.png" rel="apple-touch-icon" />
     <meta content="#14111c" name="theme-color" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "KSP Delta-V Planner",
+        "alternateName": ["KSP Delta-V Calculator", "KSP Delta-V Map"],
+        "url": "https://ksp.loicviennois.com/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "description": "Interactive KSP Delta-V map and calculator for Kerbal Space Program. Plan rocket Delta-V for interplanetary missions across Kerbol and Outer Planets Mod.",
+        "author": {
+          "@type": "Person",
+          "name": "Loïc Viennois",
+          "url": "https://www.loicviennois.com/"
+        }
+      }
+    </script>
     <script>
       // Apply the saved theme (dark by default) before first paint (see src/lib/theme.ts).
       (function () {
@@ -30,7 +72,9 @@
   <body>
     <div id="root"></div>
     <noscript
-      >Please enable JavaScript to continue using this application.</noscript
+      >KSP Delta-V Planner is an interactive Delta-V map and calculator for
+      Kerbal Space Program. Please enable JavaScript to continue using this
+      application.</noscript
     >
     <script type="module" src="/src/main.tsx"></script>
   </body>

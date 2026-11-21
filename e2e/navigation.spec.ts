@@ -71,6 +71,37 @@ test.describe('Navigation', () => {
     await expect(planner.aboutButton).toBeFocused();
   });
 
+  test('exposes canonical metadata, structured data, and map reference', async ({
+    page,
+  }) => {
+    const planner = new PlannerPage(page);
+    await planner.goto();
+
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://ksp.loicviennois.com/',
+    );
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      /Delta-V map.*Kerbal Space Program/i,
+    );
+    const jsonLd = await page
+      .locator('script[type="application/ld+json"]')
+      .textContent();
+    expect(JSON.parse(jsonLd ?? '{}')).toMatchObject({
+      '@type': 'WebApplication',
+      name: 'KSP Delta-V Planner',
+      url: 'https://ksp.loicviennois.com/',
+    });
+
+    const reference = page.locator('details');
+    await reference.locator('summary').click();
+    await expect(reference).toContainText('Kerbal Space Program');
+    await expect(reference).toContainText('Kerbin');
+    await expect(reference).toContainText('Duna');
+    await expect(reference).toContainText('Sarnus');
+  });
+
   test('switches theme and remembers it', async ({ page }) => {
     const planner = new PlannerPage(page);
     await planner.goto();
