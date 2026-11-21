@@ -7,7 +7,7 @@ test.describe('Delta-V planner', () => {
     const planner = new PlannerPage(page);
     await planner.goto();
 
-    await expect(planner.heading).toHaveText('Plan your trip');
+    await expect(planner.heading).toHaveText('Delta-V Calculator');
     await expect(planner.from).toContainText('Kerbin');
     await expect(planner.to).toContainText('Select…');
     await expect(planner.steps).toHaveCount(0);
@@ -1129,7 +1129,7 @@ test.describe('Full screen map', () => {
 
   test('grows the map with the screen, not the panel', async ({ page }) => {
     const planner = new PlannerPage(page);
-    const panel = page.getByRole('region', { name: 'Plan your trip' });
+    const panel = page.getByRole('region', { name: 'Delta-V Calculator' });
 
     await page.setViewportSize({ width: 1280, height: 720 });
     await planner.goto();

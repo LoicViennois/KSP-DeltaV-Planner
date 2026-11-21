@@ -12,6 +12,7 @@ import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { BodyPicker } from '../components/BodyPicker';
 import { NotesDialog } from '../components/NotesDialog';
 import { OuterPlanetsToggle } from '../components/OuterPlanetsToggle';
+import { PlannerReference } from '../components/PlannerReference';
 import { StepList } from '../components/StepList';
 import { TripOptions } from '../components/TripOptions';
 import { WhatsNew } from '../components/WhatsNew';
@@ -115,7 +116,7 @@ function PlannerPage() {
         )}
       </div>
 
-      <section aria-labelledby="planner-title" className="space-y-5">
+      <section aria-labelledby="planner-title" className="space-y-4">
         <WhatsNew
           onOpenMap={openMap}
           // The banner is gone: the focus goes on to the planner.
@@ -128,13 +129,13 @@ function PlannerPage() {
             tabIndex={-1}
             className="text-2xl font-bold tracking-tight outline-none"
           >
-            Plan your trip
+            Delta-V Calculator
           </h1>
           <button
             type="button"
             onClick={() => update(initialTrip)}
             aria-label="Reset path"
-            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition hover:border-thrust hover:text-ink active:scale-95"
+            className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-ink-soft transition hover:border-thrust hover:text-ink active:scale-95"
           >
             <RotateCcw aria-hidden className="size-4" />
             Reset
@@ -194,11 +195,13 @@ function PlannerPage() {
           <StepList plan={plan} selected={selected} onSelect={setSelected} />
         ) : (
           // Beside its icon, to leave the options room on short screens.
-          <p className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-line px-4 py-5 text-ink-soft">
+          <p className="flex items-center justify-center gap-3 rounded-xl border border-dashed border-line px-4 py-3 text-ink-soft">
             <Telescope aria-hidden className="size-8 shrink-0" />
             Pick a destination to see the Δv of each step of the trip.
           </p>
         )}
+
+        <PlannerReference />
       </section>
 
       <div className={`${floatingBar} md:hidden`}>
